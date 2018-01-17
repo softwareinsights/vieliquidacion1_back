@@ -4,6 +4,25 @@ const passport = require('passport');
 const permissions = require('../config/permissions');
 
 router
+
+
+    .post('/go-out-vehicle', (req, res, next) => {
+        passport.authenticate('jwt', { session: true }, (err, auth_data, info) => {
+            permissions.module_permission(auth_data.modules, 'vehiculoreparando', auth_data.user.super, 'writeable', (error, permission) => {
+                if (permission.success) {
+                    const _vehiculoreparando = req.body;
+                    _vehiculoreparando.created_by = auth_data.user.idsi_user;
+                    Vehiculoreparando.goOutVehicle( _vehiculoreparando, (error, data) =>{
+                        return Vehiculoreparando.response(res, error, data);
+                    });
+                } else {
+                    return Vehiculoreparando.response(res, error, permission);
+                }
+            });
+        })(req, res, next);
+    })
+
+
     .get('/', (req, res, next) => {
         passport.authenticate('jwt', { session: true }, (err, auth_data, info) => {
             permissions.module_permission(auth_data.modules, 'vehiculoreparando', auth_data.user.super, 'readable', (error, permission) => {

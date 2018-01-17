@@ -2,6 +2,41 @@ const connection = require('../config/db-connection');
 
 const Bonificacion = {};
 
+
+Bonificacion.applyBonification = (Bonificacion, next) => {
+    if( !connection )
+        return next('Connection refused');
+
+    let query = '';
+    let keys = [];
+
+    if (Bonificacion.validado && Bonificacion.estado_estado_idestado === 'NOAPLICADA') {
+        // UPDATE A LIQUIDACIÓN
+        query = 'UPDATE liquidacion SET bonificado = ?, saldoactual = (saldoactual - bonificado) WHERE fecha = ? AND chofer_idchofer = ?';
+        keys = [Bonificacion.cantidad, Bonificacion.fecha, Bonificacion.chofer_idchofer];
+        connection.query(query, keys, (error, result) => {
+            if(error) 
+                return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se actualizaba el registro de liquidación' });
+            else {
+                // UPDATE A BONIFICACIÓN ESTATUS
+                query = 'UPDATE bonificacion SET estado_idestado = 7 WHERE idbonificacion = ?';
+                keys = [Bonificacion.idbonificacion];
+                connection.query(query, keys, (error, result) => {
+                    if(error) 
+                        return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se actualizaba el registro de bonificación' });
+                    else {
+                        return next(null, { success: true, result: result, message: 'Bonificacion y Liquidación actualizad@' });
+                    }
+                });
+            }
+        });
+    } else {
+        return next(null, { success: false, result: {}, message: 'La Bonificación debe ser aprobada y con estado NOAPLICADA' });
+    }
+
+};
+
+
 Bonificacion.all = (created_by, next) => {
     if( !connection )
         return next('Connection refused');
@@ -120,8 +155,9 @@ Bonificacion.update = (Bonificacion, created_by, next) => {
             return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se actualizaba el registro' });
         else if (result.affectedRows === 0)
             return next(null, { success: false, result: result, message: 'Solo es posible actualizar registros propios' });
-        else
-            return next(null, { success: true, result: result, message: 'Bonificacion actualizad@' });
+        else {                 
+            return next(null, { success: true, result: result, message: 'Bonificacion y Liquidación actualizad@' });
+        }
     });
 };
 

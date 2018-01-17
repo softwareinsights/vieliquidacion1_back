@@ -2,6 +2,68 @@ const connection = require('../config/db-connection');
 
 const Vehiculoreparando = {};
 
+
+
+
+Vehiculoreparando.goOutVehicle = (Vehiculoreparando, next) => {
+    if( !connection )
+        return next('Connection refused');
+
+    // MODIFICAR VEHICULOREPARANDO PARA ASIGNAR FECHA Y HORA DE SALIDA (QUITAR ESTOS CAMPOS DE ADD Y EDIT MODAL) 
+    // PRIMERO SACAR EL LA RESTA DE HORA_SALIDA MENOS LA HORA_ENTRADA DE TABLA VEHICULOREPARANDO
+    // SACAR SI LA FECHA ES UN DÍA LUNES
+    // SACAR LIQUIDEZ CORRESPONDIENTE DE TABLA PERMISOTAXI SEGÚN permisotaxiasignado
+    // SACAR FÓRMULA FIANZA / 24 * HORAS
+    // CREAR BONIFICACION A CHOFER CON LA FECHA DE SALIDA
+    // MODIFICAR ESTATUS EN VEHICULOREPARANDO A REPARACIONFINALIZADA
+    // MODIFICAR ESTATUS A CHOFER A ACTIVO
+
+
+
+
+    let date = new Date();
+    let now = date.getFullYear() + "-" + (date.getMonth() +1) + "-" + date.getDate()
+    let hour = date.getHours() + ":" + date.getMinutes();
+
+    let query = 'UPDATE vehiculoreparando SET fechaSalida = ?, horaSalida = ?, estado_idestado = 16 WHERE idvehiculoreparando = ?';
+    let keys = [now, hour, Vehiculoreparando.idvehiculoreparando];
+
+    connection.query(query, keys, (error, result) => {
+        if(error) 
+            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se actualizaban registros' });
+        else if (result.affectedRows === 0)
+            return next(null, { success: false, result: result, message: 'Solo es posible actualizar registros propios' });
+        else {
+
+            
+            // PRIMERO SACAR EL LA RESTA DE HORA_SALIDA MENOS LA HORA_ENTRADA
+            let query = 'SELECT TIMEDIFF(horaSalida, horaIngresa) as horas FROM vehiculoreparando WHERE fechaSalida = fechaIngresa AND idvehiculoreparando = ?';
+            let keys = [Vehiculoreparando.idvehiculoreparando];
+
+            connection.query(query, keys, (error, result) => {
+                if(error) 
+                    return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se leer registros' });
+                else if (result.affectedRows === 0)
+                    return next(null, { success: false, result: result, message: 'Solo es posible leer registros propios' });
+                else {
+                    return next(null, { success: true, result: result, message: 'Vehiculoreparando horas comparadas' });
+
+
+
+
+                }
+            });
+
+
+
+
+        }
+    });
+
+};
+
+
+
 Vehiculoreparando.all = (created_by, next) => {
     if( !connection )
         return next('Connection refused');
@@ -90,15 +152,52 @@ Vehiculoreparando.insert = (Vehiculoreparando, next) => {
 
     let query = '';
     let keys = [];
-    query = 'INSERT INTO vehiculoreparando SET ?';
-    keys = [Vehiculoreparando];
 
-    connection.query(query, keys, (error, result) => {
-        if(error) 
-            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se creaba el registro' });
-        else
-            return next(null, { success: true, result: result, message: 'Vehiculoreparando cread@' });
-    });
+    // Si viene de enviotaller sacar hora y fecha de envío
+    if (Vehiculoreparando.enviotaller_idenviotaller) {
+
+        query = 'SELECT fecha, hora FROM enviotaller WHERE idenviotaller = ?';
+        keys = [Vehiculoreparando.enviotaller_idenviotaller];
+
+        connection.query(query, keys, (error, result) => {
+            if(error) 
+                return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se leia el registro Envio Taller' });
+            else {
+                // Insertar a vehiculoreparando con las fechas de enviotaller
+                Vehiculoreparando.fechaIngresa = result[0].fecha;
+                Vehiculoreparando.horaIngresa = result[0].hora;
+                Vehiculoreparando.estado_idestado = 11; // REPARANDO
+                
+                query = 'INSERT INTO vehiculoreparando SET ?';
+                keys = [Vehiculoreparando];
+
+                connection.query(query, keys, (error, result) => {
+                    if(error) 
+                        return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se creaba el registro' });
+                    else
+                        return next(null, { success: true, result: result, message: 'Vehiculoreparando cread@ con fecha de envío a taller' });
+                });
+            }
+        });
+
+    } else {
+
+        // Puede ser un vehiculo externo sin permiso y sin enviotaller
+       Vehiculoreparando.estado_idestado = 11; // REPARANDO
+
+        query = 'INSERT INTO vehiculoreparando SET ?';
+        keys = [Vehiculoreparando];
+
+        connection.query(query, keys, (error, result) => {
+            if(error) 
+                return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se creaba el registro' });
+            else
+                return next(null, { success: true, result: result, message: 'Vehiculoreparando cread@' });
+        });
+
+    }
+
+    
 };
 
 Vehiculoreparando.update = (Vehiculoreparando, created_by, next) => {

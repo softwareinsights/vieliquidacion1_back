@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 15-01-2018 a las 21:44:50
+-- Tiempo de generación: 16-01-2018 a las 20:13:44
 -- Versión del servidor: 10.1.28-MariaDB
 -- Versión de PHP: 5.6.32
 
@@ -19,7 +19,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de datos: `vieliquidaciones_5a5cd34fc626e`
+-- Base de datos: `vieliquidaciones16012018`
 --
 
 -- --------------------------------------------------------
@@ -32,6 +32,7 @@ CREATE TABLE `bonificacion` (
   `idbonificacion` int(11) NOT NULL COMMENT '0|',
   `cantidad` float DEFAULT NULL COMMENT '1|Cantidad',
   `validado` tinyint(4) DEFAULT NULL COMMENT '1|Validado',
+  `fecha` date DEFAULT NULL COMMENT '1|Fecha',
   `estado_idestado` int(3) NOT NULL COMMENT '1|Estado|nombre',
   `concepto` varchar(45) DEFAULT NULL COMMENT '1|Concepto',
   `chofer_idchofer` int(11) NOT NULL COMMENT '1|Chofer|**nombre persona.idpersona chofer.chofer',
@@ -166,17 +167,19 @@ CREATE TABLE `estado` (
 CREATE TABLE `liquidacion` (
   `idliquidacion` int(11) NOT NULL COMMENT '0|',
   `fecha` date NOT NULL COMMENT '1|Fecha',
-  `montoapagar` float NOT NULL COMMENT '1|Monto a Pagar',
-  `h_corte` time NOT NULL COMMENT '1|Hora de Corte',
+  `saldoanterior` float DEFAULT NULL COMMENT '1|Saldo Anterior',
   `saldoactual` float NOT NULL COMMENT '1|Saldo Actual',
-  `permisotaxiasignado_idpermisotaxiasignado` int(11) NOT NULL COMMENT '1|Permiso|**numero permisotaxi.idpermisotaxi permisotaxiasignado.permisotaxi_idpermisotaxi',
-  `chofer_idchofer` int(11) NOT NULL COMMENT '1|Chofer|**nombre persona.idpersona chofer.chofer',
-  `estado_idestado` int(3) NOT NULL COMMENT '1|Estado|nombre',
+  `montopagado` float NOT NULL COMMENT '1|Monto Pagado',
+  `bonificado` float DEFAULT NULL COMMENT '1|Cantidad Bonificada',
+  `h_corte` time NOT NULL COMMENT '1|Hora de Corte',
+  `permisotaxiasignado_idpermisotaxiasignado` int(11) NOT NULL COMMENT '1|Permiso',
+  `chofer_idchofer` int(11) NOT NULL COMMENT '1|Chofer',
+  `estado_idestado` int(3) NOT NULL COMMENT '1|Estado',
   `baja` tinyint(1) DEFAULT NULL COMMENT '0|',
   `created_by` int(11) DEFAULT NULL COMMENT '0|',
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT '0|',
   `modified_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '0|'
-) ENGINE=InnoDB DEFAULT CHARSET=utf COMMENT='1|9|Liquidaciones||fecha.Fecha,estado_estado_idestado.Estado,permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado.Permiso,chofer_chofer_idchofer.Chofer';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -250,18 +253,17 @@ CREATE TABLE `pago` (
   `nota` varchar(60) NOT NULL COMMENT '1|Nota',
   `cantPagada` int(11) NOT NULL COMMENT '1|Cantidad Pagada',
   `estado_idestado` int(3) NOT NULL COMMENT '1|Estado|nombre',
-  `bonificado` int(11) NOT NULL COMMENT '1|Bonificado',
   `descripcion` varchar(200) DEFAULT NULL COMMENT '1|Descripción',
-  `folio` varchar(30) NOT NULL COMMENT '1|Folio',
-  `fianza` float DEFAULT NULL COMMENT '1|Fianza',
+  `folio` varchar(30) NOT NULL COMMENT '1|Folio Liquidación',
   `liquidacion` float NOT NULL COMMENT '1|Liquidación',
+  `foliofianza` varchar(30) DEFAULT NULL COMMENT '1|Folio Fianza',
+  `fianza` float DEFAULT NULL COMMENT '1|Fianza',
   `chofer_idchofer` int(11) NOT NULL COMMENT '1|Chofer|**nombre persona.idpersona chofer.chofer',
   `baja` tinyint(1) DEFAULT NULL COMMENT '0|',
   `created_by` int(11) DEFAULT NULL COMMENT '0|',
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT '0|',
   `modified_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '0|'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='1|10|Pagos|pagobonificacion.pago_idpago.bonificacion_idbonificacion.bonificacion.idbonificacion.concepto.Bonificaciones por Conceptos|chofer_chofer_idchofer.Chofer,fecha.Fecha,nota.Nota,estado_estado_idestado.Estado';
-
 
 -- --------------------------------------------------------
 
@@ -296,7 +298,7 @@ CREATE TABLE `pagofianza` (
   `created_by` int(11) DEFAULT NULL COMMENT '0|',
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT '0|',
   `modified_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '0|'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='1|12|Pago de Fianzas||chofer_chofer_idchofer.Chofer';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='1|12|Pago de Fianzas';
 
 -- --------------------------------------------------------
 
@@ -316,7 +318,7 @@ CREATE TABLE `pagoliquidacion` (
   `created_by` int(11) DEFAULT NULL COMMENT '0|',
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT '0|',
   `modified_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '0|'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='1|12|Pago de Liquidaciones||chofer_chofer_idchofer.Chofer';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='1|12|Pago de Liquidaciones';
 
 -- --------------------------------------------------------
 
@@ -396,6 +398,101 @@ CREATE TABLE `refaccion` (
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT '0|',
   `modified_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '0|'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='1|16|Refacciones||nombre.Nombre de Refacción,taller_taller_idtaller.Nombre de Taller';
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `si_modulo`
+--
+
+CREATE TABLE `si_modulo` (
+  `idsi_modulo` int(4) NOT NULL,
+  `nombre` varchar(45) DEFAULT NULL COMMENT '1|Nombre',
+  `baja` tinyint(1) DEFAULT '0' COMMENT '0|',
+  `created_by` int(4) DEFAULT NULL COMMENT '0|',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT '0|',
+  `modified_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '0|'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='1|1|Módulos||nombre.Módulo';
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `si_permiso`
+--
+
+CREATE TABLE `si_permiso` (
+  `idsi_permiso` int(4) NOT NULL,
+  `acceso` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1|Acceso',
+  `Rol_idsi_rol` int(4) NOT NULL COMMENT '1|Rol|nombre',
+  `Modulo_idsi_modulo` int(4) NOT NULL COMMENT '1|Módulo|nombre',
+  `readable` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1|Lectura',
+  `writeable` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1|Escritura',
+  `updateable` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1|Edición',
+  `deleteable` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1|Eliminación',
+  `read_own` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1|Leer Propios',
+  `write_own` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1|Escribir Propios',
+  `update_own` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1|Editar Propios',
+  `delete_own` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1|Eliminar Propios',
+  `baja` tinyint(1) DEFAULT '0' COMMENT '0|',
+  `created_by` int(4) DEFAULT NULL COMMENT '0|',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT '0|',
+  `modified_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '0|'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='1|2|Permisos||modulo_Modulo_idsi_modulo.Módulo';
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `si_reporte`
+--
+
+CREATE TABLE `si_reporte` (
+  `idsi_reporte` int(4) NOT NULL,
+  `nombre` varchar(45) DEFAULT NULL COMMENT '1|Nombre',
+  `consulta` varchar(400) NOT NULL COMMENT '1|Consulta',
+  `campos` varchar(140) NOT NULL COMMENT '1|Campos a mostrar',
+  `Modulo_idsi_modulo` int(4) NOT NULL COMMENT '1|Módulo|nombre',
+  `pfd` tinyint(1) DEFAULT '0' COMMENT '1|Exportar a PDF',
+  `excel` tinyint(1) DEFAULT '0' COMMENT '1|Exportar a Excel',
+  `print` tinyint(1) DEFAULT '0' COMMENT '1|Impresión',
+  `baja` tinyint(1) DEFAULT '0' COMMENT '0|',
+  `created_by` int(4) DEFAULT NULL COMMENT '0|',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT '0|',
+  `modified_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '0|'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='1|5|Reportes||nombre.Nombre';
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `si_rol`
+--
+
+CREATE TABLE `si_rol` (
+  `idsi_rol` int(4) NOT NULL,
+  `nombre` varchar(45) DEFAULT NULL COMMENT '1|Nombre',
+  `baja` tinyint(1) DEFAULT '0' COMMENT '0|',
+  `created_by` int(4) DEFAULT NULL COMMENT '0|',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT '0|',
+  `modified_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '0|'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='1|3|Roles||nombre.Rol';
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `si_user`
+--
+
+CREATE TABLE `si_user` (
+  `idsi_user` int(4) NOT NULL,
+  `usuario` varchar(45) DEFAULT NULL COMMENT '1|Usuario',
+  `email` varchar(60) NOT NULL COMMENT '1|Email',
+  `password` binary(60) DEFAULT NULL COMMENT '1|Password',
+  `Rol_idsi_rol` int(4) NOT NULL COMMENT '1|Rol|nombre',
+  `super` tinyint(1) DEFAULT '0' COMMENT '0|',
+  `baja` tinyint(1) DEFAULT '0' COMMENT '0|',
+  `created_by` int(4) DEFAULT NULL COMMENT '0|',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT '0|',
+  `modified_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '0|'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='1|4|Usuarios||usuario.Usuario,email.Email,rol_Rol_idsi_rol.Rol';
 
 -- --------------------------------------------------------
 
@@ -629,6 +726,42 @@ ALTER TABLE `refaccion`
   ADD KEY `fk_refaccion_taller1_idx` (`taller_idtaller`);
 
 --
+-- Indices de la tabla `si_modulo`
+--
+ALTER TABLE `si_modulo`
+  ADD PRIMARY KEY (`idsi_modulo`);
+
+--
+-- Indices de la tabla `si_permiso`
+--
+ALTER TABLE `si_permiso`
+  ADD PRIMARY KEY (`idsi_permiso`),
+  ADD UNIQUE KEY `rol_modulo_unico` (`Rol_idsi_rol`,`Modulo_idsi_modulo`),
+  ADD KEY `si_fk_Permiso_Rol1_idx` (`Rol_idsi_rol`),
+  ADD KEY `si_fk_Permiso_Modulo1_idx` (`Modulo_idsi_modulo`);
+
+--
+-- Indices de la tabla `si_reporte`
+--
+ALTER TABLE `si_reporte`
+  ADD PRIMARY KEY (`idsi_reporte`),
+  ADD KEY `si_fk_Reporte_Modulo1_idx` (`Modulo_idsi_modulo`);
+
+--
+-- Indices de la tabla `si_rol`
+--
+ALTER TABLE `si_rol`
+  ADD PRIMARY KEY (`idsi_rol`);
+
+--
+-- Indices de la tabla `si_user`
+--
+ALTER TABLE `si_user`
+  ADD PRIMARY KEY (`idsi_user`),
+  ADD UNIQUE KEY `email` (`email`),
+  ADD KEY `si_fk_User_Rol_idx` (`Rol_idsi_rol`);
+
+--
 -- Indices de la tabla `taller`
 --
 ALTER TABLE `taller`
@@ -661,13 +794,13 @@ ALTER TABLE `vehiculoreparando`
 -- AUTO_INCREMENT de la tabla `bonificacion`
 --
 ALTER TABLE `bonificacion`
-  MODIFY `idbonificacion` int(11) NOT NULL AUTO_INCREMENT COMMENT '0|';
+  MODIFY `idbonificacion` int(11) NOT NULL AUTO_INCREMENT COMMENT '0|', AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `chofer`
 --
 ALTER TABLE `chofer`
-  MODIFY `idchofer` int(11) NOT NULL AUTO_INCREMENT COMMENT '0|', AUTO_INCREMENT=6;
+  MODIFY `idchofer` int(11) NOT NULL AUTO_INCREMENT COMMENT '0|', AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `concepto`
@@ -691,25 +824,25 @@ ALTER TABLE `egresoconcepto`
 -- AUTO_INCREMENT de la tabla `enviotaller`
 --
 ALTER TABLE `enviotaller`
-  MODIFY `idenviotaller` int(11) NOT NULL AUTO_INCREMENT COMMENT '0|', AUTO_INCREMENT=2;
+  MODIFY `idenviotaller` int(11) NOT NULL AUTO_INCREMENT COMMENT '0|', AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `estado`
 --
 ALTER TABLE `estado`
-  MODIFY `idestado` int(3) NOT NULL AUTO_INCREMENT COMMENT '0|';
+  MODIFY `idestado` int(3) NOT NULL AUTO_INCREMENT COMMENT '0|', AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `liquidacion`
 --
 ALTER TABLE `liquidacion`
-  MODIFY `idliquidacion` int(11) NOT NULL AUTO_INCREMENT COMMENT '0|';
+  MODIFY `idliquidacion` int(11) NOT NULL AUTO_INCREMENT COMMENT '0|', AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `mecanico`
 --
 ALTER TABLE `mecanico`
-  MODIFY `idmecanico` int(11) NOT NULL AUTO_INCREMENT COMMENT '0|', AUTO_INCREMENT=2;
+  MODIFY `idmecanico` int(11) NOT NULL AUTO_INCREMENT COMMENT '0|', AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `orden`
@@ -727,13 +860,13 @@ ALTER TABLE `orden_has_refaccion`
 -- AUTO_INCREMENT de la tabla `pago`
 --
 ALTER TABLE `pago`
-  MODIFY `idpago` int(11) NOT NULL AUTO_INCREMENT COMMENT '0|';
+  MODIFY `idpago` int(11) NOT NULL AUTO_INCREMENT COMMENT '0|', AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `pagobonificacion`
 --
 ALTER TABLE `pagobonificacion`
-  MODIFY `idpagobonificacion` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `idpagobonificacion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `pagofianza`
@@ -751,19 +884,19 @@ ALTER TABLE `pagoliquidacion`
 -- AUTO_INCREMENT de la tabla `permisotaxi`
 --
 ALTER TABLE `permisotaxi`
-  MODIFY `idpermisotaxi` int(11) NOT NULL AUTO_INCREMENT COMMENT '0|', AUTO_INCREMENT=2;
+  MODIFY `idpermisotaxi` int(11) NOT NULL AUTO_INCREMENT COMMENT '0|', AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `permisotaxiasignado`
 --
 ALTER TABLE `permisotaxiasignado`
-  MODIFY `idpermisotaxiasignado` int(11) NOT NULL AUTO_INCREMENT COMMENT '0|', AUTO_INCREMENT=2;
+  MODIFY `idpermisotaxiasignado` int(11) NOT NULL AUTO_INCREMENT COMMENT '0|', AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `persona`
 --
 ALTER TABLE `persona`
-  MODIFY `idpersona` int(11) NOT NULL AUTO_INCREMENT COMMENT '0|', AUTO_INCREMENT=60;
+  MODIFY `idpersona` int(11) NOT NULL AUTO_INCREMENT COMMENT '0|', AUTO_INCREMENT=63;
 
 --
 -- AUTO_INCREMENT de la tabla `refaccion`
@@ -772,22 +905,52 @@ ALTER TABLE `refaccion`
   MODIFY `idrefaccion` int(11) NOT NULL AUTO_INCREMENT COMMENT '0|', AUTO_INCREMENT=3;
 
 --
+-- AUTO_INCREMENT de la tabla `si_modulo`
+--
+ALTER TABLE `si_modulo`
+  MODIFY `idsi_modulo` int(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+
+--
+-- AUTO_INCREMENT de la tabla `si_permiso`
+--
+ALTER TABLE `si_permiso`
+  MODIFY `idsi_permiso` int(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT de la tabla `si_reporte`
+--
+ALTER TABLE `si_reporte`
+  MODIFY `idsi_reporte` int(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT de la tabla `si_rol`
+--
+ALTER TABLE `si_rol`
+  MODIFY `idsi_rol` int(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT de la tabla `si_user`
+--
+ALTER TABLE `si_user`
+  MODIFY `idsi_user` int(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
 -- AUTO_INCREMENT de la tabla `taller`
 --
 ALTER TABLE `taller`
-  MODIFY `idtaller` int(11) NOT NULL AUTO_INCREMENT COMMENT '0|', AUTO_INCREMENT=2;
+  MODIFY `idtaller` int(11) NOT NULL AUTO_INCREMENT COMMENT '0|', AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `vehiculo`
 --
 ALTER TABLE `vehiculo`
-  MODIFY `idvehiculo` int(11) NOT NULL AUTO_INCREMENT COMMENT '0|', AUTO_INCREMENT=2;
+  MODIFY `idvehiculo` int(11) NOT NULL AUTO_INCREMENT COMMENT '0|', AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `vehiculoreparando`
 --
 ALTER TABLE `vehiculoreparando`
-  MODIFY `idvehiculoreparando` int(11) NOT NULL AUTO_INCREMENT COMMENT '0|', AUTO_INCREMENT=2;
+  MODIFY `idvehiculoreparando` int(11) NOT NULL AUTO_INCREMENT COMMENT '0|', AUTO_INCREMENT=3;
 
 --
 -- Restricciones para tablas volcadas
@@ -911,6 +1074,25 @@ ALTER TABLE `permisotaxiasignado`
 --
 ALTER TABLE `refaccion`
   ADD CONSTRAINT `fk_refaccion_taller1` FOREIGN KEY (`taller_idtaller`) REFERENCES `taller` (`idtaller`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Filtros para la tabla `si_permiso`
+--
+ALTER TABLE `si_permiso`
+  ADD CONSTRAINT `si_fk_Permiso_Modulo1` FOREIGN KEY (`Modulo_idsi_modulo`) REFERENCES `si_modulo` (`idsi_modulo`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `si_fk_Permiso_Rol1` FOREIGN KEY (`Rol_idsi_rol`) REFERENCES `si_rol` (`idsi_rol`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Filtros para la tabla `si_reporte`
+--
+ALTER TABLE `si_reporte`
+  ADD CONSTRAINT `si_fk_Reporte_Modulo1` FOREIGN KEY (`Modulo_idsi_modulo`) REFERENCES `si_modulo` (`idsi_modulo`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Filtros para la tabla `si_user`
+--
+ALTER TABLE `si_user`
+  ADD CONSTRAINT `si_fk_User_Rol` FOREIGN KEY (`Rol_idsi_rol`) REFERENCES `si_rol` (`idsi_rol`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
 -- Filtros para la tabla `vehiculo`

@@ -4,6 +4,23 @@ const passport = require('passport');
 const permissions = require('../config/permissions');
 
 router
+
+    .post('/apply-bonification', (req, res, next) => {
+        passport.authenticate('jwt', { session: true }, (err, auth_data, info) => {
+            permissions.module_permission(auth_data.modules, 'bonificacion', auth_data.user.super, 'writeable', (error, permission) => {
+                if (permission.success) {
+                    const _bonificacion = req.body;
+                    _bonificacion.created_by = auth_data.user.idsi_user;
+                    Bonificacion.applyBonification( _bonificacion, (error, data) =>{
+                        return Bonificacion.response(res, error, data);
+                    });
+                } else {
+                    return Bonificacion.response(res, error, permission);
+                }
+            });
+        })(req, res, next);
+    })
+
     .get('/', (req, res, next) => {
         passport.authenticate('jwt', { session: true }, (err, auth_data, info) => {
             permissions.module_permission(auth_data.modules, 'bonificacion', auth_data.user.super, 'readable', (error, permission) => {

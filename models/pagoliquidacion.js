@@ -9,10 +9,10 @@ Pagoliquidacion.all = (created_by, next) => {
     let query = '';
     let keys = [];
     if (created_by) {
-        query = 'SELECT pagoliquidacion.*, _pago_idpago.folio as pago_pago_idpago , _persona.nombre as chofer_chofer_idchofer FROM pagoliquidacion INNER JOIN pago as _pago_idpago ON _pago_idpago.idpago = pagoliquidacion.pago_idpago INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = pagoliquidacion.chofer_idchofer INNER JOIN persona as _persona ON _persona.idpersona = _chofer_idchofer.chofer  WHERE created_by = ? HAVING pagoliquidacion.baja IS NULL OR pagoliquidacion.baja = false';
+        query = 'SELECT pagoliquidacion.*, _pago_idpago.foliofianza as pago_pago_idpago , _persona.nombre as chofer_chofer_idchofer FROM pagoliquidacion INNER JOIN pago as _pago_idpago ON _pago_idpago.idpago = pagoliquidacion.pago_idpago INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = pagoliquidacion.chofer_idchofer INNER JOIN persona as _persona ON _persona.idpersona = _chofer_idchofer.chofer  WHERE created_by = ? HAVING pagoliquidacion.baja IS NULL OR pagoliquidacion.baja = false';
         keys = [created_by];
     } else {
-        query = 'SELECT pagoliquidacion.*, _pago_idpago.folio as pago_pago_idpago , _persona.nombre as chofer_chofer_idchofer FROM pagoliquidacion INNER JOIN pago as _pago_idpago ON _pago_idpago.idpago = pagoliquidacion.pago_idpago INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = pagoliquidacion.chofer_idchofer INNER JOIN persona as _persona ON _persona.idpersona = _chofer_idchofer.chofer  HAVING pagoliquidacion.baja IS NULL OR pagoliquidacion.baja = false';
+        query = 'SELECT pagoliquidacion.*, _pago_idpago.foliofianza as pago_pago_idpago , _persona.nombre as chofer_chofer_idchofer FROM pagoliquidacion INNER JOIN pago as _pago_idpago ON _pago_idpago.idpago = pagoliquidacion.pago_idpago INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = pagoliquidacion.chofer_idchofer INNER JOIN persona as _persona ON _persona.idpersona = _chofer_idchofer.chofer  HAVING pagoliquidacion.baja IS NULL OR pagoliquidacion.baja = false';
         keys = [];
     }
 

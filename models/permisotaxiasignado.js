@@ -90,6 +90,9 @@ Permisotaxiasignado.insert = (Permisotaxiasignado, next) => {
 
     let query = '';
     let keys = [];
+
+    Permisotaxiasignado.estado_idestado = 12; // ASIGNADO
+
     query = 'INSERT INTO permisotaxiasignado SET ?';
     keys = [Permisotaxiasignado];
 
