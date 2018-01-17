@@ -13,7 +13,7 @@ Vehiculoreparando.goOutVehicle = (Vehiculoreparando, next) => {
     // PRIMERO SACAR EL LA RESTA DE HORA_SALIDA MENOS LA HORA_ENTRADA DE TABLA VEHICULOREPARANDO
     // SACAR SI LA FECHA ES UN DÍA LUNES
     // SACAR LIQUIDEZ CORRESPONDIENTE DE TABLA PERMISOTAXI SEGÚN permisotaxiasignado
-    // SACAR FÓRMULA FIANZA / 24 * HORAS
+    // SACAR FÓRMULA LIQUIDEZ / 24 * HORAS
     // CREAR BONIFICACION A CHOFER CON LA FECHA DE SALIDA
     // MODIFICAR ESTATUS EN VEHICULOREPARANDO A REPARACIONFINALIZADA
     // MODIFICAR ESTATUS A CHOFER A ACTIVO
@@ -37,7 +37,7 @@ Vehiculoreparando.goOutVehicle = (Vehiculoreparando, next) => {
 
             
             // PRIMERO SACAR EL LA RESTA DE HORA_SALIDA MENOS LA HORA_ENTRADA
-            let query = 'SELECT TIMEDIFF(horaSalida, horaIngresa) as horas FROM vehiculoreparando WHERE fechaSalida = fechaIngresa AND idvehiculoreparando = ?';
+            let query = 'SELECT TIMEDIFF(horaSalida, horaIngresa) as horas, WEEKDAY(fechaSalida) as dia FROM vehiculoreparando WHERE idvehiculoreparando = ?';
             let keys = [Vehiculoreparando.idvehiculoreparando];
 
             connection.query(query, keys, (error, result) => {
@@ -46,7 +46,74 @@ Vehiculoreparando.goOutVehicle = (Vehiculoreparando, next) => {
                 else if (result.affectedRows === 0)
                     return next(null, { success: false, result: result, message: 'Solo es posible leer registros propios' });
                 else {
-                    return next(null, { success: true, result: result, message: 'Vehiculoreparando horas comparadas' });
+
+
+                    let horasBonificadas = result[0].horas;
+                    let diaBonificar = result[0].dia;
+
+
+                    // SACAR SI LA FECHA ES UN DÍA LUNES Y SI ESTA ENVIADO DE TALLER PARA APLICAR LA BONIFICACION
+
+                    if (Vehiculoreparando.enviotaller_idenviotaller) {
+
+                        if (diaBonificar === 6) {
+                            let query = 'SELECT pt.liquidezDom as liquidez, pta.chofer_idchofer as idchofer, pta.vehiculo_idvehiculo as idvehiculo FROM vehiculoreparando as vr INNER JOIN enviotaller as et ON vr.enviotaller_idenviotaller = et.idenviotaller INNER JOIN permisotaxiasignado as pta ON pta.idpermisotaxiasignado = et.permisotaxiasignado_idpermisotaxiasignado INNER JOIN permisotaxi as pt ON pt.idpermisotaxi = pta.permisotaxi_idpermisotaxi WHERE vr.idvehiculoreparando = ?';
+                        } else {
+                            let query = 'SELECT pt.liquidez as liquidez, pta.chofer_idchofer as idchofer, pta.vehiculo_idvehiculo as idvehiculo FROM vehiculoreparando as vr INNER JOIN enviotaller as et ON vr.enviotaller_idenviotaller = et.idenviotaller INNER JOIN permisotaxiasignado as pta ON pta.idpermisotaxiasignado = et.permisotaxiasignado_idpermisotaxiasignado INNER JOIN permisotaxi as pt ON pt.idpermisotaxi = pta.permisotaxi_idpermisotaxi WHERE vr.idvehiculoreparando = ?';
+
+                        }
+
+                        // SACAR LIQUIDEZ CORRESPONDIENTE DE TABLA PERMISOTAXI SEGÚN permisotaxiasignado
+                        let query = '';
+                        let keys = [Vehiculoreparando.idvehiculoreparando];
+
+                        connection.query(query, keys, (error, result) => {
+                            if(error) 
+                                return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se leer registros' });
+                            else if (result.affectedRows === 0)
+                                return next(null, { success: false, result: result, message: 'Solo es posible leer registros propios' });
+                            else {
+                                let liquidez = result[0].liquidez;
+
+                                // SACAR FÓRMULA LIQUIDEZ / 24 * HORAS
+
+                                let montoBonificar = liquidez / 24 * horasBonificadas;
+                                let idchofer = result[0].idchofer;
+                                
+
+
+                                // CREAR BONIFICACION A CHOFER CON LA FECHA DE SALIDA
+                                let query = 'INSERT INTO bonificacion SET cantidad = ?, validado = 0, fecha = ?, estado_idestado = 6, concepto = "BONIFICACIÓN POR TIEMPO EN TALLER", chofer_idchofer = ?';
+                                let keys = [montoBonificar, now, idchofer];
+
+                                connection.query(query, keys, (error, result) => {
+                                    if(error) 
+                                        return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se leer registros' });
+                                    else if (result.affectedRows === 0)
+                                        return next(null, { success: false, result: result, message: 'Solo es posible leer registros propios' });
+                                    else {
+
+
+                                        return next(null, { success: true, result: {'montoBonificar': montoBonificar, 'idchofer': idchofer, idvehiculo: } , message: 'Vehiculoreparando ha salido del taller correctamente, se ha creado una bonificación' });
+
+
+                                    }
+                                });
+
+
+
+
+
+
+                            }
+                        });
+
+
+
+
+
+                    }
+
 
 
 
