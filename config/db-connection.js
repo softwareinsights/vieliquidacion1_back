@@ -14,6 +14,7 @@ var connection = mysql.createConnection({
 
 
 function handleDisconnect() {
+    /*
     connection.connect( err => {
         if (err) {
             console.log('Error trying to connect with Data Base: ' + err.stack);
@@ -21,6 +22,7 @@ function handleDisconnect() {
         }
         console.log('Connected as id ' + connection.threadId);
     });
+    */
 
   connection.connect(function(err) {              // The server is either down
     if(err) {                                     // or restarting (takes a while sometimes).
