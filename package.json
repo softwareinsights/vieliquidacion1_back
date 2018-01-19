@@ -4,6 +4,7 @@
   "description": "Liquidacion1601",
   "main": "app.js",
   "scripts": {
+    "start": "node .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Software Insights",
