@@ -33,9 +33,7 @@ Bonificacion.applyBonification = (Bonificacion, next) => {
     } else {
         return next(null, { success: false, result: {}, message: 'La Bonificación debe ser aprobada y con estado NOAPLICADA' });
     }
-
 };
-
 
 Bonificacion.all = (created_by, next) => {
     if( !connection )

@@ -4,6 +4,23 @@ const passport = require('passport');
 const permissions = require('../config/permissions');
 
 router
+
+    .post('/go-out-corralon', (req, res, next) => {
+        passport.authenticate('jwt', { session: true }, (err, auth_data, info) => {
+            permissions.module_permission(auth_data.modules, 'corralon', auth_data.user.super, 'writeable', (error, permission) => {
+                if (permission.success) {
+                    const _corralon = req.body;
+                    _corralon.created_by = auth_data.user.idsi_user;
+                    Corralon.goOutCorralon( _corralon, (error, data) =>{
+                        return Corralon.response(res, error, data);
+                    });
+                } else {
+                    return Corralon.response(res, error, permission);
+                }
+            });
+        })(req, res, next);
+    })
+
     .get('/', (req, res, next) => {
         passport.authenticate('jwt', { session: true }, (err, auth_data, info) => {
             permissions.module_permission(auth_data.modules, 'corralon', auth_data.user.super, 'readable', (error, permission) => {

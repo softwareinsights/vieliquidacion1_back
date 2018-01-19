@@ -4,6 +4,22 @@ const passport = require('passport');
 const permissions = require('../config/permissions');
 
 router
+
+    .get('/adeudando-from-idchofer/:id', (req, res, next) => {
+        passport.authenticate('jwt', { session: true }, (err, auth_data, info) => {
+            permissions.module_permission(auth_data.modules, 'liquidacion', auth_data.user.super, 'readable', (error, permission) => {
+                if (permission.success) {
+                    const created_by = (permission.only_own) ? auth_data.user.idsi_user : false;
+                    Liquidacion.adeudandoFromIdchofer(req.params.id, created_by, (error, data) => {
+                        return Liquidacion.response(res, error, data);
+                    })
+                } else {
+                    return Liquidacion.response(res, error, permission);
+                }
+            });
+        })(req, res, next);
+    })
+
     .get('/', (req, res, next) => {
         passport.authenticate('jwt', { session: true }, (err, auth_data, info) => {
             permissions.module_permission(auth_data.modules, 'liquidacion', auth_data.user.super, 'readable', (error, permission) => {

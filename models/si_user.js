@@ -108,10 +108,10 @@ Si_user.all = (created_by, next) => {
     let query = '';
     let keys = [];
     if (created_by) {
-        query = 'SELECT si_user.* FROM si_user WHERE created_by = ? HAVING si_user.baja IS NULL OR si_user.baja = false';
+        query = 'SELECT si_user.*, r.nombre as rol_Rol_idsi_rol FROM si_user INNER JOIN si_rol as r ON r.idsi_rol = si_user.Rol_idsi_rol WHERE created_by = ? HAVING si_user.baja IS NULL OR si_user.baja = false';
         keys = [created_by];
     } else {
-        query = 'SELECT si_user.* FROM si_user HAVING si_user.baja IS NULL OR si_user.baja = false';
+        query = 'SELECT si_user.*, r.nombre as rol_Rol_idsi_rol FROM si_user INNER JOIN si_rol as r ON r.idsi_rol = si_user.Rol_idsi_rol HAVING si_user.baja IS NULL OR si_user.baja = false';
         keys = [];
     }
 

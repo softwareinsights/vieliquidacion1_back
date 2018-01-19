@@ -2,6 +2,31 @@ const connection = require('../config/db-connection');
 
 const Liquidacion = {};
 
+
+Liquidacion.adeudandoFromIdchofer = (idChofer, created_by, next) => {
+    if( !connection )
+        return next('Connection refused');
+
+    let query = '';
+    let keys = [];
+    if (created_by) {
+        query = 'SELECT * FROM liquidacion WHERE estado_idestado = 9 AND chofer_idchofer = ? AND created_by = ? HAVING baja IS NULL OR baja = false';
+        keys = [idChofer, created_by];
+    } else {
+        query = 'SELECT * FROM liquidacion WHERE estado_idestado = 9 AND chofer_idchofer = ? HAVING baja IS NULL OR baja = false';
+        keys = [idChofer];
+    }
+
+    connection.query(query, keys, (error, result) => {
+        if(error) 
+            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se encontraba el registro' });
+        else if (result.affectedRows === 0)
+            return next(null, { success: false, result: result, message: 'Solo es posible encontrar registros propios' });
+        else
+            return next(null, { success: true, result: result, message: 'Liquidacion encontrad@' });
+    });
+};
+
 Liquidacion.all = (created_by, next) => {
     if( !connection )
         return next('Connection refused');
