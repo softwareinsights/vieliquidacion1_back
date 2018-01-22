@@ -41,7 +41,7 @@ Si_user.login = ( email, password, next ) => {
     if ( !connection )
         return next('Connection refused');
 
-    const query = connection.query(`SELECT idsi_user, usuario, email, password, Rol_idsi_rol, super, baja FROM heroku_39ef62fb8ff0d28.si_user WHERE email = ? HAVING baja IS NULL OR baja = false`, [email], (error, result) => {
+    const query = connection.query(`SELECT idsi_user, usuario, email, password, Rol_idsi_rol, super, baja FROM si_user WHERE email = ? HAVING baja IS NULL OR baja = false`, [email], (error, result) => {
 
         if ( error )
             return next( error );
