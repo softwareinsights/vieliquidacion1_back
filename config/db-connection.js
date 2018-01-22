@@ -3,7 +3,17 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
-var db_config = mysql.createConnection({
+var db_config = {
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    port: process.env.DB_PORT,
+    database: process.env.DB_NAME,
+    dateStrings: true 
+};
+
+/*
+var connection = mysql.createConnection({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
     password: process.env.DB_PASS,
@@ -12,7 +22,6 @@ var db_config = mysql.createConnection({
     dateStrings: true 
 });
 
-/*
 connection.connect( err => {
     if (err) {
         console.log('Error trying to connect with Data Base: ' + err.stack);
