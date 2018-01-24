@@ -10,7 +10,7 @@ Dashboard.all = (next) => {
     let query = '';
     let keys = [];
 
-    query = 'SELECT c.*,p.nombre, pt.numero  FROM chofer as c INNER JOIN persona as p ON p.idpersona = c.chofer INNER JOIN permisotaxiasignado as pta ON pta.chofer_idchofer = c.idchofer INNER JOIN permisotaxi as pt ON pt.idpermisotaxi = pta.permisotaxi_idpermisotaxi WHERE c.deudaliquidacion > c.deudafianza HAVING c.baja = NULL OR c.baja = false';
+    query = 'SELECT c.*,p.nombre, pt.numero  FROM chofer as c INNER JOIN persona as p ON p.idpersona = c.chofer INNER JOIN permisotaxiasignado as pta ON pta.chofer_idchofer = c.idchofer INNER JOIN permisotaxi as pt ON pt.idpermisotaxi = pta.permisotaxi_idpermisotaxi WHERE c.deudaliquidacion > c.deudafianza GROUP BY c.idchofer HAVING c.baja IS NULL OR c.baja = false';
     keys = [];
 
     connection.query(query, keys, (error, result) => {

@@ -91,7 +91,7 @@ Chofer.insert = (Chofer, next) => {
     let query = '';
     let keys = [];
     
-    Permisotaxiasignado.estado_idestado = 18; // DISPONIBLE
+    Chofer.estado_idestado = 18; // DISPONIBLE
 
     query = 'INSERT INTO chofer SET ?';
     keys = [Chofer];

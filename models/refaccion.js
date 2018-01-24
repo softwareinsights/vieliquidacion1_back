@@ -9,10 +9,10 @@ Refaccion.all = (created_by, next) => {
     let query = '';
     let keys = [];
     if (created_by) {
-        query = 'SELECT refaccion.*, _taller_idtaller.nombre as taller_taller_idtaller FROM refaccion INNER JOIN taller as _taller_idtaller ON _taller_idtaller.idtaller = refaccion.taller_idtaller   WHERE created_by = ? HAVING refaccion.baja IS NULL OR refaccion.baja = false';
+        query = 'SELECT refaccion.*, _taller_idtaller.nombre as taller_taller_idtaller FROM refaccion INNER JOIN taller as _taller_idtaller ON _taller_idtaller.idtaller = refaccion.taller_idtaller WHERE refaccion.created_by = ? HAVING refaccion.baja IS NULL OR refaccion.baja = false';
         keys = [created_by];
     } else {
-        query = 'SELECT refaccion.*, _taller_idtaller.nombre as taller_taller_idtaller FROM refaccion INNER JOIN taller as _taller_idtaller ON _taller_idtaller.idtaller = refaccion.taller_idtaller   HAVING refaccion.baja IS NULL OR refaccion.baja = false';
+        query = 'SELECT refaccion.*, _taller_idtaller.nombre as taller_taller_idtaller FROM refaccion INNER JOIN taller as _taller_idtaller ON _taller_idtaller.idtaller = refaccion.taller_idtaller HAVING refaccion.baja IS NULL OR refaccion.baja = false';
         keys = [];
     }
 

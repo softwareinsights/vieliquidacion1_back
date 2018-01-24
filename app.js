@@ -4,6 +4,8 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const morgan = require('morgan');
 const passport = require('passport');
+var CronJob = require('cron').CronJob;
+
 
 //Route importation.
 const bonificacion = require('./routes/bonificacions');
@@ -77,5 +79,39 @@ app.use('/si_rol', si_rol);
 app.use('/si_user', si_user);
 app.use('/dashboard', dashboard);
 
+
+
+
+const Liquidacion = require('../models/liquidacion');
+
+
+
+// new CronJob('1 * * * * * *', function() {
+new CronJob('00 00 00 * * 0-7', function() {
+   
+   // Execute code here
+   console.log('Prueba cron');
+
+
+
+   // OBTENER TODOS PERMISOS ASIGNADOS ACTIVOS
+   // SACAR QUE NÚMERO DÍA ES HOY Y LA FECHA
+   // BARRER CADA PERMISO ASIGNADO PARA SABER SU PERMISOTAXI SU LIQUIDACIÓN AL NÚMERO DE DÍA
+
+
+
+
+}, null, true, 'America/Mexico_City');
+
+
+
+
+
+
+
 // Set port
 app.listen(3000);
+
+
+
+

@@ -26,6 +26,38 @@ Permisotaxi.all = (created_by, next) => {
     });
 };
 
+Permisotaxi.findLiquidacionByIdInThisDay = (idPermisotaxi, created_by, next) => {
+    if( !connection )
+        return next('Connection refused');
+
+    // SACAR NÚMERO DE DÍA
+    connection.query('SELECT WEEKDAY(NOW())', [], (error, resultDay) => {
+        if(error) 
+            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se encontraba el registro' });
+        else {
+
+            let diaBonificar = resultDay[0].dia;
+            // SACAR SI LA FECHA ES UN DÍA DOMINGO Y SI ESTA ENVIADO DE TALLER PARA APLICAR LA BONIFICACION
+            let query = '';
+            if (diaBonificar === 6) {
+                query = 'SELECT pt.liquidezDom as liquidez FROM permisotaxi as pt WHERE pt.idpermisotaxi = ?';
+            } else {
+                query = 'SELECT pt.liquidez as liquidez FROM permisotaxi as pt WHERE pt.idpermisotaxi = ?';
+            }
+            keys = [idPermisotaxi];
+            connection.query(query, keys, (error, result) => {
+                if(error) 
+                    return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se encontraba el registro' });
+                else if (result.affectedRows === 0)
+                    return next(null, { success: false, result: result, message: 'Solo es posible encontrar registros propios' });
+                else
+                    return next(null, { success: true, result: result, message: 'Permisotaxi encontrad@' });
+            });
+        }
+    });
+
+};
+
 Permisotaxi.findById = (idPermisotaxi, created_by, next) => {
     if( !connection )
         return next('Connection refused');

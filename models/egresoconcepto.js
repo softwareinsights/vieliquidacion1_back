@@ -9,7 +9,7 @@ Egresoconcepto.all = (created_by, next) => {
     let query = '';
     let keys = [];
     if (created_by) {
-        query = 'SELECT egresoconcepto.*, _taller_idtaller.nombre as taller_taller_idtaller , _concepto_idconcepto.nombre as concepto_concepto_idconcepto FROM egresoconcepto INNER JOIN taller as _taller_idtaller ON _taller_idtaller.idtaller = egresoconcepto.taller_idtaller INNER JOIN concepto as _concepto_idconcepto ON _concepto_idconcepto.idconcepto = egresoconcepto.concepto_idconcepto   WHERE created_by = ? HAVING egresoconcepto.baja IS NULL OR egresoconcepto.baja = false';
+        query = 'SELECT egresoconcepto.*, _taller_idtaller.nombre as taller_taller_idtaller , _concepto_idconcepto.nombre as concepto_concepto_idconcepto FROM egresoconcepto INNER JOIN taller as _taller_idtaller ON _taller_idtaller.idtaller = egresoconcepto.taller_idtaller INNER JOIN concepto as _concepto_idconcepto ON _concepto_idconcepto.idconcepto = egresoconcepto.concepto_idconcepto   WHERE egresoconcepto.created_by = ? HAVING egresoconcepto.baja IS NULL OR egresoconcepto.baja = false';
         keys = [created_by];
     } else {
         query = 'SELECT egresoconcepto.*, _taller_idtaller.nombre as taller_taller_idtaller , _concepto_idconcepto.nombre as concepto_concepto_idconcepto FROM egresoconcepto INNER JOIN taller as _taller_idtaller ON _taller_idtaller.idtaller = egresoconcepto.taller_idtaller INNER JOIN concepto as _concepto_idconcepto ON _concepto_idconcepto.idconcepto = egresoconcepto.concepto_idconcepto   HAVING egresoconcepto.baja IS NULL OR egresoconcepto.baja = false';

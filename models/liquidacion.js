@@ -3,6 +3,29 @@ const connection = require('../config/db-connection');
 const Liquidacion = {};
 
 
+Liquidacion.reporte = (next) => {
+    if( !connection )
+        return next('Connection refused');
+
+    let query = '';
+    let keys = [];
+
+
+
+    query = 'SELECT p.nombre as persona_nombre, liquidacion.fecha as liquidacion_fecha, _estado_idestado.nombre as estado_estado_idestado, liquidacion.baja FROM liquidacion INNER JOIN chofer as c ON c.idchofer = liquidacion.chofer_idchofer INNER JOIN persona as p ON p.idpersona = c.chofer INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = liquidacion.estado_idestado WHERE liquidacion.estado_idestado = 9 HAVING liquidacion.baja IS NULL OR liquidacion.baja = false';
+    keys = [];
+
+    connection.query(query, keys, (error, result) => {
+        if(error) 
+            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se encontraba el registro' });
+        else if (result.affectedRows === 0)
+            return next(null, { success: false, result: result, message: 'Solo es posible encontrar registros propios' });
+        else
+            return next(null, { success: true, result: result, message: 'Liquidacion encontrad@' });
+    });
+};
+
+
 Liquidacion.adeudandoFromIdchofer = (idChofer, created_by, next) => {
     if( !connection )
         return next('Connection refused');
@@ -10,10 +33,10 @@ Liquidacion.adeudandoFromIdchofer = (idChofer, created_by, next) => {
     let query = '';
     let keys = [];
     if (created_by) {
-        query = 'SELECT * FROM liquidacion WHERE estado_idestado = 9 AND chofer_idchofer = ? AND created_by = ? HAVING baja IS NULL OR baja = false';
+        query = 'SELECT liquidacion.*, _estado_idestado.nombre as estado_estado_idestado FROM liquidacion INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = liquidacion.estado_idestado WHERE liquidacion.estado_idestado = 9 AND liquidacion.chofer_idchofer = ? AND liquidacion.created_by = ? HAVING liquidacion.baja IS NULL OR liquidacion.baja = false';
         keys = [idChofer, created_by];
     } else {
-        query = 'SELECT * FROM liquidacion WHERE estado_idestado = 9 AND chofer_idchofer = ? HAVING baja IS NULL OR baja = false';
+        query = 'SELECT liquidacion.*, _estado_idestado.nombre as estado_estado_idestado FROM liquidacion INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = liquidacion.estado_idestado WHERE liquidacion.estado_idestado = 9 AND liquidacion.chofer_idchofer = ? HAVING liquidacion.baja IS NULL OR liquidacion.baja = false';
         keys = [idChofer];
     }
 
