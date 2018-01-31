@@ -3,6 +3,45 @@ const connection = require('../config/db-connection');
 const Liquidacion = {};
 
 
+/*
+Combo.update = (combo, platillos, next) => {
+    if ( !connection )
+        return next('Connection refused');
+
+    async.waterfall([
+        next => {
+            connection.query(`SELECT * FROM combo WHERE idcombo = ? HAVING baja IS NULL OR baja = false`,
+            [comboId], (error, result) => {
+                error ? next(error) : next(null, result)
+            })
+        },
+        (result, next) => {
+            
+            connection.query(`
+            SELECT platillo.idplatillo, platillo.nombre, platillo.descripcion, comboRP.cantidad 
+            FROM combo_has_restaurante_has_platillo AS comboRP
+            INNER JOIN platillo ON platillo.idplatillo = res_has_pla_platillo_idplatillo
+            WHERE combo_idcombo = ?`, [result[0].idcombo], (error, resultJoin) => {
+                if ( error )
+                    next(error)
+                else {
+                    result[0].platillos = resultJoin;
+                    next(null, result[0]);
+                }
+            })
+        }
+    ],
+    (error, result) => {
+        if ( error )
+            return next({ success: false, error: error });
+        else
+            return next( null, { success: true, result: result});
+    })
+
+};
+*/
+
+
 Liquidacion.reporte = (next) => {
     if( !connection )
         return next('Connection refused');
@@ -10,19 +49,101 @@ Liquidacion.reporte = (next) => {
     let query = '';
     let keys = [];
 
+    let now = '';
+    let weekday = '';
+    let weelastdaykday = '';
+    let arr_dias = [];
+    let arr_choferes = [];
+    let arr_dias_choferes = new Array();
 
-
-    query = 'SELECT p.nombre as persona_nombre, liquidacion.fecha as liquidacion_fecha, _estado_idestado.nombre as estado_estado_idestado, liquidacion.baja FROM liquidacion INNER JOIN chofer as c ON c.idchofer = liquidacion.chofer_idchofer INNER JOIN persona as p ON p.idpersona = c.chofer INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = liquidacion.estado_idestado WHERE liquidacion.estado_idestado = 9 HAVING liquidacion.baja IS NULL OR liquidacion.baja = false';
+   ////// SACAR QUE NÚMERO DÍA ES HOY Y LA FECHA
+    query = 'SELECT WEEKDAY(NOW()) as weekday, CURDATE() as now, LAST_DAY(NOW()) as lastday, YEAR(NOW()) as year, MONTH(NOW()) as month';
     keys = [];
 
-    connection.query(query, keys, (error, result) => {
+    connection.query(query, keys, (error, fecha) => {
         if(error) 
-            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se encontraba el registro' });
-        else if (result.affectedRows === 0)
-            return next(null, { success: false, result: result, message: 'Solo es posible encontrar registros propios' });
-        else
-            return next(null, { success: true, result: result, message: 'Liquidacion encontrad@' });
+            console.log("ERROR Un error ha ocurrido mientras se leía el día de la semana y la fecha");
+        else {
+            now = fecha[0].now;
+            weekday = fecha[0].weekday;
+            lastday = fecha[0].lastday;
+            lastday = lastday.split('-');
+            lastday = lastday[2];
+            year = fecha[0].year;
+            month = fecha[0].month;
+
+            // SACAR ARREGLO DESDE DIA 1 AL ULTIMO DÍA
+            for(let day = 1; day<=lastday; day++) {
+                let date = year + '-' + ((month < 10) ? "0" : "") + month + '-' + ((day < 10) ? "0" : "") + day;
+                arr_dias.push(date);
+            }
+
+            // CREAR ARREGLO DE CHOFERES POR PERMISOS TAXI ASIGNADOS
+            query = 'SELECT p.nombre as chofer, pt.numero as permiso, pta.idpermisotaxiasignado, pta.baja FROM permisotaxiasignado as pta INNER JOIN chofer as c ON c.idchofer = pta.chofer_idchofer INNER JOIN persona as p ON p.idpersona = c.chofer INNER JOIN permisotaxi as pt ON pt.idpermisotaxi = pta.permisotaxi_idpermisotaxi WHERE pta.estado_idestado = 12 HAVING pta.baja IS NULL OR pta.baja = false';
+            keys = [];
+
+            connection.query(query, keys, (error, choferes) => {
+                if(error) 
+                    return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se encontraba el permisotaxiasignado' });
+                else  {
+
+                    console.log("choferes", choferes);
+
+                    choferes.forEach(permisotaxiasignado => {
+
+                        // arr_dias_choferes[permisotaxiasignado.idpermisotaxiasignado] = new Array();
+                        arr_dias.forEach(date => {
+
+                            let i = 0;
+
+                            
+                            arr_dias_choferes[date][i] = new Array(permisotaxiasignado.idpermisotaxiasignado);
+
+
+                            // LEER LIQUIDACIONES POR FECHA Y permisotaxiasignado
+                            query = 'SELECT * FROM liquidacion AS l WHERE l.fecha = ? AND l.permisotaxiasignado_idpermisotaxiasignado = ? HAVING l.baja IS NULL OR l.baja = false';
+                            keys = [date, permisotaxiasignado.idpermisotaxiasignado];
+                            
+                            console.log("query", query);
+                            console.log("date", date);
+                            console.log("permisotaxiasignado.idpermisotaxiasignado", permisotaxiasignado.idpermisotaxiasignado);
+
+                            connection.query(query, keys, (error, liquidacion) => {
+                                if(error) 
+                                    console.log("Un error ha ocurrido mientras se encontraba la liquidación");
+                                else  {
+                                    
+
+                                    if (liquidacion.length) {
+
+                                        if (liquidacion[0].estado_idestado !== null) {
+
+                                            console.log("liquidacion[0]", liquidacion[0]);
+
+                                            arr_dias_choferes[date][i] = new Array(permisotaxiasignado.idpermisotaxiasignado, liquidacion[0].estado_idestado);
+                                            
+                                            console.log("arr_dias_choferes", arr_dias_choferes);
+
+                            
+                                            i++;
+
+                                        }
+
+                                    }
+                                }
+                            });
+
+                        });
+                    });
+
+                    console.log("arr_dias_choferes___", arr_dias_choferes);
+                            
+                    return next(null, { success: true, result: arr_dias_choferes, message: 'Reporte listo' });
+                }    
+            });
+        }
     });
+
 };
 
 

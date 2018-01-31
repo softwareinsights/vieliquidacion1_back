@@ -26,9 +26,11 @@ Permisotaxi.all = (created_by, next) => {
     });
 };
 
-Permisotaxi.findLiquidacionByIdInThisDay = (idPermisotaxi, created_by, next) => {
+Permisotaxi.findLiquidezByIdInThisDay = (idPermisotaxi, created_by, next) => {
     if( !connection )
         return next('Connection refused');
+
+        console.log("idPermisotaxi", idPermisotaxi);
 
     // SACAR NÚMERO DE DÍA
     connection.query('SELECT WEEKDAY(NOW())', [], (error, resultDay) => {
@@ -51,7 +53,7 @@ Permisotaxi.findLiquidacionByIdInThisDay = (idPermisotaxi, created_by, next) => 
                 else if (result.affectedRows === 0)
                     return next(null, { success: false, result: result, message: 'Solo es posible encontrar registros propios' });
                 else
-                    return next(null, { success: true, result: result, message: 'Permisotaxi encontrad@' });
+                    return next(null, { success: true, result: result, message: 'Liquidez encontrad@' });
             });
         }
     });

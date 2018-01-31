@@ -19,11 +19,6 @@ router
         })(req, res, next);
     })
 
-    .get('/testcron', (req, res, next) => {
-        console.log("cron");
-    })
-
-
     .get('/adeudando-from-idchofer/:id', (req, res, next) => {
         passport.authenticate('jwt', { session: true }, (err, auth_data, info) => {
             permissions.module_permission(auth_data.modules, 'liquidacion', auth_data.user.super, 'readable', (error, permission) => {

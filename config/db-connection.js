@@ -12,29 +12,9 @@ var db_config = {
     dateStrings: true 
 };
 
-/*
-var connection = mysql.createConnection({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASS,
-    port: process.env.DB_PORT,
-    database: process.env.DB_NAME,
-    dateStrings: true 
-});
-
-connection.connect( err => {
-    if (err) {
-        console.log('Error trying to connect with Data Base: ' + err.stack);
-        return;
-    }
-    console.log('Connected as id ' + connection.threadId);
-});
-*/
-
 function handleDisconnect() {
     console.log('1. connecting to db:');
-    connection = mysql.createConnection(db_config); // Recreate the connection, since
-													// the old one cannot be reused.
+    connection = mysql.createConnection(db_config); // Recreate the connection, since the old one cannot be reused.
 
     connection.connect(function(err) {              	// The server is either down
         if (err) {                                     // or restarting (takes a while sometimes).
@@ -55,8 +35,6 @@ function handleDisconnect() {
 }
 
 handleDisconnect();
-
-
 
 module.exports =  connection;
 

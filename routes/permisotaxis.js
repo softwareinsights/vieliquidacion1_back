@@ -9,7 +9,8 @@ router
         passport.authenticate('jwt', { session: true }, (err, auth_data, info) => {
             permissions.module_permission(auth_data.modules, 'permisotaxi', auth_data.user.super, 'readable', (error, permission) => {
                 if (permission.success) {
-                    Permisotaxi.findLiquidacionByIdInThisDay(req.params.id, (error, data) => {
+                    const created_by = (permission.only_own) ? auth_data.user.idsi_user : false;
+                    Permisotaxi.findLiquidezByIdInThisDay(req.params.id, created_by, (error, data) => {
                         return Permisotaxi.response(res, error, data);
                     })
                 } else {
