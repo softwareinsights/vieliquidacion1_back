@@ -35,6 +35,53 @@ Bonificacion.applyBonification = (Bonificacion, next) => {
     }
 };
 
+
+Bonificacion.findByIdChofer = (idChofer, created_by, next) => {
+    if( !connection )
+        return next('Connection refused');
+
+    let query = '';
+    let keys = [];
+    if (created_by) {
+        query = 'SELECT bonificacion.*, _estado_idestado.nombre as estado_estado_idestado , _persona.nombre as chofer_chofer_idchofer FROM bonificacion INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = bonificacion.estado_idestado INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = bonificacion.chofer_idchofer INNER JOIN persona as _persona ON _persona.idpersona = _chofer_idchofer.chofer  WHERE bonificacion.chofer_idchofer = ? AND bonificacion.created_by = ? HAVING bonificacion.baja IS NULL OR bonificacion.baja = false';
+        keys = [idChofer, created_by];
+    } else {
+        query = 'SELECT bonificacion.*, _estado_idestado.nombre as estado_estado_idestado , _persona.nombre as chofer_chofer_idchofer FROM bonificacion INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = bonificacion.estado_idestado INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = bonificacion.chofer_idchofer INNER JOIN persona as _persona ON _persona.idpersona = _chofer_idchofer.chofer  WHERE bonificacion.chofer_idchofer = ? HAVING bonificacion.baja IS NULL OR bonificacion.baja = false';
+        keys = [idChofer];
+    }
+
+    connection.query(query, keys, (error, result) => {
+        if(error)
+            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se encontraba el registro' });
+        else if (result.affectedRows === 0)
+            return next(null, { success: false, result: result, message: 'Solo es posible encontrar registros propios' });
+        else
+            return next(null, { success: true, result: result, message: 'Bonificacion encontrad@' });
+    });
+};
+Bonificacion.findByIdEstado = (idEstado, created_by, next) => {
+    if( !connection )
+        return next('Connection refused');
+
+    let query = '';
+    let keys = [];
+    if (created_by) {
+        query = 'SELECT bonificacion.*, _estado_idestado.nombre as estado_estado_idestado , _persona.nombre as chofer_chofer_idchofer FROM bonificacion INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = bonificacion.estado_idestado INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = bonificacion.chofer_idchofer INNER JOIN persona as _persona ON _persona.idpersona = _chofer_idchofer.chofer  WHERE bonificacion.estado_idestado = ? AND bonificacion.created_by = ? HAVING bonificacion.baja IS NULL OR bonificacion.baja = false';
+        keys = [idEstado, created_by];
+    } else {
+        query = 'SELECT bonificacion.*, _estado_idestado.nombre as estado_estado_idestado , _persona.nombre as chofer_chofer_idchofer FROM bonificacion INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = bonificacion.estado_idestado INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = bonificacion.chofer_idchofer INNER JOIN persona as _persona ON _persona.idpersona = _chofer_idchofer.chofer  WHERE bonificacion.estado_idestado = ? HAVING bonificacion.baja IS NULL OR bonificacion.baja = false';
+        keys = [idEstado];
+    }
+
+    connection.query(query, keys, (error, result) => {
+        if(error)
+            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se encontraba el registro' });
+        else if (result.affectedRows === 0)
+            return next(null, { success: false, result: result, message: 'Solo es posible encontrar registros propios' });
+        else
+            return next(null, { success: true, result: result, message: 'Bonificacion encontrad@' });
+    });
+};
 Bonificacion.all = (created_by, next) => {
     if( !connection )
         return next('Connection refused');
@@ -42,7 +89,7 @@ Bonificacion.all = (created_by, next) => {
     let query = '';
     let keys = [];
     if (created_by) {
-        query = 'SELECT bonificacion.*, _estado_idestado.nombre as estado_estado_idestado , _persona.nombre as chofer_chofer_idchofer FROM bonificacion INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = bonificacion.estado_idestado INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = bonificacion.chofer_idchofer INNER JOIN persona as _persona ON _persona.idpersona = _chofer_idchofer.chofer  WHERE created_by = ? HAVING bonificacion.baja IS NULL OR bonificacion.baja = false';
+        query = 'SELECT bonificacion.*, _estado_idestado.nombre as estado_estado_idestado , _persona.nombre as chofer_chofer_idchofer FROM bonificacion INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = bonificacion.estado_idestado INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = bonificacion.chofer_idchofer INNER JOIN persona as _persona ON _persona.idpersona = _chofer_idchofer.chofer  WHERE bonificacion.created_by = ? HAVING bonificacion.baja IS NULL OR bonificacion.baja = false';
         keys = [created_by];
     } else {
         query = 'SELECT bonificacion.*, _estado_idestado.nombre as estado_estado_idestado , _persona.nombre as chofer_chofer_idchofer FROM bonificacion INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = bonificacion.estado_idestado INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = bonificacion.chofer_idchofer INNER JOIN persona as _persona ON _persona.idpersona = _chofer_idchofer.chofer  HAVING bonificacion.baja IS NULL OR bonificacion.baja = false';
@@ -153,9 +200,8 @@ Bonificacion.update = (Bonificacion, created_by, next) => {
             return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se actualizaba el registro' });
         else if (result.affectedRows === 0)
             return next(null, { success: false, result: result, message: 'Solo es posible actualizar registros propios' });
-        else {                 
-            return next(null, { success: true, result: result, message: 'Bonificacion y Liquidación actualizad@' });
-        }
+        else
+            return next(null, { success: true, result: result, message: 'Bonificacion actualizad@' });
     });
 };
 

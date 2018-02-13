@@ -1,18 +1,18 @@
 const connection = require('../config/db-connection');
 
-const Si_rol = {};
+const Mantenimiento = {};
 
-Si_rol.all = (created_by, next) => {
+Mantenimiento.all = (created_by, next) => {
     if( !connection )
         return next('Connection refused');
 
     let query = '';
     let keys = [];
     if (created_by) {
-        query = 'SELECT si_rol.* FROM si_rol    WHERE si_rol.created_by = ? HAVING si_rol.baja IS NULL OR si_rol.baja = false';
+        query = 'SELECT mantenimiento.* FROM mantenimiento    WHERE mantenimiento.created_by = ? HAVING mantenimiento.baja IS NULL OR mantenimiento.baja = false';
         keys = [created_by];
     } else {
-        query = 'SELECT si_rol.* FROM si_rol    HAVING si_rol.baja IS NULL OR si_rol.baja = false';
+        query = 'SELECT mantenimiento.* FROM mantenimiento    HAVING mantenimiento.baja IS NULL OR mantenimiento.baja = false';
         keys = [];
     }
 
@@ -22,22 +22,22 @@ Si_rol.all = (created_by, next) => {
         else if (result.affectedRows === 0)
             return next(null, { success: false, result: result, message: 'Solo es posible leer registros propios' });
         else
-            return next(null, { success: true, result: result, message: 'Si_rol leíd@' });
+            return next(null, { success: true, result: result, message: 'Mantenimiento leíd@' });
     });
 };
 
-Si_rol.findById = (idSi_rol, created_by, next) => {
+Mantenimiento.findById = (idMantenimiento, created_by, next) => {
     if( !connection )
         return next('Connection refused');
 
     let query = '';
     let keys = [];
     if (created_by) {
-        query = 'SELECT * FROM si_rol WHERE idsi_rol = ? AND created_by = ? HAVING baja IS NULL OR baja = false';
-        keys = [idSi_rol, created_by];
+        query = 'SELECT * FROM mantenimiento WHERE idmantenimiento = ? AND created_by = ? HAVING baja IS NULL OR baja = false';
+        keys = [idMantenimiento, created_by];
     } else {
-        query = 'SELECT * FROM si_rol WHERE idsi_rol = ? HAVING baja IS NULL OR baja = false';
-        keys = [idSi_rol];
+        query = 'SELECT * FROM mantenimiento WHERE idmantenimiento = ? HAVING baja IS NULL OR baja = false';
+        keys = [idMantenimiento];
     }
 
     connection.query(query, keys, (error, result) => {
@@ -46,73 +46,73 @@ Si_rol.findById = (idSi_rol, created_by, next) => {
         else if (result.affectedRows === 0)
             return next(null, { success: false, result: result, message: 'Solo es posible encontrar registros propios' });
         else
-            return next(null, { success: true, result: result, message: 'Si_rol encontrad@' });
+            return next(null, { success: true, result: result, message: 'Mantenimiento encontrad@' });
     });
 };
 
-Si_rol.count = (next) => {
+Mantenimiento.count = (next) => {
     if( !connection )
         return next('Connection refused');
 
     let query = '';
     let keys = [];
-    query = 'SELECT COUNT(idsi_rol) AS count FROM si_rol';
+    query = 'SELECT COUNT(idmantenimiento) AS count FROM mantenimiento';
     keys = [];
 
     connection.query(query, keys, (error, result) => {
         if(error) 
             return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se leían registros' });
         else
-            return next(null, { success: true, result: result, message: 'Si_rol contabilizad@' });
+            return next(null, { success: true, result: result, message: 'Mantenimiento contabilizad@' });
     });
 };
 
-Si_rol.exist = (idSi_rol, next) => {
+Mantenimiento.exist = (idMantenimiento, next) => {
     if( !connection )
         return next('Connection refused');
 
     let query = '';
     let keys = [];
-    query = 'SELECT EXISTS(SELECT 1 FROM si_rol WHERE idsi_rol = ?) AS exist';
-    keys = [idSi_rol];
+    query = 'SELECT EXISTS(SELECT 1 FROM mantenimiento WHERE idmantenimiento = ?) AS exist';
+    keys = [idMantenimiento];
 
     connection.query(query, keys, (error, result) => {
         if(error) 
             return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se leían registros' });
         else
-            return next(null, { success: true, result: result, message: 'Si_rol verificad@' });
+            return next(null, { success: true, result: result, message: 'Mantenimiento verificad@' });
     });
 };
 
-Si_rol.insert = (Si_rol, next) => {
+Mantenimiento.insert = (Mantenimiento, next) => {
     if( !connection )
         return next('Connection refused');
 
     let query = '';
     let keys = [];
-    query = 'INSERT INTO si_rol SET ?';
-    keys = [Si_rol];
+    query = 'INSERT INTO mantenimiento SET ?';
+    keys = [Mantenimiento];
 
     connection.query(query, keys, (error, result) => {
         if(error) 
             return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se creaba el registro' });
         else
-            return next(null, { success: true, result: result, message: 'Si_rol cread@' });
+            return next(null, { success: true, result: result, message: 'Mantenimiento cread@' });
     });
 };
 
-Si_rol.update = (Si_rol, created_by, next) => {
+Mantenimiento.update = (Mantenimiento, created_by, next) => {
     if( !connection )
         return next('Connection refused');
 
     let query = '';
     let keys = [];
     if (created_by) {
-        query = 'UPDATE si_rol SET ? WHERE idsi_rol = ? AND created_by = ?';
-        keys = [Si_rol, Si_rol.idsi_rol, created_by];
+        query = 'UPDATE mantenimiento SET ? WHERE idmantenimiento = ? AND created_by = ?';
+        keys = [Mantenimiento, Mantenimiento.idmantenimiento, created_by];
     } else {
-        query = 'UPDATE si_rol SET ? WHERE idsi_rol = ?';
-        keys = [Si_rol, Si_rol.idsi_rol];
+        query = 'UPDATE mantenimiento SET ? WHERE idmantenimiento = ?';
+        keys = [Mantenimiento, Mantenimiento.idmantenimiento];
     }
 
     connection.query(query, keys, (error, result) => {
@@ -121,22 +121,22 @@ Si_rol.update = (Si_rol, created_by, next) => {
         else if (result.affectedRows === 0)
             return next(null, { success: false, result: result, message: 'Solo es posible actualizar registros propios' });
         else
-            return next(null, { success: true, result: result, message: 'Si_rol actualizad@' });
+            return next(null, { success: true, result: result, message: 'Mantenimiento actualizad@' });
     });
 };
 
-Si_rol.remove = (idsi_rol, created_by, next) => {
+Mantenimiento.remove = (idmantenimiento, created_by, next) => {
     if( !connection )
         return next('Connection refused');
 
     let query = '';
     let keys = [];
     if (created_by) {
-        query = 'DELETE FROM si_rol WHERE idsi_rol = ? AND created_by = ?';
-        keys = [idsi_rol, created_by];
+        query = 'DELETE FROM mantenimiento WHERE idmantenimiento = ? AND created_by = ?';
+        keys = [idmantenimiento, created_by];
     } else {
-        query = 'DELETE FROM si_rol WHERE idsi_rol = ?';
-        keys = [idsi_rol];
+        query = 'DELETE FROM mantenimiento WHERE idmantenimiento = ?';
+        keys = [idmantenimiento];
     }
 
     connection.query(query, keys, (error, result) => {
@@ -145,22 +145,22 @@ Si_rol.remove = (idsi_rol, created_by, next) => {
         else if (result.affectedRows === 0)
             return next(null, { success: false, result: result, message: 'Solo es posible eliminar registros propios' });
         else
-            return next(null, { success: true, result: result, message: 'Si_rol eliminad@' });
+            return next(null, { success: true, result: result, message: 'Mantenimiento eliminad@' });
     });
 };
 
-Si_rol.logicRemove = (idsi_rol, created_by, next) => {
+Mantenimiento.logicRemove = (idmantenimiento, created_by, next) => {
     if( !connection )
         return next('Connection refused');
 
     let query = '';
     let keys = [];
     if (created_by) {
-        query = 'UPDATE si_rol SET baja = 1 WHERE idsi_rol = ? AND created_by = ?';
-        keys = [idsi_rol, created_by];
+        query = 'UPDATE mantenimiento SET baja = 1 WHERE idmantenimiento = ? AND created_by = ?';
+        keys = [idmantenimiento, created_by];
     } else {
-        query = 'UPDATE si_rol SET baja = 1 WHERE idsi_rol = ?';
-        keys = [idsi_rol];
+        query = 'UPDATE mantenimiento SET baja = 1 WHERE idmantenimiento = ?';
+        keys = [idmantenimiento];
     }
 
     connection.query(query, keys, (error, result) => {
@@ -169,15 +169,15 @@ Si_rol.logicRemove = (idsi_rol, created_by, next) => {
         else if (result.affectedRows === 0)
             return next(null, { success: false, result: result, message: 'Solo es posible eliminar registros propios' });
         else
-            return next(null, { success: true, result: result, message: 'Si_rol eliminad@' });
+            return next(null, { success: true, result: result, message: 'Mantenimiento eliminad@' });
     });
 };
 
-Si_rol.response = (res, error, data) => {
+Mantenimiento.response = (res, error, data) => {
     if ( error )
         res.status(500).json(error);
     else
         res.status(200).json(data);
 };
 
-module.exports = Si_rol;
+module.exports = Mantenimiento;

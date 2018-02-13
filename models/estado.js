@@ -9,7 +9,7 @@ Estado.all = (created_by, next) => {
     let query = '';
     let keys = [];
     if (created_by) {
-        query = 'SELECT estado.* FROM estado    WHERE created_by = ? HAVING estado.baja IS NULL OR estado.baja = false';
+        query = 'SELECT estado.* FROM estado    WHERE estado.created_by = ? HAVING estado.baja IS NULL OR estado.baja = false';
         keys = [created_by];
     } else {
         query = 'SELECT estado.* FROM estado    HAVING estado.baja IS NULL OR estado.baja = false';

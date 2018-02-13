@@ -2,6 +2,52 @@ const connection = require('../config/db-connection');
 
 const Egresoconcepto = {};
 
+Egresoconcepto.findByIdConcepto = (idConcepto, created_by, next) => {
+    if( !connection )
+        return next('Connection refused');
+
+    let query = '';
+    let keys = [];
+    if (created_by) {
+        query = 'SELECT egresoconcepto.*, _taller_idtaller.nombre as taller_taller_idtaller , _concepto_idconcepto.nombre as concepto_concepto_idconcepto FROM egresoconcepto INNER JOIN taller as _taller_idtaller ON _taller_idtaller.idtaller = egresoconcepto.taller_idtaller INNER JOIN concepto as _concepto_idconcepto ON _concepto_idconcepto.idconcepto = egresoconcepto.concepto_idconcepto   WHERE egresoconcepto.concepto_idconcepto = ? AND egresoconcepto.created_by = ? HAVING egresoconcepto.baja IS NULL OR egresoconcepto.baja = false';
+        keys = [idConcepto, created_by];
+    } else {
+        query = 'SELECT egresoconcepto.*, _taller_idtaller.nombre as taller_taller_idtaller , _concepto_idconcepto.nombre as concepto_concepto_idconcepto FROM egresoconcepto INNER JOIN taller as _taller_idtaller ON _taller_idtaller.idtaller = egresoconcepto.taller_idtaller INNER JOIN concepto as _concepto_idconcepto ON _concepto_idconcepto.idconcepto = egresoconcepto.concepto_idconcepto   WHERE egresoconcepto.concepto_idconcepto = ? HAVING egresoconcepto.baja IS NULL OR egresoconcepto.baja = false';
+        keys = [idConcepto];
+    }
+
+    connection.query(query, keys, (error, result) => {
+        if(error)
+            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se encontraba el registro' });
+        else if (result.affectedRows === 0)
+            return next(null, { success: false, result: result, message: 'Solo es posible encontrar registros propios' });
+        else
+            return next(null, { success: true, result: result, message: 'Egresoconcepto encontrad@' });
+    });
+};
+Egresoconcepto.findByIdTaller = (idTaller, created_by, next) => {
+    if( !connection )
+        return next('Connection refused');
+
+    let query = '';
+    let keys = [];
+    if (created_by) {
+        query = 'SELECT egresoconcepto.*, _taller_idtaller.nombre as taller_taller_idtaller , _concepto_idconcepto.nombre as concepto_concepto_idconcepto FROM egresoconcepto INNER JOIN taller as _taller_idtaller ON _taller_idtaller.idtaller = egresoconcepto.taller_idtaller INNER JOIN concepto as _concepto_idconcepto ON _concepto_idconcepto.idconcepto = egresoconcepto.concepto_idconcepto   WHERE egresoconcepto.taller_idtaller = ? AND egresoconcepto.created_by = ? HAVING egresoconcepto.baja IS NULL OR egresoconcepto.baja = false';
+        keys = [idTaller, created_by];
+    } else {
+        query = 'SELECT egresoconcepto.*, _taller_idtaller.nombre as taller_taller_idtaller , _concepto_idconcepto.nombre as concepto_concepto_idconcepto FROM egresoconcepto INNER JOIN taller as _taller_idtaller ON _taller_idtaller.idtaller = egresoconcepto.taller_idtaller INNER JOIN concepto as _concepto_idconcepto ON _concepto_idconcepto.idconcepto = egresoconcepto.concepto_idconcepto   WHERE egresoconcepto.taller_idtaller = ? HAVING egresoconcepto.baja IS NULL OR egresoconcepto.baja = false';
+        keys = [idTaller];
+    }
+
+    connection.query(query, keys, (error, result) => {
+        if(error)
+            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se encontraba el registro' });
+        else if (result.affectedRows === 0)
+            return next(null, { success: false, result: result, message: 'Solo es posible encontrar registros propios' });
+        else
+            return next(null, { success: true, result: result, message: 'Egresoconcepto encontrad@' });
+    });
+};
 Egresoconcepto.all = (created_by, next) => {
     if( !connection )
         return next('Connection refused');

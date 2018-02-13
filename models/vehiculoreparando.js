@@ -2,7 +2,6 @@ const connection = require('../config/db-connection');
 
 const Vehiculoreparando = {};
 
-
 Vehiculoreparando.goOutVehicle = (Vehiculoreparando, next) => {
     if( !connection )
         return next('Connection refused');
@@ -87,6 +86,121 @@ Vehiculoreparando.goOutVehicle = (Vehiculoreparando, next) => {
     });
 };
 
+Vehiculoreparando.findByIdEnviotaller = (idEnviotaller, created_by, next) => {
+    if( !connection )
+        return next('Connection refused');
+
+    let query = '';
+    let keys = [];
+    if (created_by) {
+        query = 'SELECT vehiculoreparando.*, _estado_idestado.nombre as estado_estado_idestado , _enviotaller_idenviotaller.motivo as enviotaller_enviotaller_idenviotaller , _taller_idtaller.nombre as taller_taller_idtaller , _persona.nombre as mecanico_mecanico_idmecanico , _permisotaxi.numero as permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado FROM vehiculoreparando INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = vehiculoreparando.estado_idestado INNER JOIN enviotaller as _enviotaller_idenviotaller ON _enviotaller_idenviotaller.idenviotaller = vehiculoreparando.enviotaller_idenviotaller INNER JOIN taller as _taller_idtaller ON _taller_idtaller.idtaller = vehiculoreparando.taller_idtaller INNER JOIN mecanico as _mecanico_idmecanico ON _mecanico_idmecanico.idmecanico = vehiculoreparando.mecanico_idmecanico INNER JOIN permisotaxiasignado as _permisotaxiasignado_idpermisotaxiasignado ON _permisotaxiasignado_idpermisotaxiasignado.idpermisotaxiasignado = vehiculoreparando.permisotaxiasignado_idpermisotaxiasignado INNER JOIN persona as _persona ON _persona.idpersona = _mecanico_idmecanico.persona_idpersona INNER JOIN permisotaxi as _permisotaxi ON _permisotaxi.idpermisotaxi = _permisotaxiasignado_idpermisotaxiasignado.permisotaxi_idpermisotaxi  WHERE vehiculoreparando.enviotaller_idenviotaller = ? AND vehiculoreparando.created_by = ? HAVING vehiculoreparando.baja IS NULL OR vehiculoreparando.baja = false';
+        keys = [idEnviotaller, created_by];
+    } else {
+        query = 'SELECT vehiculoreparando.*, _estado_idestado.nombre as estado_estado_idestado , _enviotaller_idenviotaller.motivo as enviotaller_enviotaller_idenviotaller , _taller_idtaller.nombre as taller_taller_idtaller , _persona.nombre as mecanico_mecanico_idmecanico , _permisotaxi.numero as permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado FROM vehiculoreparando INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = vehiculoreparando.estado_idestado INNER JOIN enviotaller as _enviotaller_idenviotaller ON _enviotaller_idenviotaller.idenviotaller = vehiculoreparando.enviotaller_idenviotaller INNER JOIN taller as _taller_idtaller ON _taller_idtaller.idtaller = vehiculoreparando.taller_idtaller INNER JOIN mecanico as _mecanico_idmecanico ON _mecanico_idmecanico.idmecanico = vehiculoreparando.mecanico_idmecanico INNER JOIN permisotaxiasignado as _permisotaxiasignado_idpermisotaxiasignado ON _permisotaxiasignado_idpermisotaxiasignado.idpermisotaxiasignado = vehiculoreparando.permisotaxiasignado_idpermisotaxiasignado INNER JOIN persona as _persona ON _persona.idpersona = _mecanico_idmecanico.persona_idpersona INNER JOIN permisotaxi as _permisotaxi ON _permisotaxi.idpermisotaxi = _permisotaxiasignado_idpermisotaxiasignado.permisotaxi_idpermisotaxi  WHERE vehiculoreparando.enviotaller_idenviotaller = ? HAVING vehiculoreparando.baja IS NULL OR vehiculoreparando.baja = false';
+        keys = [idEnviotaller];
+    }
+
+    connection.query(query, keys, (error, result) => {
+        if(error)
+            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se encontraba el registro' });
+        else if (result.affectedRows === 0)
+            return next(null, { success: false, result: result, message: 'Solo es posible encontrar registros propios' });
+        else
+            return next(null, { success: true, result: result, message: 'Vehiculoreparando encontrad@' });
+    });
+};
+Vehiculoreparando.findByIdEstado = (idEstado, created_by, next) => {
+    if( !connection )
+        return next('Connection refused');
+
+    let query = '';
+    let keys = [];
+    if (created_by) {
+        query = 'SELECT vehiculoreparando.*, _estado_idestado.nombre as estado_estado_idestado , _enviotaller_idenviotaller.motivo as enviotaller_enviotaller_idenviotaller , _taller_idtaller.nombre as taller_taller_idtaller , _persona.nombre as mecanico_mecanico_idmecanico , _permisotaxi.numero as permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado FROM vehiculoreparando INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = vehiculoreparando.estado_idestado INNER JOIN enviotaller as _enviotaller_idenviotaller ON _enviotaller_idenviotaller.idenviotaller = vehiculoreparando.enviotaller_idenviotaller INNER JOIN taller as _taller_idtaller ON _taller_idtaller.idtaller = vehiculoreparando.taller_idtaller INNER JOIN mecanico as _mecanico_idmecanico ON _mecanico_idmecanico.idmecanico = vehiculoreparando.mecanico_idmecanico INNER JOIN permisotaxiasignado as _permisotaxiasignado_idpermisotaxiasignado ON _permisotaxiasignado_idpermisotaxiasignado.idpermisotaxiasignado = vehiculoreparando.permisotaxiasignado_idpermisotaxiasignado INNER JOIN persona as _persona ON _persona.idpersona = _mecanico_idmecanico.persona_idpersona INNER JOIN permisotaxi as _permisotaxi ON _permisotaxi.idpermisotaxi = _permisotaxiasignado_idpermisotaxiasignado.permisotaxi_idpermisotaxi  WHERE vehiculoreparando.estado_idestado = ? AND vehiculoreparando.created_by = ? HAVING vehiculoreparando.baja IS NULL OR vehiculoreparando.baja = false';
+        keys = [idEstado, created_by];
+    } else {
+        query = 'SELECT vehiculoreparando.*, _estado_idestado.nombre as estado_estado_idestado , _enviotaller_idenviotaller.motivo as enviotaller_enviotaller_idenviotaller , _taller_idtaller.nombre as taller_taller_idtaller , _persona.nombre as mecanico_mecanico_idmecanico , _permisotaxi.numero as permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado FROM vehiculoreparando INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = vehiculoreparando.estado_idestado INNER JOIN enviotaller as _enviotaller_idenviotaller ON _enviotaller_idenviotaller.idenviotaller = vehiculoreparando.enviotaller_idenviotaller INNER JOIN taller as _taller_idtaller ON _taller_idtaller.idtaller = vehiculoreparando.taller_idtaller INNER JOIN mecanico as _mecanico_idmecanico ON _mecanico_idmecanico.idmecanico = vehiculoreparando.mecanico_idmecanico INNER JOIN permisotaxiasignado as _permisotaxiasignado_idpermisotaxiasignado ON _permisotaxiasignado_idpermisotaxiasignado.idpermisotaxiasignado = vehiculoreparando.permisotaxiasignado_idpermisotaxiasignado INNER JOIN persona as _persona ON _persona.idpersona = _mecanico_idmecanico.persona_idpersona INNER JOIN permisotaxi as _permisotaxi ON _permisotaxi.idpermisotaxi = _permisotaxiasignado_idpermisotaxiasignado.permisotaxi_idpermisotaxi  WHERE vehiculoreparando.estado_idestado = ? HAVING vehiculoreparando.baja IS NULL OR vehiculoreparando.baja = false';
+        keys = [idEstado];
+    }
+
+    connection.query(query, keys, (error, result) => {
+        if(error)
+            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se encontraba el registro' });
+        else if (result.affectedRows === 0)
+            return next(null, { success: false, result: result, message: 'Solo es posible encontrar registros propios' });
+        else
+            return next(null, { success: true, result: result, message: 'Vehiculoreparando encontrad@' });
+    });
+};
+Vehiculoreparando.findByIdMecanico = (idMecanico, created_by, next) => {
+    if( !connection )
+        return next('Connection refused');
+
+    let query = '';
+    let keys = [];
+    if (created_by) {
+        query = 'SELECT vehiculoreparando.*, _estado_idestado.nombre as estado_estado_idestado , _enviotaller_idenviotaller.motivo as enviotaller_enviotaller_idenviotaller , _taller_idtaller.nombre as taller_taller_idtaller , _persona.nombre as mecanico_mecanico_idmecanico , _permisotaxi.numero as permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado FROM vehiculoreparando INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = vehiculoreparando.estado_idestado INNER JOIN enviotaller as _enviotaller_idenviotaller ON _enviotaller_idenviotaller.idenviotaller = vehiculoreparando.enviotaller_idenviotaller INNER JOIN taller as _taller_idtaller ON _taller_idtaller.idtaller = vehiculoreparando.taller_idtaller INNER JOIN mecanico as _mecanico_idmecanico ON _mecanico_idmecanico.idmecanico = vehiculoreparando.mecanico_idmecanico INNER JOIN permisotaxiasignado as _permisotaxiasignado_idpermisotaxiasignado ON _permisotaxiasignado_idpermisotaxiasignado.idpermisotaxiasignado = vehiculoreparando.permisotaxiasignado_idpermisotaxiasignado INNER JOIN persona as _persona ON _persona.idpersona = _mecanico_idmecanico.persona_idpersona INNER JOIN permisotaxi as _permisotaxi ON _permisotaxi.idpermisotaxi = _permisotaxiasignado_idpermisotaxiasignado.permisotaxi_idpermisotaxi  WHERE vehiculoreparando.mecanico_idmecanico = ? AND vehiculoreparando.created_by = ? HAVING vehiculoreparando.baja IS NULL OR vehiculoreparando.baja = false';
+        keys = [idMecanico, created_by];
+    } else {
+        query = 'SELECT vehiculoreparando.*, _estado_idestado.nombre as estado_estado_idestado , _enviotaller_idenviotaller.motivo as enviotaller_enviotaller_idenviotaller , _taller_idtaller.nombre as taller_taller_idtaller , _persona.nombre as mecanico_mecanico_idmecanico , _permisotaxi.numero as permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado FROM vehiculoreparando INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = vehiculoreparando.estado_idestado INNER JOIN enviotaller as _enviotaller_idenviotaller ON _enviotaller_idenviotaller.idenviotaller = vehiculoreparando.enviotaller_idenviotaller INNER JOIN taller as _taller_idtaller ON _taller_idtaller.idtaller = vehiculoreparando.taller_idtaller INNER JOIN mecanico as _mecanico_idmecanico ON _mecanico_idmecanico.idmecanico = vehiculoreparando.mecanico_idmecanico INNER JOIN permisotaxiasignado as _permisotaxiasignado_idpermisotaxiasignado ON _permisotaxiasignado_idpermisotaxiasignado.idpermisotaxiasignado = vehiculoreparando.permisotaxiasignado_idpermisotaxiasignado INNER JOIN persona as _persona ON _persona.idpersona = _mecanico_idmecanico.persona_idpersona INNER JOIN permisotaxi as _permisotaxi ON _permisotaxi.idpermisotaxi = _permisotaxiasignado_idpermisotaxiasignado.permisotaxi_idpermisotaxi  WHERE vehiculoreparando.mecanico_idmecanico = ? HAVING vehiculoreparando.baja IS NULL OR vehiculoreparando.baja = false';
+        keys = [idMecanico];
+    }
+
+    connection.query(query, keys, (error, result) => {
+        if(error)
+            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se encontraba el registro' });
+        else if (result.affectedRows === 0)
+            return next(null, { success: false, result: result, message: 'Solo es posible encontrar registros propios' });
+        else
+            return next(null, { success: true, result: result, message: 'Vehiculoreparando encontrad@' });
+    });
+};
+Vehiculoreparando.findByIdPermisotaxiasignado = (idPermisotaxiasignado, created_by, next) => {
+    if( !connection )
+        return next('Connection refused');
+
+    let query = '';
+    let keys = [];
+    if (created_by) {
+        query = 'SELECT vehiculoreparando.*, _estado_idestado.nombre as estado_estado_idestado , _enviotaller_idenviotaller.motivo as enviotaller_enviotaller_idenviotaller , _taller_idtaller.nombre as taller_taller_idtaller , _persona.nombre as mecanico_mecanico_idmecanico , _permisotaxi.numero as permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado FROM vehiculoreparando INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = vehiculoreparando.estado_idestado INNER JOIN enviotaller as _enviotaller_idenviotaller ON _enviotaller_idenviotaller.idenviotaller = vehiculoreparando.enviotaller_idenviotaller INNER JOIN taller as _taller_idtaller ON _taller_idtaller.idtaller = vehiculoreparando.taller_idtaller INNER JOIN mecanico as _mecanico_idmecanico ON _mecanico_idmecanico.idmecanico = vehiculoreparando.mecanico_idmecanico INNER JOIN permisotaxiasignado as _permisotaxiasignado_idpermisotaxiasignado ON _permisotaxiasignado_idpermisotaxiasignado.idpermisotaxiasignado = vehiculoreparando.permisotaxiasignado_idpermisotaxiasignado INNER JOIN persona as _persona ON _persona.idpersona = _mecanico_idmecanico.persona_idpersona INNER JOIN permisotaxi as _permisotaxi ON _permisotaxi.idpermisotaxi = _permisotaxiasignado_idpermisotaxiasignado.permisotaxi_idpermisotaxi  WHERE vehiculoreparando.permisotaxiasignado_idpermisotaxiasignado = ? AND vehiculoreparando.created_by = ? HAVING vehiculoreparando.baja IS NULL OR vehiculoreparando.baja = false';
+        keys = [idPermisotaxiasignado, created_by];
+    } else {
+        query = 'SELECT vehiculoreparando.*, _estado_idestado.nombre as estado_estado_idestado , _enviotaller_idenviotaller.motivo as enviotaller_enviotaller_idenviotaller , _taller_idtaller.nombre as taller_taller_idtaller , _persona.nombre as mecanico_mecanico_idmecanico , _permisotaxi.numero as permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado FROM vehiculoreparando INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = vehiculoreparando.estado_idestado INNER JOIN enviotaller as _enviotaller_idenviotaller ON _enviotaller_idenviotaller.idenviotaller = vehiculoreparando.enviotaller_idenviotaller INNER JOIN taller as _taller_idtaller ON _taller_idtaller.idtaller = vehiculoreparando.taller_idtaller INNER JOIN mecanico as _mecanico_idmecanico ON _mecanico_idmecanico.idmecanico = vehiculoreparando.mecanico_idmecanico INNER JOIN permisotaxiasignado as _permisotaxiasignado_idpermisotaxiasignado ON _permisotaxiasignado_idpermisotaxiasignado.idpermisotaxiasignado = vehiculoreparando.permisotaxiasignado_idpermisotaxiasignado INNER JOIN persona as _persona ON _persona.idpersona = _mecanico_idmecanico.persona_idpersona INNER JOIN permisotaxi as _permisotaxi ON _permisotaxi.idpermisotaxi = _permisotaxiasignado_idpermisotaxiasignado.permisotaxi_idpermisotaxi  WHERE vehiculoreparando.permisotaxiasignado_idpermisotaxiasignado = ? HAVING vehiculoreparando.baja IS NULL OR vehiculoreparando.baja = false';
+        keys = [idPermisotaxiasignado];
+    }
+
+    connection.query(query, keys, (error, result) => {
+        if(error)
+            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se encontraba el registro' });
+        else if (result.affectedRows === 0)
+            return next(null, { success: false, result: result, message: 'Solo es posible encontrar registros propios' });
+        else
+            return next(null, { success: true, result: result, message: 'Vehiculoreparando encontrad@' });
+    });
+};
+Vehiculoreparando.findByIdTaller = (idTaller, created_by, next) => {
+    if( !connection )
+        return next('Connection refused');
+
+    let query = '';
+    let keys = [];
+    if (created_by) {
+        query = 'SELECT vehiculoreparando.*, _estado_idestado.nombre as estado_estado_idestado , _enviotaller_idenviotaller.motivo as enviotaller_enviotaller_idenviotaller , _taller_idtaller.nombre as taller_taller_idtaller , _persona.nombre as mecanico_mecanico_idmecanico , _permisotaxi.numero as permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado FROM vehiculoreparando INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = vehiculoreparando.estado_idestado INNER JOIN enviotaller as _enviotaller_idenviotaller ON _enviotaller_idenviotaller.idenviotaller = vehiculoreparando.enviotaller_idenviotaller INNER JOIN taller as _taller_idtaller ON _taller_idtaller.idtaller = vehiculoreparando.taller_idtaller INNER JOIN mecanico as _mecanico_idmecanico ON _mecanico_idmecanico.idmecanico = vehiculoreparando.mecanico_idmecanico INNER JOIN permisotaxiasignado as _permisotaxiasignado_idpermisotaxiasignado ON _permisotaxiasignado_idpermisotaxiasignado.idpermisotaxiasignado = vehiculoreparando.permisotaxiasignado_idpermisotaxiasignado INNER JOIN persona as _persona ON _persona.idpersona = _mecanico_idmecanico.persona_idpersona INNER JOIN permisotaxi as _permisotaxi ON _permisotaxi.idpermisotaxi = _permisotaxiasignado_idpermisotaxiasignado.permisotaxi_idpermisotaxi  WHERE vehiculoreparando.taller_idtaller = ? AND vehiculoreparando.created_by = ? HAVING vehiculoreparando.baja IS NULL OR vehiculoreparando.baja = false';
+        keys = [idTaller, created_by];
+    } else {
+        query = 'SELECT vehiculoreparando.*, _estado_idestado.nombre as estado_estado_idestado , _enviotaller_idenviotaller.motivo as enviotaller_enviotaller_idenviotaller , _taller_idtaller.nombre as taller_taller_idtaller , _persona.nombre as mecanico_mecanico_idmecanico , _permisotaxi.numero as permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado FROM vehiculoreparando INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = vehiculoreparando.estado_idestado INNER JOIN enviotaller as _enviotaller_idenviotaller ON _enviotaller_idenviotaller.idenviotaller = vehiculoreparando.enviotaller_idenviotaller INNER JOIN taller as _taller_idtaller ON _taller_idtaller.idtaller = vehiculoreparando.taller_idtaller INNER JOIN mecanico as _mecanico_idmecanico ON _mecanico_idmecanico.idmecanico = vehiculoreparando.mecanico_idmecanico INNER JOIN permisotaxiasignado as _permisotaxiasignado_idpermisotaxiasignado ON _permisotaxiasignado_idpermisotaxiasignado.idpermisotaxiasignado = vehiculoreparando.permisotaxiasignado_idpermisotaxiasignado INNER JOIN persona as _persona ON _persona.idpersona = _mecanico_idmecanico.persona_idpersona INNER JOIN permisotaxi as _permisotaxi ON _permisotaxi.idpermisotaxi = _permisotaxiasignado_idpermisotaxiasignado.permisotaxi_idpermisotaxi  WHERE vehiculoreparando.taller_idtaller = ? HAVING vehiculoreparando.baja IS NULL OR vehiculoreparando.baja = false';
+        keys = [idTaller];
+    }
+
+    connection.query(query, keys, (error, result) => {
+        if(error)
+            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se encontraba el registro' });
+        else if (result.affectedRows === 0)
+            return next(null, { success: false, result: result, message: 'Solo es posible encontrar registros propios' });
+        else
+            return next(null, { success: true, result: result, message: 'Vehiculoreparando encontrad@' });
+    });
+};
 Vehiculoreparando.all = (created_by, next) => {
     if( !connection )
         return next('Connection refused');
@@ -94,7 +208,7 @@ Vehiculoreparando.all = (created_by, next) => {
     let query = '';
     let keys = [];
     if (created_by) {
-        query = 'SELECT vehiculoreparando.*, _estado_idestado.nombre as estado_estado_idestado , _enviotaller_idenviotaller.motivo as enviotaller_enviotaller_idenviotaller , _taller_idtaller.nombre as taller_taller_idtaller , _persona.nombre as mecanico_mecanico_idmecanico , _permisotaxi.numero as permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado FROM vehiculoreparando INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = vehiculoreparando.estado_idestado INNER JOIN enviotaller as _enviotaller_idenviotaller ON _enviotaller_idenviotaller.idenviotaller = vehiculoreparando.enviotaller_idenviotaller INNER JOIN taller as _taller_idtaller ON _taller_idtaller.idtaller = vehiculoreparando.taller_idtaller INNER JOIN mecanico as _mecanico_idmecanico ON _mecanico_idmecanico.idmecanico = vehiculoreparando.mecanico_idmecanico INNER JOIN permisotaxiasignado as _permisotaxiasignado_idpermisotaxiasignado ON _permisotaxiasignado_idpermisotaxiasignado.idpermisotaxiasignado = vehiculoreparando.permisotaxiasignado_idpermisotaxiasignado INNER JOIN persona as _persona ON _persona.idpersona = _mecanico_idmecanico.persona_idpersona INNER JOIN permisotaxi as _permisotaxi ON _permisotaxi.idpermisotaxi = _permisotaxiasignado_idpermisotaxiasignado.permisotaxi_idpermisotaxi  WHERE created_by = ? HAVING vehiculoreparando.baja IS NULL OR vehiculoreparando.baja = false';
+        query = 'SELECT vehiculoreparando.*, _estado_idestado.nombre as estado_estado_idestado , _enviotaller_idenviotaller.motivo as enviotaller_enviotaller_idenviotaller , _taller_idtaller.nombre as taller_taller_idtaller , _persona.nombre as mecanico_mecanico_idmecanico , _permisotaxi.numero as permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado FROM vehiculoreparando INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = vehiculoreparando.estado_idestado INNER JOIN enviotaller as _enviotaller_idenviotaller ON _enviotaller_idenviotaller.idenviotaller = vehiculoreparando.enviotaller_idenviotaller INNER JOIN taller as _taller_idtaller ON _taller_idtaller.idtaller = vehiculoreparando.taller_idtaller INNER JOIN mecanico as _mecanico_idmecanico ON _mecanico_idmecanico.idmecanico = vehiculoreparando.mecanico_idmecanico INNER JOIN permisotaxiasignado as _permisotaxiasignado_idpermisotaxiasignado ON _permisotaxiasignado_idpermisotaxiasignado.idpermisotaxiasignado = vehiculoreparando.permisotaxiasignado_idpermisotaxiasignado INNER JOIN persona as _persona ON _persona.idpersona = _mecanico_idmecanico.persona_idpersona INNER JOIN permisotaxi as _permisotaxi ON _permisotaxi.idpermisotaxi = _permisotaxiasignado_idpermisotaxiasignado.permisotaxi_idpermisotaxi  WHERE vehiculoreparando.created_by = ? HAVING vehiculoreparando.baja IS NULL OR vehiculoreparando.baja = false';
         keys = [created_by];
     } else {
         query = 'SELECT vehiculoreparando.*, _estado_idestado.nombre as estado_estado_idestado , _enviotaller_idenviotaller.motivo as enviotaller_enviotaller_idenviotaller , _taller_idtaller.nombre as taller_taller_idtaller , _persona.nombre as mecanico_mecanico_idmecanico , _permisotaxi.numero as permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado FROM vehiculoreparando INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = vehiculoreparando.estado_idestado INNER JOIN enviotaller as _enviotaller_idenviotaller ON _enviotaller_idenviotaller.idenviotaller = vehiculoreparando.enviotaller_idenviotaller INNER JOIN taller as _taller_idtaller ON _taller_idtaller.idtaller = vehiculoreparando.taller_idtaller INNER JOIN mecanico as _mecanico_idmecanico ON _mecanico_idmecanico.idmecanico = vehiculoreparando.mecanico_idmecanico INNER JOIN permisotaxiasignado as _permisotaxiasignado_idpermisotaxiasignado ON _permisotaxiasignado_idpermisotaxiasignado.idpermisotaxiasignado = vehiculoreparando.permisotaxiasignado_idpermisotaxiasignado INNER JOIN persona as _persona ON _persona.idpersona = _mecanico_idmecanico.persona_idpersona INNER JOIN permisotaxi as _permisotaxi ON _permisotaxi.idpermisotaxi = _permisotaxiasignado_idpermisotaxiasignado.permisotaxi_idpermisotaxi  HAVING vehiculoreparando.baja IS NULL OR vehiculoreparando.baja = false';
@@ -175,52 +289,15 @@ Vehiculoreparando.insert = (Vehiculoreparando, next) => {
 
     let query = '';
     let keys = [];
+    query = 'INSERT INTO vehiculoreparando SET ?';
+    keys = [Vehiculoreparando];
 
-    // Si viene de enviotaller sacar hora y fecha de envío
-    if (Vehiculoreparando.enviotaller_idenviotaller) {
-
-        query = 'SELECT fecha, hora FROM enviotaller WHERE idenviotaller = ?';
-        keys = [Vehiculoreparando.enviotaller_idenviotaller];
-
-        connection.query(query, keys, (error, result) => {
-            if(error) 
-                return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se leia el registro Envio Taller' });
-            else {
-                // Insertar a vehiculoreparando con las fechas de enviotaller
-                Vehiculoreparando.fechaIngresa = result[0].fecha;
-                Vehiculoreparando.horaIngresa = result[0].hora;
-                Vehiculoreparando.estado_idestado = 11; // REPARANDO
-                
-                query = 'INSERT INTO vehiculoreparando SET ?';
-                keys = [Vehiculoreparando];
-
-                connection.query(query, keys, (error, result) => {
-                    if(error) 
-                        return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se creaba el registro' });
-                    else
-                        return next(null, { success: true, result: result, message: 'Vehiculoreparando cread@ con fecha de envío a taller' });
-                });
-            }
-        });
-
-    } else {
-
-        // Puede ser un vehiculo externo sin permiso y sin enviotaller
-       Vehiculoreparando.estado_idestado = 11; // REPARANDO
-
-        query = 'INSERT INTO vehiculoreparando SET ?';
-        keys = [Vehiculoreparando];
-
-        connection.query(query, keys, (error, result) => {
-            if(error) 
-                return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se creaba el registro' });
-            else
-                return next(null, { success: true, result: result, message: 'Vehiculoreparando cread@' });
-        });
-
-    }
-
-    
+    connection.query(query, keys, (error, result) => {
+        if(error) 
+            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se creaba el registro' });
+        else
+            return next(null, { success: true, result: result, message: 'Vehiculoreparando cread@' });
+    });
 };
 
 Vehiculoreparando.update = (Vehiculoreparando, created_by, next) => {

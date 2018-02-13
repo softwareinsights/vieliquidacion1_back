@@ -40,8 +40,8 @@ CREATE TABLE `si_modulo` (
 CREATE TABLE `si_permiso` (
   `idsi_permiso` int(4) NOT NULL COMMENT '0|',
   `acceso` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1|Acceso',
-  `Rol_idsi_rol` int(4) NOT NULL COMMENT '1|Rol|nombre',
-  `Modulo_idsi_modulo` int(4) NOT NULL COMMENT '1|Módulo|nombre',
+  `si_rol_idsi_rol` int(4) NOT NULL COMMENT '1|Rol|nombre',
+  `si_modulo_idsi_modulo` int(4) NOT NULL COMMENT '1|Módulo|nombre',
   `readable` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1|Lectura',
   `writeable` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1|Escritura',
   `updateable` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1|Edición',
@@ -54,7 +54,7 @@ CREATE TABLE `si_permiso` (
   `created_by` int(4) DEFAULT NULL COMMENT '0|',
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT '0|',
   `modified_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '0|'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='1|2|Permisos||modulo_Modulo_idsi_modulo.Módulo';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='1|2|Permisos||modulo_si_modulo_idsi_modulo.Módulo';
 
 -- --------------------------------------------------------
 
@@ -83,13 +83,13 @@ CREATE TABLE `si_user` (
   `usuario` varchar(45) DEFAULT NULL COMMENT '1|Usuario',
   `email` varchar(60) NOT NULL COMMENT '1|Email',
   `password` binary(60) DEFAULT NULL COMMENT '1|Password',
-  `Rol_idsi_rol` int(4) NOT NULL COMMENT '1|Rol|nombre',
+  `si_rol_idsi_rol` int(4) NOT NULL COMMENT '1|Rol|nombre',
   `super` tinyint(1) DEFAULT '0' COMMENT '0|',
   `baja` tinyint(1) DEFAULT '0' COMMENT '0|',
   `created_by` int(4) DEFAULT NULL COMMENT '0|',
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT '0|',
   `modified_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '0|'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='1|4|Usuarios||usuario.Usuario,email.Email,rol_Rol_idsi_rol.Rol';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='1|4|Usuarios||usuario.Usuario,email.Email,rol_si_rol_idsi_rol.Rol';
 
 
 -- --------------------------------------------------------
@@ -103,7 +103,7 @@ CREATE TABLE `si_reporte` (
   `nombre` varchar(45) DEFAULT NULL COMMENT '1|Nombre',
   `consulta` varchar(400) NOT NULL COMMENT '1|Consulta',
   `campos` varchar(140) NOT NULL COMMENT '1|Campos a mostrar',
-  `Modulo_idsi_modulo` int(4) NOT NULL COMMENT '1|Módulo|nombre',
+  `si_modulo_idsi_modulo` int(4) NOT NULL COMMENT '1|Módulo|nombre',
   `pfd` tinyint(1) DEFAULT '0' COMMENT '1|Exportar a PDF',
   `excel` tinyint(1) DEFAULT '0' COMMENT '1|Exportar a Excel',
   `print` tinyint(1) DEFAULT '0' COMMENT '1|Impresión',
@@ -129,9 +129,9 @@ ALTER TABLE `si_modulo`
 --
 ALTER TABLE `si_permiso`
   ADD PRIMARY KEY (`idsi_permiso`),
-  ADD UNIQUE KEY `rol_modulo_unico` (`Rol_idsi_rol`,`Modulo_idsi_modulo`),
-  ADD KEY `si_fk_Permiso_Rol1_idx` (`Rol_idsi_rol`),
-  ADD KEY `si_fk_Permiso_Modulo1_idx` (`Modulo_idsi_modulo`);
+  ADD UNIQUE KEY `rol_modulo_unico` (`si_rol_idsi_rol`,`si_modulo_idsi_modulo`),
+  ADD KEY `si_fk_Permiso_Rol1_idx` (`si_rol_idsi_rol`),
+  ADD KEY `si_fk_Permiso_Modulo1_idx` (`si_modulo_idsi_modulo`);
 
 --
 -- Indices de la tabla `si_rol`
@@ -145,14 +145,14 @@ ALTER TABLE `si_rol`
 ALTER TABLE `si_user`
   ADD PRIMARY KEY (`idsi_user`),
   ADD UNIQUE KEY `email` (`email`),
-  ADD KEY `si_fk_User_Rol_idx` (`Rol_idsi_rol`);
+  ADD KEY `si_fk_User_Rol_idx` (`si_rol_idsi_rol`);
 
 --
 -- Indices de la tabla `si_reporte`
 --
 ALTER TABLE `si_reporte`
   ADD PRIMARY KEY (`idsi_reporte`),
-  ADD KEY `si_fk_Reporte_Modulo1_idx` (`Modulo_idsi_modulo`);
+  ADD KEY `si_fk_Reporte_Modulo1_idx` (`si_modulo_idsi_modulo`);
 
 
 
@@ -195,20 +195,20 @@ ALTER TABLE `si_reporte`
 -- Filtros para la tabla `si_permiso`
 --
 ALTER TABLE `si_permiso`
-  ADD CONSTRAINT `si_fk_Permiso_Modulo1` FOREIGN KEY (`Modulo_idsi_modulo`) REFERENCES `si_modulo` (`idsi_modulo`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `si_fk_Permiso_Rol1` FOREIGN KEY (`Rol_idsi_rol`) REFERENCES `si_rol` (`idsi_rol`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+  ADD CONSTRAINT `si_fk_Permiso_Modulo1` FOREIGN KEY (`si_modulo_idsi_modulo`) REFERENCES `si_modulo` (`idsi_modulo`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `si_fk_Permiso_Rol1` FOREIGN KEY (`si_rol_idsi_rol`) REFERENCES `si_rol` (`idsi_rol`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
 -- Filtros para la tabla `si_user`
 --
 ALTER TABLE `si_user`
-  ADD CONSTRAINT `si_fk_User_Rol` FOREIGN KEY (`Rol_idsi_rol`) REFERENCES `si_rol` (`idsi_rol`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+  ADD CONSTRAINT `si_fk_User_Rol` FOREIGN KEY (`si_rol_idsi_rol`) REFERENCES `si_rol` (`idsi_rol`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
 -- Filtros para la tabla `si_reporte`
 --
 ALTER TABLE `si_reporte`
-  ADD CONSTRAINT `si_fk_Reporte_Modulo1` FOREIGN KEY (`Modulo_idsi_modulo`) REFERENCES `si_modulo` (`idsi_modulo`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+  ADD CONSTRAINT `si_fk_Reporte_Modulo1` FOREIGN KEY (`si_modulo_idsi_modulo`) REFERENCES `si_modulo` (`idsi_modulo`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 
 

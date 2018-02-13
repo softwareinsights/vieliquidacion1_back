@@ -2,6 +2,52 @@ const connection = require('../config/db-connection');
 
 const Pagoliquidacion = {};
 
+Pagoliquidacion.findByIdChofer = (idChofer, created_by, next) => {
+    if( !connection )
+        return next('Connection refused');
+
+    let query = '';
+    let keys = [];
+    if (created_by) {
+        query = 'SELECT pagoliquidacion.*, _pago_idpago.folio as pago_pago_idpago , _persona.nombre as chofer_chofer_idchofer FROM pagoliquidacion INNER JOIN pago as _pago_idpago ON _pago_idpago.idpago = pagoliquidacion.pago_idpago INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = pagoliquidacion.chofer_idchofer INNER JOIN persona as _persona ON _persona.idpersona = _chofer_idchofer.chofer  WHERE pagoliquidacion.chofer_idchofer = ? AND pagoliquidacion.created_by = ? HAVING pagoliquidacion.baja IS NULL OR pagoliquidacion.baja = false';
+        keys = [idChofer, created_by];
+    } else {
+        query = 'SELECT pagoliquidacion.*, _pago_idpago.folio as pago_pago_idpago , _persona.nombre as chofer_chofer_idchofer FROM pagoliquidacion INNER JOIN pago as _pago_idpago ON _pago_idpago.idpago = pagoliquidacion.pago_idpago INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = pagoliquidacion.chofer_idchofer INNER JOIN persona as _persona ON _persona.idpersona = _chofer_idchofer.chofer  WHERE pagoliquidacion.chofer_idchofer = ? HAVING pagoliquidacion.baja IS NULL OR pagoliquidacion.baja = false';
+        keys = [idChofer];
+    }
+
+    connection.query(query, keys, (error, result) => {
+        if(error)
+            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se encontraba el registro' });
+        else if (result.affectedRows === 0)
+            return next(null, { success: false, result: result, message: 'Solo es posible encontrar registros propios' });
+        else
+            return next(null, { success: true, result: result, message: 'Pagoliquidacion encontrad@' });
+    });
+};
+Pagoliquidacion.findByIdPago = (idPago, created_by, next) => {
+    if( !connection )
+        return next('Connection refused');
+
+    let query = '';
+    let keys = [];
+    if (created_by) {
+        query = 'SELECT pagoliquidacion.*, _pago_idpago.folio as pago_pago_idpago , _persona.nombre as chofer_chofer_idchofer FROM pagoliquidacion INNER JOIN pago as _pago_idpago ON _pago_idpago.idpago = pagoliquidacion.pago_idpago INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = pagoliquidacion.chofer_idchofer INNER JOIN persona as _persona ON _persona.idpersona = _chofer_idchofer.chofer  WHERE pagoliquidacion.pago_idpago = ? AND pagoliquidacion.created_by = ? HAVING pagoliquidacion.baja IS NULL OR pagoliquidacion.baja = false';
+        keys = [idPago, created_by];
+    } else {
+        query = 'SELECT pagoliquidacion.*, _pago_idpago.folio as pago_pago_idpago , _persona.nombre as chofer_chofer_idchofer FROM pagoliquidacion INNER JOIN pago as _pago_idpago ON _pago_idpago.idpago = pagoliquidacion.pago_idpago INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = pagoliquidacion.chofer_idchofer INNER JOIN persona as _persona ON _persona.idpersona = _chofer_idchofer.chofer  WHERE pagoliquidacion.pago_idpago = ? HAVING pagoliquidacion.baja IS NULL OR pagoliquidacion.baja = false';
+        keys = [idPago];
+    }
+
+    connection.query(query, keys, (error, result) => {
+        if(error)
+            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se encontraba el registro' });
+        else if (result.affectedRows === 0)
+            return next(null, { success: false, result: result, message: 'Solo es posible encontrar registros propios' });
+        else
+            return next(null, { success: true, result: result, message: 'Pagoliquidacion encontrad@' });
+    });
+};
 Pagoliquidacion.all = (created_by, next) => {
     if( !connection )
         return next('Connection refused');
@@ -9,10 +55,10 @@ Pagoliquidacion.all = (created_by, next) => {
     let query = '';
     let keys = [];
     if (created_by) {
-        query = 'SELECT pagoliquidacion.*, _pago_idpago.foliofianza as pago_pago_idpago , _persona.nombre as chofer_chofer_idchofer FROM pagoliquidacion INNER JOIN pago as _pago_idpago ON _pago_idpago.idpago = pagoliquidacion.pago_idpago INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = pagoliquidacion.chofer_idchofer INNER JOIN persona as _persona ON _persona.idpersona = _chofer_idchofer.chofer  WHERE created_by = ? HAVING pagoliquidacion.baja IS NULL OR pagoliquidacion.baja = false';
+        query = 'SELECT pagoliquidacion.*, _pago_idpago.folio as pago_pago_idpago , _persona.nombre as chofer_chofer_idchofer FROM pagoliquidacion INNER JOIN pago as _pago_idpago ON _pago_idpago.idpago = pagoliquidacion.pago_idpago INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = pagoliquidacion.chofer_idchofer INNER JOIN persona as _persona ON _persona.idpersona = _chofer_idchofer.chofer  WHERE pagoliquidacion.created_by = ? HAVING pagoliquidacion.baja IS NULL OR pagoliquidacion.baja = false';
         keys = [created_by];
     } else {
-        query = 'SELECT pagoliquidacion.*, _pago_idpago.foliofianza as pago_pago_idpago , _persona.nombre as chofer_chofer_idchofer FROM pagoliquidacion INNER JOIN pago as _pago_idpago ON _pago_idpago.idpago = pagoliquidacion.pago_idpago INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = pagoliquidacion.chofer_idchofer INNER JOIN persona as _persona ON _persona.idpersona = _chofer_idchofer.chofer  HAVING pagoliquidacion.baja IS NULL OR pagoliquidacion.baja = false';
+        query = 'SELECT pagoliquidacion.*, _pago_idpago.folio as pago_pago_idpago , _persona.nombre as chofer_chofer_idchofer FROM pagoliquidacion INNER JOIN pago as _pago_idpago ON _pago_idpago.idpago = pagoliquidacion.pago_idpago INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = pagoliquidacion.chofer_idchofer INNER JOIN persona as _persona ON _persona.idpersona = _chofer_idchofer.chofer  HAVING pagoliquidacion.baja IS NULL OR pagoliquidacion.baja = false';
         keys = [];
     }
 

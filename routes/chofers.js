@@ -4,6 +4,104 @@ const passport = require('passport');
 const permissions = require('../config/permissions');
 
 router
+    .get('/estado/:idestado', (req, res, next) => {
+        passport.authenticate('jwt', { session: true }, (err, auth_data, info) => {
+            permissions.module_permission(auth_data.modules, 'chofer', auth_data.user.super, 'readable', (error, permission) => {
+                if (permission.success) {
+                    const created_by = (permission.only_own) ? auth_data.user.idsi_user : false;
+                    Chofer.findByIdEstado(req.params.idestado, created_by, (error, data) => {
+                        return Chofer.response(res, error, data);
+                    })
+                } else {
+                    return Chofer.response(res, error, permission);
+                }
+            });
+        })(req, res, next);
+    })
+    .get('/estado/:idestado', (req, res, next) => {
+        passport.authenticate('jwt', { session: true }, (err, auth_data, info) => {
+            permissions.module_permission(auth_data.modules, 'chofer', auth_data.user.super, 'readable', (error, permission) => {
+                if (permission.success) {
+                    const created_by = (permission.only_own) ? auth_data.user.idsi_user : false;
+                    Chofer.findByIdEstado(req.params.idestado, created_by, (error, data) => {
+                        return Chofer.response(res, error, data);
+                    })
+                } else {
+                    return Chofer.response(res, error, permission);
+                }
+            });
+        })(req, res, next);
+    })
+    .get('/persona/:idpersona', (req, res, next) => {
+        passport.authenticate('jwt', { session: true }, (err, auth_data, info) => {
+            permissions.module_permission(auth_data.modules, 'chofer', auth_data.user.super, 'readable', (error, permission) => {
+                if (permission.success) {
+                    const created_by = (permission.only_own) ? auth_data.user.idsi_user : false;
+                    Chofer.findByIdPersona(req.params.idpersona, created_by, (error, data) => {
+                        return Chofer.response(res, error, data);
+                    })
+                } else {
+                    return Chofer.response(res, error, permission);
+                }
+            });
+        })(req, res, next);
+    })
+    .get('/persona/:idpersona', (req, res, next) => {
+        passport.authenticate('jwt', { session: true }, (err, auth_data, info) => {
+            permissions.module_permission(auth_data.modules, 'chofer', auth_data.user.super, 'readable', (error, permission) => {
+                if (permission.success) {
+                    const created_by = (permission.only_own) ? auth_data.user.idsi_user : false;
+                    Chofer.findByIdPersona(req.params.idpersona, created_by, (error, data) => {
+                        return Chofer.response(res, error, data);
+                    })
+                } else {
+                    return Chofer.response(res, error, permission);
+                }
+            });
+        })(req, res, next);
+    })
+    .get('/persona/:idpersona', (req, res, next) => {
+        passport.authenticate('jwt', { session: true }, (err, auth_data, info) => {
+            permissions.module_permission(auth_data.modules, 'chofer', auth_data.user.super, 'readable', (error, permission) => {
+                if (permission.success) {
+                    const created_by = (permission.only_own) ? auth_data.user.idsi_user : false;
+                    Chofer.findByIdPersona(req.params.idpersona, created_by, (error, data) => {
+                        return Chofer.response(res, error, data);
+                    })
+                } else {
+                    return Chofer.response(res, error, permission);
+                }
+            });
+        })(req, res, next);
+    })
+    .get('/persona/:idpersona', (req, res, next) => {
+        passport.authenticate('jwt', { session: true }, (err, auth_data, info) => {
+            permissions.module_permission(auth_data.modules, 'chofer', auth_data.user.super, 'readable', (error, permission) => {
+                if (permission.success) {
+                    const created_by = (permission.only_own) ? auth_data.user.idsi_user : false;
+                    Chofer.findByIdPersona(req.params.idpersona, created_by, (error, data) => {
+                        return Chofer.response(res, error, data);
+                    })
+                } else {
+                    return Chofer.response(res, error, permission);
+                }
+            });
+        })(req, res, next);
+    })
+    .get('/persona/:idpersona', (req, res, next) => {
+        passport.authenticate('jwt', { session: true }, (err, auth_data, info) => {
+            permissions.module_permission(auth_data.modules, 'chofer', auth_data.user.super, 'readable', (error, permission) => {
+                if (permission.success) {
+                    const created_by = (permission.only_own) ? auth_data.user.idsi_user : false;
+                    Chofer.findByIdPersona(req.params.idpersona, created_by, (error, data) => {
+                        return Chofer.response(res, error, data);
+                    })
+                } else {
+                    return Chofer.response(res, error, permission);
+                }
+            });
+        })(req, res, next);
+    })
     .get('/', (req, res, next) => {
         passport.authenticate('jwt', { session: true }, (err, auth_data, info) => {
             permissions.module_permission(auth_data.modules, 'chofer', auth_data.user.super, 'readable', (error, permission) => {

@@ -4,6 +4,34 @@ const passport = require('passport');
 const permissions = require('../config/permissions');
 
 router
+    .get('/chofer/:idchofer', (req, res, next) => {
+        passport.authenticate('jwt', { session: true }, (err, auth_data, info) => {
+            permissions.module_permission(auth_data.modules, 'pago', auth_data.user.super, 'readable', (error, permission) => {
+                if (permission.success) {
+                    const created_by = (permission.only_own) ? auth_data.user.idsi_user : false;
+                    Pago.findByIdChofer(req.params.idchofer, created_by, (error, data) => {
+                        return Pago.response(res, error, data);
+                    })
+                } else {
+                    return Pago.response(res, error, permission);
+                }
+            });
+        })(req, res, next);
+    })
+    .get('/estado/:idestado', (req, res, next) => {
+        passport.authenticate('jwt', { session: true }, (err, auth_data, info) => {
+            permissions.module_permission(auth_data.modules, 'pago', auth_data.user.super, 'readable', (error, permission) => {
+                if (permission.success) {
+                    const created_by = (permission.only_own) ? auth_data.user.idsi_user : false;
+                    Pago.findByIdEstado(req.params.idestado, created_by, (error, data) => {
+                        return Pago.response(res, error, data);
+                    })
+                } else {
+                    return Pago.response(res, error, permission);
+                }
+            });
+        })(req, res, next);
+    })
     .get('/', (req, res, next) => {
         passport.authenticate('jwt', { session: true }, (err, auth_data, info) => {
             permissions.module_permission(auth_data.modules, 'pago', auth_data.user.super, 'readable', (error, permission) => {

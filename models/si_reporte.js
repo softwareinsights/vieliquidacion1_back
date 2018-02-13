@@ -2,6 +2,29 @@ const connection = require('../config/db-connection');
 
 const Si_reporte = {};
 
+Si_reporte.findByIdSi_modulo = (idSi_modulo, created_by, next) => {
+    if( !connection )
+        return next('Connection refused');
+
+    let query = '';
+    let keys = [];
+    if (created_by) {
+        query = 'SELECT si_reporte.*, _si_modulo_idsi_modulo.nombre as si_modulo_si_modulo_idsi_modulo FROM si_reporte INNER JOIN si_modulo as _si_modulo_idsi_modulo ON _si_modulo_idsi_modulo.idsi_modulo = si_reporte.si_modulo_idsi_modulo   WHERE si_reporte.si_modulo_idsi_modulo = ? AND si_reporte.created_by = ? HAVING si_reporte.baja IS NULL OR si_reporte.baja = false';
+        keys = [idSi_modulo, created_by];
+    } else {
+        query = 'SELECT si_reporte.*, _si_modulo_idsi_modulo.nombre as si_modulo_si_modulo_idsi_modulo FROM si_reporte INNER JOIN si_modulo as _si_modulo_idsi_modulo ON _si_modulo_idsi_modulo.idsi_modulo = si_reporte.si_modulo_idsi_modulo   WHERE si_reporte.si_modulo_idsi_modulo = ? HAVING si_reporte.baja IS NULL OR si_reporte.baja = false';
+        keys = [idSi_modulo];
+    }
+
+    connection.query(query, keys, (error, result) => {
+        if(error)
+            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se encontraba el registro' });
+        else if (result.affectedRows === 0)
+            return next(null, { success: false, result: result, message: 'Solo es posible encontrar registros propios' });
+        else
+            return next(null, { success: true, result: result, message: 'Si_reporte encontrad@' });
+    });
+};
 Si_reporte.all = (created_by, next) => {
     if( !connection )
         return next('Connection refused');
@@ -9,10 +32,10 @@ Si_reporte.all = (created_by, next) => {
     let query = '';
     let keys = [];
     if (created_by) {
-        query = 'SELECT si_reporte.*, _Modulo_idsi_modulo.nombre as si_modulo_Modulo_idsi_modulo FROM si_reporte INNER JOIN si_modulo as _Modulo_idsi_modulo ON _Modulo_idsi_modulo.idsi_modulo = si_reporte.Modulo_idsi_modulo   WHERE created_by = ? HAVING si_reporte.baja IS NULL OR si_reporte.baja = false';
+        query = 'SELECT si_reporte.*, _si_modulo_idsi_modulo.nombre as si_modulo_si_modulo_idsi_modulo FROM si_reporte INNER JOIN si_modulo as _si_modulo_idsi_modulo ON _si_modulo_idsi_modulo.idsi_modulo = si_reporte.si_modulo_idsi_modulo   WHERE si_reporte.created_by = ? HAVING si_reporte.baja IS NULL OR si_reporte.baja = false';
         keys = [created_by];
     } else {
-        query = 'SELECT si_reporte.*, _Modulo_idsi_modulo.nombre as si_modulo_Modulo_idsi_modulo FROM si_reporte INNER JOIN si_modulo as _Modulo_idsi_modulo ON _Modulo_idsi_modulo.idsi_modulo = si_reporte.Modulo_idsi_modulo   HAVING si_reporte.baja IS NULL OR si_reporte.baja = false';
+        query = 'SELECT si_reporte.*, _si_modulo_idsi_modulo.nombre as si_modulo_si_modulo_idsi_modulo FROM si_reporte INNER JOIN si_modulo as _si_modulo_idsi_modulo ON _si_modulo_idsi_modulo.idsi_modulo = si_reporte.si_modulo_idsi_modulo   HAVING si_reporte.baja IS NULL OR si_reporte.baja = false';
         keys = [];
     }
 

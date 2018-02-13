@@ -2,6 +2,52 @@ const connection = require('../config/db-connection');
 
 const Vehiculo = {};
 
+Vehiculo.findByIdEstado = (idEstado, created_by, next) => {
+    if( !connection )
+        return next('Connection refused');
+
+    let query = '';
+    let keys = [];
+    if (created_by) {
+        query = 'SELECT vehiculo.*, _estado_idestado.nombre as estado_estado_idestado , _propietario.nombre as persona_propietario FROM vehiculo INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = vehiculo.estado_idestado INNER JOIN persona as _propietario ON _propietario.idpersona = vehiculo.propietario   WHERE vehiculo.estado_idestado = ? AND vehiculo.created_by = ? HAVING vehiculo.baja IS NULL OR vehiculo.baja = false';
+        keys = [idEstado, created_by];
+    } else {
+        query = 'SELECT vehiculo.*, _estado_idestado.nombre as estado_estado_idestado , _propietario.nombre as persona_propietario FROM vehiculo INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = vehiculo.estado_idestado INNER JOIN persona as _propietario ON _propietario.idpersona = vehiculo.propietario   WHERE vehiculo.estado_idestado = ? HAVING vehiculo.baja IS NULL OR vehiculo.baja = false';
+        keys = [idEstado];
+    }
+
+    connection.query(query, keys, (error, result) => {
+        if(error)
+            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se encontraba el registro' });
+        else if (result.affectedRows === 0)
+            return next(null, { success: false, result: result, message: 'Solo es posible encontrar registros propios' });
+        else
+            return next(null, { success: true, result: result, message: 'Vehiculo encontrad@' });
+    });
+};
+Vehiculo.findByIdPersona = (idPersona, created_by, next) => {
+    if( !connection )
+        return next('Connection refused');
+
+    let query = '';
+    let keys = [];
+    if (created_by) {
+        query = 'SELECT vehiculo.*, _estado_idestado.nombre as estado_estado_idestado , _propietario.nombre as persona_propietario FROM vehiculo INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = vehiculo.estado_idestado INNER JOIN persona as _propietario ON _propietario.idpersona = vehiculo.propietario   WHERE vehiculo.persona_idpersona = ? AND vehiculo.created_by = ? HAVING vehiculo.baja IS NULL OR vehiculo.baja = false';
+        keys = [idPersona, created_by];
+    } else {
+        query = 'SELECT vehiculo.*, _estado_idestado.nombre as estado_estado_idestado , _propietario.nombre as persona_propietario FROM vehiculo INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = vehiculo.estado_idestado INNER JOIN persona as _propietario ON _propietario.idpersona = vehiculo.propietario   WHERE vehiculo.persona_idpersona = ? HAVING vehiculo.baja IS NULL OR vehiculo.baja = false';
+        keys = [idPersona];
+    }
+
+    connection.query(query, keys, (error, result) => {
+        if(error)
+            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se encontraba el registro' });
+        else if (result.affectedRows === 0)
+            return next(null, { success: false, result: result, message: 'Solo es posible encontrar registros propios' });
+        else
+            return next(null, { success: true, result: result, message: 'Vehiculo encontrad@' });
+    });
+};
 Vehiculo.all = (created_by, next) => {
     if( !connection )
         return next('Connection refused');
@@ -9,7 +55,7 @@ Vehiculo.all = (created_by, next) => {
     let query = '';
     let keys = [];
     if (created_by) {
-        query = 'SELECT vehiculo.*, _estado_idestado.nombre as estado_estado_idestado , _propietario.nombre as persona_propietario FROM vehiculo INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = vehiculo.estado_idestado INNER JOIN persona as _propietario ON _propietario.idpersona = vehiculo.propietario   WHERE created_by = ? HAVING vehiculo.baja IS NULL OR vehiculo.baja = false';
+        query = 'SELECT vehiculo.*, _estado_idestado.nombre as estado_estado_idestado , _propietario.nombre as persona_propietario FROM vehiculo INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = vehiculo.estado_idestado INNER JOIN persona as _propietario ON _propietario.idpersona = vehiculo.propietario   WHERE vehiculo.created_by = ? HAVING vehiculo.baja IS NULL OR vehiculo.baja = false';
         keys = [created_by];
     } else {
         query = 'SELECT vehiculo.*, _estado_idestado.nombre as estado_estado_idestado , _propietario.nombre as persona_propietario FROM vehiculo INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = vehiculo.estado_idestado INNER JOIN persona as _propietario ON _propietario.idpersona = vehiculo.propietario   HAVING vehiculo.baja IS NULL OR vehiculo.baja = false';

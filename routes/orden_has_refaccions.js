@@ -4,6 +4,34 @@ const passport = require('passport');
 const permissions = require('../config/permissions');
 
 router
+    .get('/orden/:idorden', (req, res, next) => {
+        passport.authenticate('jwt', { session: true }, (err, auth_data, info) => {
+            permissions.module_permission(auth_data.modules, 'orden_has_refaccion', auth_data.user.super, 'readable', (error, permission) => {
+                if (permission.success) {
+                    const created_by = (permission.only_own) ? auth_data.user.idsi_user : false;
+                    Orden_has_refaccion.findByIdOrden(req.params.idorden, created_by, (error, data) => {
+                        return Orden_has_refaccion.response(res, error, data);
+                    })
+                } else {
+                    return Orden_has_refaccion.response(res, error, permission);
+                }
+            });
+        })(req, res, next);
+    })
+    .get('/refaccion/:idrefaccion', (req, res, next) => {
+        passport.authenticate('jwt', { session: true }, (err, auth_data, info) => {
+            permissions.module_permission(auth_data.modules, 'orden_has_refaccion', auth_data.user.super, 'readable', (error, permission) => {
+                if (permission.success) {
+                    const created_by = (permission.only_own) ? auth_data.user.idsi_user : false;
+                    Orden_has_refaccion.findByIdRefaccion(req.params.idrefaccion, created_by, (error, data) => {
+                        return Orden_has_refaccion.response(res, error, data);
+                    })
+                } else {
+                    return Orden_has_refaccion.response(res, error, permission);
+                }
+            });
+        })(req, res, next);
+    })
     .get('/', (req, res, next) => {
         passport.authenticate('jwt', { session: true }, (err, auth_data, info) => {
             permissions.module_permission(auth_data.modules, 'orden_has_refaccion', auth_data.user.super, 'readable', (error, permission) => {

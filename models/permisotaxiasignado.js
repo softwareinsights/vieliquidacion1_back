@@ -2,6 +2,75 @@ const connection = require('../config/db-connection');
 
 const Permisotaxiasignado = {};
 
+Permisotaxiasignado.findByIdChofer = (idChofer, created_by, next) => {
+    if( !connection )
+        return next('Connection refused');
+
+    let query = '';
+    let keys = [];
+    if (created_by) {
+        query = 'SELECT permisotaxiasignado.*, _estado_idestado.nombre as estado_estado_idestado , _persona.nombre as chofer_chofer_idchofer , _permisotaxi_idpermisotaxi.numero as permisotaxi_permisotaxi_idpermisotaxi FROM permisotaxiasignado INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = permisotaxiasignado.estado_idestado INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = permisotaxiasignado.chofer_idchofer INNER JOIN permisotaxi as _permisotaxi_idpermisotaxi ON _permisotaxi_idpermisotaxi.idpermisotaxi = permisotaxiasignado.permisotaxi_idpermisotaxi INNER JOIN persona as _persona ON _persona.idpersona = _chofer_idchofer.chofer  WHERE permisotaxiasignado.chofer_idchofer = ? AND permisotaxiasignado.created_by = ? HAVING permisotaxiasignado.baja IS NULL OR permisotaxiasignado.baja = false';
+        keys = [idChofer, created_by];
+    } else {
+        query = 'SELECT permisotaxiasignado.*, _estado_idestado.nombre as estado_estado_idestado , _persona.nombre as chofer_chofer_idchofer , _permisotaxi_idpermisotaxi.numero as permisotaxi_permisotaxi_idpermisotaxi FROM permisotaxiasignado INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = permisotaxiasignado.estado_idestado INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = permisotaxiasignado.chofer_idchofer INNER JOIN permisotaxi as _permisotaxi_idpermisotaxi ON _permisotaxi_idpermisotaxi.idpermisotaxi = permisotaxiasignado.permisotaxi_idpermisotaxi INNER JOIN persona as _persona ON _persona.idpersona = _chofer_idchofer.chofer  WHERE permisotaxiasignado.chofer_idchofer = ? HAVING permisotaxiasignado.baja IS NULL OR permisotaxiasignado.baja = false';
+        keys = [idChofer];
+    }
+
+    connection.query(query, keys, (error, result) => {
+        if(error)
+            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se encontraba el registro' });
+        else if (result.affectedRows === 0)
+            return next(null, { success: false, result: result, message: 'Solo es posible encontrar registros propios' });
+        else
+            return next(null, { success: true, result: result, message: 'Permisotaxiasignado encontrad@' });
+    });
+};
+Permisotaxiasignado.findByIdEstado = (idEstado, created_by, next) => {
+    if( !connection )
+        return next('Connection refused');
+
+    let query = '';
+    let keys = [];
+    if (created_by) {
+        query = 'SELECT permisotaxiasignado.*, _estado_idestado.nombre as estado_estado_idestado , _persona.nombre as chofer_chofer_idchofer , _permisotaxi_idpermisotaxi.numero as permisotaxi_permisotaxi_idpermisotaxi FROM permisotaxiasignado INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = permisotaxiasignado.estado_idestado INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = permisotaxiasignado.chofer_idchofer INNER JOIN permisotaxi as _permisotaxi_idpermisotaxi ON _permisotaxi_idpermisotaxi.idpermisotaxi = permisotaxiasignado.permisotaxi_idpermisotaxi INNER JOIN persona as _persona ON _persona.idpersona = _chofer_idchofer.chofer  WHERE permisotaxiasignado.estado_idestado = ? AND permisotaxiasignado.created_by = ? HAVING permisotaxiasignado.baja IS NULL OR permisotaxiasignado.baja = false';
+        keys = [idEstado, created_by];
+    } else {
+        query = 'SELECT permisotaxiasignado.*, _estado_idestado.nombre as estado_estado_idestado , _persona.nombre as chofer_chofer_idchofer , _permisotaxi_idpermisotaxi.numero as permisotaxi_permisotaxi_idpermisotaxi FROM permisotaxiasignado INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = permisotaxiasignado.estado_idestado INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = permisotaxiasignado.chofer_idchofer INNER JOIN permisotaxi as _permisotaxi_idpermisotaxi ON _permisotaxi_idpermisotaxi.idpermisotaxi = permisotaxiasignado.permisotaxi_idpermisotaxi INNER JOIN persona as _persona ON _persona.idpersona = _chofer_idchofer.chofer  WHERE permisotaxiasignado.estado_idestado = ? HAVING permisotaxiasignado.baja IS NULL OR permisotaxiasignado.baja = false';
+        keys = [idEstado];
+    }
+
+    connection.query(query, keys, (error, result) => {
+        if(error)
+            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se encontraba el registro' });
+        else if (result.affectedRows === 0)
+            return next(null, { success: false, result: result, message: 'Solo es posible encontrar registros propios' });
+        else
+            return next(null, { success: true, result: result, message: 'Permisotaxiasignado encontrad@' });
+    });
+};
+Permisotaxiasignado.findByIdPermisotaxi = (idPermisotaxi, created_by, next) => {
+    if( !connection )
+        return next('Connection refused');
+
+    let query = '';
+    let keys = [];
+    if (created_by) {
+        query = 'SELECT permisotaxiasignado.*, _estado_idestado.nombre as estado_estado_idestado , _persona.nombre as chofer_chofer_idchofer , _permisotaxi_idpermisotaxi.numero as permisotaxi_permisotaxi_idpermisotaxi FROM permisotaxiasignado INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = permisotaxiasignado.estado_idestado INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = permisotaxiasignado.chofer_idchofer INNER JOIN permisotaxi as _permisotaxi_idpermisotaxi ON _permisotaxi_idpermisotaxi.idpermisotaxi = permisotaxiasignado.permisotaxi_idpermisotaxi INNER JOIN persona as _persona ON _persona.idpersona = _chofer_idchofer.chofer  WHERE permisotaxiasignado.permisotaxi_idpermisotaxi = ? AND permisotaxiasignado.created_by = ? HAVING permisotaxiasignado.baja IS NULL OR permisotaxiasignado.baja = false';
+        keys = [idPermisotaxi, created_by];
+    } else {
+        query = 'SELECT permisotaxiasignado.*, _estado_idestado.nombre as estado_estado_idestado , _persona.nombre as chofer_chofer_idchofer , _permisotaxi_idpermisotaxi.numero as permisotaxi_permisotaxi_idpermisotaxi FROM permisotaxiasignado INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = permisotaxiasignado.estado_idestado INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = permisotaxiasignado.chofer_idchofer INNER JOIN permisotaxi as _permisotaxi_idpermisotaxi ON _permisotaxi_idpermisotaxi.idpermisotaxi = permisotaxiasignado.permisotaxi_idpermisotaxi INNER JOIN persona as _persona ON _persona.idpersona = _chofer_idchofer.chofer  WHERE permisotaxiasignado.permisotaxi_idpermisotaxi = ? HAVING permisotaxiasignado.baja IS NULL OR permisotaxiasignado.baja = false';
+        keys = [idPermisotaxi];
+    }
+
+    connection.query(query, keys, (error, result) => {
+        if(error)
+            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se encontraba el registro' });
+        else if (result.affectedRows === 0)
+            return next(null, { success: false, result: result, message: 'Solo es posible encontrar registros propios' });
+        else
+            return next(null, { success: true, result: result, message: 'Permisotaxiasignado encontrad@' });
+    });
+};
 Permisotaxiasignado.all = (created_by, next) => {
     if( !connection )
         return next('Connection refused');
@@ -9,10 +78,10 @@ Permisotaxiasignado.all = (created_by, next) => {
     let query = '';
     let keys = [];
     if (created_by) {
-        query = 'SELECT permisotaxiasignado.*, _estado_idestado.nombre as estado_estado_idestado , _persona.nombre as chofer_chofer_idchofer , _vehiculo_idvehiculo.placa as vehiculo_vehiculo_idvehiculo , _permisotaxi_idpermisotaxi.numero as permisotaxi_permisotaxi_idpermisotaxi FROM permisotaxiasignado INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = permisotaxiasignado.estado_idestado INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = permisotaxiasignado.chofer_idchofer INNER JOIN vehiculo as _vehiculo_idvehiculo ON _vehiculo_idvehiculo.idvehiculo = permisotaxiasignado.vehiculo_idvehiculo INNER JOIN permisotaxi as _permisotaxi_idpermisotaxi ON _permisotaxi_idpermisotaxi.idpermisotaxi = permisotaxiasignado.permisotaxi_idpermisotaxi INNER JOIN persona as _persona ON _persona.idpersona = _chofer_idchofer.chofer  WHERE created_by = ? HAVING permisotaxiasignado.baja IS NULL OR permisotaxiasignado.baja = false';
+        query = 'SELECT permisotaxiasignado.*, _estado_idestado.nombre as estado_estado_idestado , _persona.nombre as chofer_chofer_idchofer , _permisotaxi_idpermisotaxi.numero as permisotaxi_permisotaxi_idpermisotaxi FROM permisotaxiasignado INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = permisotaxiasignado.estado_idestado INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = permisotaxiasignado.chofer_idchofer INNER JOIN permisotaxi as _permisotaxi_idpermisotaxi ON _permisotaxi_idpermisotaxi.idpermisotaxi = permisotaxiasignado.permisotaxi_idpermisotaxi INNER JOIN persona as _persona ON _persona.idpersona = _chofer_idchofer.chofer  WHERE permisotaxiasignado.created_by = ? HAVING permisotaxiasignado.baja IS NULL OR permisotaxiasignado.baja = false';
         keys = [created_by];
     } else {
-        query = 'SELECT permisotaxiasignado.*, _estado_idestado.nombre as estado_estado_idestado , _persona.nombre as chofer_chofer_idchofer , _vehiculo_idvehiculo.placa as vehiculo_vehiculo_idvehiculo , _permisotaxi_idpermisotaxi.numero as permisotaxi_permisotaxi_idpermisotaxi FROM permisotaxiasignado INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = permisotaxiasignado.estado_idestado INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = permisotaxiasignado.chofer_idchofer INNER JOIN vehiculo as _vehiculo_idvehiculo ON _vehiculo_idvehiculo.idvehiculo = permisotaxiasignado.vehiculo_idvehiculo INNER JOIN permisotaxi as _permisotaxi_idpermisotaxi ON _permisotaxi_idpermisotaxi.idpermisotaxi = permisotaxiasignado.permisotaxi_idpermisotaxi INNER JOIN persona as _persona ON _persona.idpersona = _chofer_idchofer.chofer  HAVING permisotaxiasignado.baja IS NULL OR permisotaxiasignado.baja = false';
+        query = 'SELECT permisotaxiasignado.*, _estado_idestado.nombre as estado_estado_idestado , _persona.nombre as chofer_chofer_idchofer , _permisotaxi_idpermisotaxi.numero as permisotaxi_permisotaxi_idpermisotaxi FROM permisotaxiasignado INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = permisotaxiasignado.estado_idestado INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = permisotaxiasignado.chofer_idchofer INNER JOIN permisotaxi as _permisotaxi_idpermisotaxi ON _permisotaxi_idpermisotaxi.idpermisotaxi = permisotaxiasignado.permisotaxi_idpermisotaxi INNER JOIN persona as _persona ON _persona.idpersona = _chofer_idchofer.chofer  HAVING permisotaxiasignado.baja IS NULL OR permisotaxiasignado.baja = false';
         keys = [];
     }
 
@@ -90,9 +159,6 @@ Permisotaxiasignado.insert = (Permisotaxiasignado, next) => {
 
     let query = '';
     let keys = [];
-
-    Permisotaxiasignado.estado_idestado = 12; // ASIGNADO
-
     query = 'INSERT INTO permisotaxiasignado SET ?';
     keys = [Permisotaxiasignado];
 

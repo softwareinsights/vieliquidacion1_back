@@ -2,7 +2,6 @@ const connection = require('../config/db-connection');
 
 const Corralon = {};
 
-
 Corralon.goOutCorralon = (Corralon, next) => {
     if( !connection )
         return next('Connection refused');
@@ -84,6 +83,52 @@ Corralon.goOutCorralon = (Corralon, next) => {
     });
 };
 
+Corralon.findByIdEstado = (idEstado, created_by, next) => {
+    if( !connection )
+        return next('Connection refused');
+
+    let query = '';
+    let keys = [];
+    if (created_by) {
+        query = 'SELECT corralon.*, _estado_idestado.nombre as estado_estado_idestado , _permisotaxi.numero as permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado FROM corralon INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = corralon.estado_idestado INNER JOIN permisotaxiasignado as _permisotaxiasignado_idpermisotaxiasignado ON _permisotaxiasignado_idpermisotaxiasignado.idpermisotaxiasignado = corralon.permisotaxiasignado_idpermisotaxiasignado INNER JOIN permisotaxi as _permisotaxi ON _permisotaxi.idpermisotaxi = _permisotaxiasignado_idpermisotaxiasignado.permisotaxi_idpermisotaxi  WHERE corralon.estado_idestado = ? AND corralon.created_by = ? HAVING corralon.baja IS NULL OR corralon.baja = false';
+        keys = [idEstado, created_by];
+    } else {
+        query = 'SELECT corralon.*, _estado_idestado.nombre as estado_estado_idestado , _permisotaxi.numero as permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado FROM corralon INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = corralon.estado_idestado INNER JOIN permisotaxiasignado as _permisotaxiasignado_idpermisotaxiasignado ON _permisotaxiasignado_idpermisotaxiasignado.idpermisotaxiasignado = corralon.permisotaxiasignado_idpermisotaxiasignado INNER JOIN permisotaxi as _permisotaxi ON _permisotaxi.idpermisotaxi = _permisotaxiasignado_idpermisotaxiasignado.permisotaxi_idpermisotaxi  WHERE corralon.estado_idestado = ? HAVING corralon.baja IS NULL OR corralon.baja = false';
+        keys = [idEstado];
+    }
+
+    connection.query(query, keys, (error, result) => {
+        if(error)
+            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se encontraba el registro' });
+        else if (result.affectedRows === 0)
+            return next(null, { success: false, result: result, message: 'Solo es posible encontrar registros propios' });
+        else
+            return next(null, { success: true, result: result, message: 'Corralon encontrad@' });
+    });
+};
+Corralon.findByIdPermisotaxiasignado = (idPermisotaxiasignado, created_by, next) => {
+    if( !connection )
+        return next('Connection refused');
+
+    let query = '';
+    let keys = [];
+    if (created_by) {
+        query = 'SELECT corralon.*, _estado_idestado.nombre as estado_estado_idestado , _permisotaxi.numero as permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado FROM corralon INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = corralon.estado_idestado INNER JOIN permisotaxiasignado as _permisotaxiasignado_idpermisotaxiasignado ON _permisotaxiasignado_idpermisotaxiasignado.idpermisotaxiasignado = corralon.permisotaxiasignado_idpermisotaxiasignado INNER JOIN permisotaxi as _permisotaxi ON _permisotaxi.idpermisotaxi = _permisotaxiasignado_idpermisotaxiasignado.permisotaxi_idpermisotaxi  WHERE corralon.permisotaxiasignado_idpermisotaxiasignado = ? AND corralon.created_by = ? HAVING corralon.baja IS NULL OR corralon.baja = false';
+        keys = [idPermisotaxiasignado, created_by];
+    } else {
+        query = 'SELECT corralon.*, _estado_idestado.nombre as estado_estado_idestado , _permisotaxi.numero as permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado FROM corralon INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = corralon.estado_idestado INNER JOIN permisotaxiasignado as _permisotaxiasignado_idpermisotaxiasignado ON _permisotaxiasignado_idpermisotaxiasignado.idpermisotaxiasignado = corralon.permisotaxiasignado_idpermisotaxiasignado INNER JOIN permisotaxi as _permisotaxi ON _permisotaxi.idpermisotaxi = _permisotaxiasignado_idpermisotaxiasignado.permisotaxi_idpermisotaxi  WHERE corralon.permisotaxiasignado_idpermisotaxiasignado = ? HAVING corralon.baja IS NULL OR corralon.baja = false';
+        keys = [idPermisotaxiasignado];
+    }
+
+    connection.query(query, keys, (error, result) => {
+        if(error)
+            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se encontraba el registro' });
+        else if (result.affectedRows === 0)
+            return next(null, { success: false, result: result, message: 'Solo es posible encontrar registros propios' });
+        else
+            return next(null, { success: true, result: result, message: 'Corralon encontrad@' });
+    });
+};
 Corralon.all = (created_by, next) => {
     if( !connection )
         return next('Connection refused');
@@ -91,7 +136,7 @@ Corralon.all = (created_by, next) => {
     let query = '';
     let keys = [];
     if (created_by) {
-        query = 'SELECT corralon.*, _estado_idestado.nombre as estado_estado_idestado , _permisotaxi.numero as permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado FROM corralon INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = corralon.estado_idestado INNER JOIN permisotaxiasignado as _permisotaxiasignado_idpermisotaxiasignado ON _permisotaxiasignado_idpermisotaxiasignado.idpermisotaxiasignado = corralon.permisotaxiasignado_idpermisotaxiasignado INNER JOIN permisotaxi as _permisotaxi ON _permisotaxi.idpermisotaxi = _permisotaxiasignado_idpermisotaxiasignado.permisotaxi_idpermisotaxi  WHERE created_by = ? HAVING corralon.baja IS NULL OR corralon.baja = false';
+        query = 'SELECT corralon.*, _estado_idestado.nombre as estado_estado_idestado , _permisotaxi.numero as permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado FROM corralon INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = corralon.estado_idestado INNER JOIN permisotaxiasignado as _permisotaxiasignado_idpermisotaxiasignado ON _permisotaxiasignado_idpermisotaxiasignado.idpermisotaxiasignado = corralon.permisotaxiasignado_idpermisotaxiasignado INNER JOIN permisotaxi as _permisotaxi ON _permisotaxi.idpermisotaxi = _permisotaxiasignado_idpermisotaxiasignado.permisotaxi_idpermisotaxi  WHERE corralon.created_by = ? HAVING corralon.baja IS NULL OR corralon.baja = false';
         keys = [created_by];
     } else {
         query = 'SELECT corralon.*, _estado_idestado.nombre as estado_estado_idestado , _permisotaxi.numero as permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado FROM corralon INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = corralon.estado_idestado INNER JOIN permisotaxiasignado as _permisotaxiasignado_idpermisotaxiasignado ON _permisotaxiasignado_idpermisotaxiasignado.idpermisotaxiasignado = corralon.permisotaxiasignado_idpermisotaxiasignado INNER JOIN permisotaxi as _permisotaxi ON _permisotaxi.idpermisotaxi = _permisotaxiasignado_idpermisotaxiasignado.permisotaxi_idpermisotaxi  HAVING corralon.baja IS NULL OR corralon.baja = false';

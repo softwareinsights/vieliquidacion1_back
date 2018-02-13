@@ -9,7 +9,7 @@ Si_modulo.all = (created_by, next) => {
     let query = '';
     let keys = [];
     if (created_by) {
-        query = 'SELECT si_modulo.* FROM si_modulo    WHERE created_by = ? HAVING si_modulo.baja IS NULL OR si_modulo.baja = false';
+        query = 'SELECT si_modulo.* FROM si_modulo    WHERE si_modulo.created_by = ? HAVING si_modulo.baja IS NULL OR si_modulo.baja = false';
         keys = [created_by];
     } else {
         query = 'SELECT si_modulo.* FROM si_modulo    HAVING si_modulo.baja IS NULL OR si_modulo.baja = false';

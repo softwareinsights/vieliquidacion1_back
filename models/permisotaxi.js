@@ -2,29 +2,6 @@ const connection = require('../config/db-connection');
 
 const Permisotaxi = {};
 
-Permisotaxi.all = (created_by, next) => {
-    if( !connection )
-        return next('Connection refused');
-
-    let query = '';
-    let keys = [];
-    if (created_by) {
-        query = 'SELECT permisotaxi.*, _estado_idestado.nombre as estado_estado_idestado , _propietario.nombre as persona_propietario FROM permisotaxi INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = permisotaxi.estado_idestado INNER JOIN persona as _propietario ON _propietario.idpersona = permisotaxi.propietario   WHERE created_by = ? HAVING permisotaxi.baja IS NULL OR permisotaxi.baja = false';
-        keys = [created_by];
-    } else {
-        query = 'SELECT permisotaxi.*, _estado_idestado.nombre as estado_estado_idestado , _propietario.nombre as persona_propietario FROM permisotaxi INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = permisotaxi.estado_idestado INNER JOIN persona as _propietario ON _propietario.idpersona = permisotaxi.propietario   HAVING permisotaxi.baja IS NULL OR permisotaxi.baja = false';
-        keys = [];
-    }
-
-    connection.query(query, keys, (error, result) => {
-        if(error) 
-            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se leían registros' });
-        else if (result.affectedRows === 0)
-            return next(null, { success: false, result: result, message: 'Solo es posible leer registros propios' });
-        else
-            return next(null, { success: true, result: result, message: 'Permisotaxi leíd@' });
-    });
-};
 
 Permisotaxi.findLiquidezByIdInThisDay = (idPermisotaxi, created_by, next) => {
     if( !connection )
@@ -58,6 +35,100 @@ Permisotaxi.findLiquidezByIdInThisDay = (idPermisotaxi, created_by, next) => {
         }
     });
 
+};
+
+
+Permisotaxi.findByIdEstado = (idEstado, created_by, next) => {
+    if( !connection )
+        return next('Connection refused');
+
+    let query = '';
+    let keys = [];
+    if (created_by) {
+        query = 'SELECT permisotaxi.*, _estado_idestado.nombre as estado_estado_idestado , _propietario.nombre as persona_propietario , _vehiculo_idvehiculo.marca as vehiculo_vehiculo_idvehiculo FROM permisotaxi INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = permisotaxi.estado_idestado INNER JOIN persona as _propietario ON _propietario.idpersona = permisotaxi.propietario INNER JOIN vehiculo as _vehiculo_idvehiculo ON _vehiculo_idvehiculo.idvehiculo = permisotaxi.vehiculo_idvehiculo   WHERE permisotaxi.estado_idestado = ? AND permisotaxi.created_by = ? HAVING permisotaxi.baja IS NULL OR permisotaxi.baja = false';
+        keys = [idEstado, created_by];
+    } else {
+        query = 'SELECT permisotaxi.*, _estado_idestado.nombre as estado_estado_idestado , _propietario.nombre as persona_propietario , _vehiculo_idvehiculo.marca as vehiculo_vehiculo_idvehiculo FROM permisotaxi INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = permisotaxi.estado_idestado INNER JOIN persona as _propietario ON _propietario.idpersona = permisotaxi.propietario INNER JOIN vehiculo as _vehiculo_idvehiculo ON _vehiculo_idvehiculo.idvehiculo = permisotaxi.vehiculo_idvehiculo   WHERE permisotaxi.estado_idestado = ? HAVING permisotaxi.baja IS NULL OR permisotaxi.baja = false';
+        keys = [idEstado];
+    }
+
+    connection.query(query, keys, (error, result) => {
+        if(error)
+            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se encontraba el registro' });
+        else if (result.affectedRows === 0)
+            return next(null, { success: false, result: result, message: 'Solo es posible encontrar registros propios' });
+        else
+            return next(null, { success: true, result: result, message: 'Permisotaxi encontrad@' });
+    });
+};
+Permisotaxi.findByIdPersona = (idPersona, created_by, next) => {
+    if( !connection )
+        return next('Connection refused');
+
+    let query = '';
+    let keys = [];
+    if (created_by) {
+        query = 'SELECT permisotaxi.*, _estado_idestado.nombre as estado_estado_idestado , _propietario.nombre as persona_propietario , _vehiculo_idvehiculo.marca as vehiculo_vehiculo_idvehiculo FROM permisotaxi INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = permisotaxi.estado_idestado INNER JOIN persona as _propietario ON _propietario.idpersona = permisotaxi.propietario INNER JOIN vehiculo as _vehiculo_idvehiculo ON _vehiculo_idvehiculo.idvehiculo = permisotaxi.vehiculo_idvehiculo   WHERE permisotaxi.persona_idpersona = ? AND permisotaxi.created_by = ? HAVING permisotaxi.baja IS NULL OR permisotaxi.baja = false';
+        keys = [idPersona, created_by];
+    } else {
+        query = 'SELECT permisotaxi.*, _estado_idestado.nombre as estado_estado_idestado , _propietario.nombre as persona_propietario , _vehiculo_idvehiculo.marca as vehiculo_vehiculo_idvehiculo FROM permisotaxi INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = permisotaxi.estado_idestado INNER JOIN persona as _propietario ON _propietario.idpersona = permisotaxi.propietario INNER JOIN vehiculo as _vehiculo_idvehiculo ON _vehiculo_idvehiculo.idvehiculo = permisotaxi.vehiculo_idvehiculo   WHERE permisotaxi.persona_idpersona = ? HAVING permisotaxi.baja IS NULL OR permisotaxi.baja = false';
+        keys = [idPersona];
+    }
+
+    connection.query(query, keys, (error, result) => {
+        if(error)
+            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se encontraba el registro' });
+        else if (result.affectedRows === 0)
+            return next(null, { success: false, result: result, message: 'Solo es posible encontrar registros propios' });
+        else
+            return next(null, { success: true, result: result, message: 'Permisotaxi encontrad@' });
+    });
+};
+Permisotaxi.findByIdVehiculo = (idVehiculo, created_by, next) => {
+    if( !connection )
+        return next('Connection refused');
+
+    let query = '';
+    let keys = [];
+    if (created_by) {
+        query = 'SELECT permisotaxi.*, _estado_idestado.nombre as estado_estado_idestado , _propietario.nombre as persona_propietario , _vehiculo_idvehiculo.marca as vehiculo_vehiculo_idvehiculo FROM permisotaxi INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = permisotaxi.estado_idestado INNER JOIN persona as _propietario ON _propietario.idpersona = permisotaxi.propietario INNER JOIN vehiculo as _vehiculo_idvehiculo ON _vehiculo_idvehiculo.idvehiculo = permisotaxi.vehiculo_idvehiculo   WHERE permisotaxi.vehiculo_idvehiculo = ? AND permisotaxi.created_by = ? HAVING permisotaxi.baja IS NULL OR permisotaxi.baja = false';
+        keys = [idVehiculo, created_by];
+    } else {
+        query = 'SELECT permisotaxi.*, _estado_idestado.nombre as estado_estado_idestado , _propietario.nombre as persona_propietario , _vehiculo_idvehiculo.marca as vehiculo_vehiculo_idvehiculo FROM permisotaxi INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = permisotaxi.estado_idestado INNER JOIN persona as _propietario ON _propietario.idpersona = permisotaxi.propietario INNER JOIN vehiculo as _vehiculo_idvehiculo ON _vehiculo_idvehiculo.idvehiculo = permisotaxi.vehiculo_idvehiculo   WHERE permisotaxi.vehiculo_idvehiculo = ? HAVING permisotaxi.baja IS NULL OR permisotaxi.baja = false';
+        keys = [idVehiculo];
+    }
+
+    connection.query(query, keys, (error, result) => {
+        if(error)
+            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se encontraba el registro' });
+        else if (result.affectedRows === 0)
+            return next(null, { success: false, result: result, message: 'Solo es posible encontrar registros propios' });
+        else
+            return next(null, { success: true, result: result, message: 'Permisotaxi encontrad@' });
+    });
+};
+Permisotaxi.all = (created_by, next) => {
+    if( !connection )
+        return next('Connection refused');
+
+    let query = '';
+    let keys = [];
+    if (created_by) {
+        query = 'SELECT permisotaxi.*, _estado_idestado.nombre as estado_estado_idestado , _propietario.nombre as persona_propietario , _vehiculo_idvehiculo.marca as vehiculo_vehiculo_idvehiculo FROM permisotaxi INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = permisotaxi.estado_idestado INNER JOIN persona as _propietario ON _propietario.idpersona = permisotaxi.propietario INNER JOIN vehiculo as _vehiculo_idvehiculo ON _vehiculo_idvehiculo.idvehiculo = permisotaxi.vehiculo_idvehiculo   WHERE permisotaxi.created_by = ? HAVING permisotaxi.baja IS NULL OR permisotaxi.baja = false';
+        keys = [created_by];
+    } else {
+        query = 'SELECT permisotaxi.*, _estado_idestado.nombre as estado_estado_idestado , _propietario.nombre as persona_propietario , _vehiculo_idvehiculo.marca as vehiculo_vehiculo_idvehiculo FROM permisotaxi INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = permisotaxi.estado_idestado INNER JOIN persona as _propietario ON _propietario.idpersona = permisotaxi.propietario INNER JOIN vehiculo as _vehiculo_idvehiculo ON _vehiculo_idvehiculo.idvehiculo = permisotaxi.vehiculo_idvehiculo   HAVING permisotaxi.baja IS NULL OR permisotaxi.baja = false';
+        keys = [];
+    }
+
+    connection.query(query, keys, (error, result) => {
+        if(error) 
+            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se leían registros' });
+        else if (result.affectedRows === 0)
+            return next(null, { success: false, result: result, message: 'Solo es posible leer registros propios' });
+        else
+            return next(null, { success: true, result: result, message: 'Permisotaxi leíd@' });
+    });
 };
 
 Permisotaxi.findById = (idPermisotaxi, created_by, next) => {

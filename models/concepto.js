@@ -9,7 +9,7 @@ Concepto.all = (created_by, next) => {
     let query = '';
     let keys = [];
     if (created_by) {
-        query = 'SELECT concepto.* FROM concepto    WHERE created_by = ? HAVING concepto.baja IS NULL OR concepto.baja = false';
+        query = 'SELECT concepto.* FROM concepto    WHERE concepto.created_by = ? HAVING concepto.baja IS NULL OR concepto.baja = false';
         keys = [created_by];
     } else {
         query = 'SELECT concepto.* FROM concepto    HAVING concepto.baja IS NULL OR concepto.baja = false';

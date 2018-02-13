@@ -2,6 +2,29 @@ const connection = require('../config/db-connection');
 
 const Refaccion = {};
 
+Refaccion.findByIdTaller = (idTaller, created_by, next) => {
+    if( !connection )
+        return next('Connection refused');
+
+    let query = '';
+    let keys = [];
+    if (created_by) {
+        query = 'SELECT refaccion.*, _taller_idtaller.nombre as taller_taller_idtaller FROM refaccion INNER JOIN taller as _taller_idtaller ON _taller_idtaller.idtaller = refaccion.taller_idtaller   WHERE refaccion.taller_idtaller = ? AND refaccion.created_by = ? HAVING refaccion.baja IS NULL OR refaccion.baja = false';
+        keys = [idTaller, created_by];
+    } else {
+        query = 'SELECT refaccion.*, _taller_idtaller.nombre as taller_taller_idtaller FROM refaccion INNER JOIN taller as _taller_idtaller ON _taller_idtaller.idtaller = refaccion.taller_idtaller   WHERE refaccion.taller_idtaller = ? HAVING refaccion.baja IS NULL OR refaccion.baja = false';
+        keys = [idTaller];
+    }
+
+    connection.query(query, keys, (error, result) => {
+        if(error)
+            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se encontraba el registro' });
+        else if (result.affectedRows === 0)
+            return next(null, { success: false, result: result, message: 'Solo es posible encontrar registros propios' });
+        else
+            return next(null, { success: true, result: result, message: 'Refaccion encontrad@' });
+    });
+};
 Refaccion.all = (created_by, next) => {
     if( !connection )
         return next('Connection refused');
@@ -9,10 +32,10 @@ Refaccion.all = (created_by, next) => {
     let query = '';
     let keys = [];
     if (created_by) {
-        query = 'SELECT refaccion.*, _taller_idtaller.nombre as taller_taller_idtaller FROM refaccion INNER JOIN taller as _taller_idtaller ON _taller_idtaller.idtaller = refaccion.taller_idtaller WHERE refaccion.created_by = ? HAVING refaccion.baja IS NULL OR refaccion.baja = false';
+        query = 'SELECT refaccion.*, _taller_idtaller.nombre as taller_taller_idtaller FROM refaccion INNER JOIN taller as _taller_idtaller ON _taller_idtaller.idtaller = refaccion.taller_idtaller   WHERE refaccion.created_by = ? HAVING refaccion.baja IS NULL OR refaccion.baja = false';
         keys = [created_by];
     } else {
-        query = 'SELECT refaccion.*, _taller_idtaller.nombre as taller_taller_idtaller FROM refaccion INNER JOIN taller as _taller_idtaller ON _taller_idtaller.idtaller = refaccion.taller_idtaller HAVING refaccion.baja IS NULL OR refaccion.baja = false';
+        query = 'SELECT refaccion.*, _taller_idtaller.nombre as taller_taller_idtaller FROM refaccion INNER JOIN taller as _taller_idtaller ON _taller_idtaller.idtaller = refaccion.taller_idtaller   HAVING refaccion.baja IS NULL OR refaccion.baja = false';
         keys = [];
     }
 

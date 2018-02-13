@@ -4,8 +4,6 @@ const passport = require('passport');
 const permissions = require('../config/permissions');
 
 router
-
-
     .post('/go-out-vehicle', (req, res, next) => {
         passport.authenticate('jwt', { session: true }, (err, auth_data, info) => {
             permissions.module_permission(auth_data.modules, 'vehiculoreparando', auth_data.user.super, 'writeable', (error, permission) => {
@@ -21,8 +19,76 @@ router
             });
         })(req, res, next);
     })
-
-
+    .get('/enviotaller/:idenviotaller', (req, res, next) => {
+        passport.authenticate('jwt', { session: true }, (err, auth_data, info) => {
+            permissions.module_permission(auth_data.modules, 'vehiculoreparando', auth_data.user.super, 'readable', (error, permission) => {
+                if (permission.success) {
+                    const created_by = (permission.only_own) ? auth_data.user.idsi_user : false;
+                    Vehiculoreparando.findByIdEnviotaller(req.params.idenviotaller, created_by, (error, data) => {
+                        return Vehiculoreparando.response(res, error, data);
+                    })
+                } else {
+                    return Vehiculoreparando.response(res, error, permission);
+                }
+            });
+        })(req, res, next);
+    })
+    .get('/estado/:idestado', (req, res, next) => {
+        passport.authenticate('jwt', { session: true }, (err, auth_data, info) => {
+            permissions.module_permission(auth_data.modules, 'vehiculoreparando', auth_data.user.super, 'readable', (error, permission) => {
+                if (permission.success) {
+                    const created_by = (permission.only_own) ? auth_data.user.idsi_user : false;
+                    Vehiculoreparando.findByIdEstado(req.params.idestado, created_by, (error, data) => {
+                        return Vehiculoreparando.response(res, error, data);
+                    })
+                } else {
+                    return Vehiculoreparando.response(res, error, permission);
+                }
+            });
+        })(req, res, next);
+    })
+    .get('/mecanico/:idmecanico', (req, res, next) => {
+        passport.authenticate('jwt', { session: true }, (err, auth_data, info) => {
+            permissions.module_permission(auth_data.modules, 'vehiculoreparando', auth_data.user.super, 'readable', (error, permission) => {
+                if (permission.success) {
+                    const created_by = (permission.only_own) ? auth_data.user.idsi_user : false;
+                    Vehiculoreparando.findByIdMecanico(req.params.idmecanico, created_by, (error, data) => {
+                        return Vehiculoreparando.response(res, error, data);
+                    })
+                } else {
+                    return Vehiculoreparando.response(res, error, permission);
+                }
+            });
+        })(req, res, next);
+    })
+    .get('/permisotaxiasignado/:idpermisotaxiasignado', (req, res, next) => {
+        passport.authenticate('jwt', { session: true }, (err, auth_data, info) => {
+            permissions.module_permission(auth_data.modules, 'vehiculoreparando', auth_data.user.super, 'readable', (error, permission) => {
+                if (permission.success) {
+                    const created_by = (permission.only_own) ? auth_data.user.idsi_user : false;
+                    Vehiculoreparando.findByIdPermisotaxiasignado(req.params.idpermisotaxiasignado, created_by, (error, data) => {
+                        return Vehiculoreparando.response(res, error, data);
+                    })
+                } else {
+                    return Vehiculoreparando.response(res, error, permission);
+                }
+            });
+        })(req, res, next);
+    })
+    .get('/taller/:idtaller', (req, res, next) => {
+        passport.authenticate('jwt', { session: true }, (err, auth_data, info) => {
+            permissions.module_permission(auth_data.modules, 'vehiculoreparando', auth_data.user.super, 'readable', (error, permission) => {
+                if (permission.success) {
+                    const created_by = (permission.only_own) ? auth_data.user.idsi_user : false;
+                    Vehiculoreparando.findByIdTaller(req.params.idtaller, created_by, (error, data) => {
+                        return Vehiculoreparando.response(res, error, data);
+                    })
+                } else {
+                    return Vehiculoreparando.response(res, error, permission);
+                }
+            });
+        })(req, res, next);
+    })
     .get('/', (req, res, next) => {
         passport.authenticate('jwt', { session: true }, (err, auth_data, info) => {
             permissions.module_permission(auth_data.modules, 'vehiculoreparando', auth_data.user.super, 'readable', (error, permission) => {

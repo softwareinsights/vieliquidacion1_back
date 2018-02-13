@@ -2,6 +2,52 @@ const connection = require('../config/db-connection');
 
 const Pagofianza = {};
 
+Pagofianza.findByIdChofer = (idChofer, created_by, next) => {
+    if( !connection )
+        return next('Connection refused');
+
+    let query = '';
+    let keys = [];
+    if (created_by) {
+        query = 'SELECT pagofianza.*, _pago_idpago.folio as pago_pago_idpago , _persona.nombre as chofer_chofer_idchofer FROM pagofianza INNER JOIN pago as _pago_idpago ON _pago_idpago.idpago = pagofianza.pago_idpago INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = pagofianza.chofer_idchofer INNER JOIN persona as _persona ON _persona.idpersona = _chofer_idchofer.chofer  WHERE pagofianza.chofer_idchofer = ? AND pagofianza.created_by = ? HAVING pagofianza.baja IS NULL OR pagofianza.baja = false';
+        keys = [idChofer, created_by];
+    } else {
+        query = 'SELECT pagofianza.*, _pago_idpago.folio as pago_pago_idpago , _persona.nombre as chofer_chofer_idchofer FROM pagofianza INNER JOIN pago as _pago_idpago ON _pago_idpago.idpago = pagofianza.pago_idpago INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = pagofianza.chofer_idchofer INNER JOIN persona as _persona ON _persona.idpersona = _chofer_idchofer.chofer  WHERE pagofianza.chofer_idchofer = ? HAVING pagofianza.baja IS NULL OR pagofianza.baja = false';
+        keys = [idChofer];
+    }
+
+    connection.query(query, keys, (error, result) => {
+        if(error)
+            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se encontraba el registro' });
+        else if (result.affectedRows === 0)
+            return next(null, { success: false, result: result, message: 'Solo es posible encontrar registros propios' });
+        else
+            return next(null, { success: true, result: result, message: 'Pagofianza encontrad@' });
+    });
+};
+Pagofianza.findByIdPago = (idPago, created_by, next) => {
+    if( !connection )
+        return next('Connection refused');
+
+    let query = '';
+    let keys = [];
+    if (created_by) {
+        query = 'SELECT pagofianza.*, _pago_idpago.folio as pago_pago_idpago , _persona.nombre as chofer_chofer_idchofer FROM pagofianza INNER JOIN pago as _pago_idpago ON _pago_idpago.idpago = pagofianza.pago_idpago INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = pagofianza.chofer_idchofer INNER JOIN persona as _persona ON _persona.idpersona = _chofer_idchofer.chofer  WHERE pagofianza.pago_idpago = ? AND pagofianza.created_by = ? HAVING pagofianza.baja IS NULL OR pagofianza.baja = false';
+        keys = [idPago, created_by];
+    } else {
+        query = 'SELECT pagofianza.*, _pago_idpago.folio as pago_pago_idpago , _persona.nombre as chofer_chofer_idchofer FROM pagofianza INNER JOIN pago as _pago_idpago ON _pago_idpago.idpago = pagofianza.pago_idpago INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = pagofianza.chofer_idchofer INNER JOIN persona as _persona ON _persona.idpersona = _chofer_idchofer.chofer  WHERE pagofianza.pago_idpago = ? HAVING pagofianza.baja IS NULL OR pagofianza.baja = false';
+        keys = [idPago];
+    }
+
+    connection.query(query, keys, (error, result) => {
+        if(error)
+            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se encontraba el registro' });
+        else if (result.affectedRows === 0)
+            return next(null, { success: false, result: result, message: 'Solo es posible encontrar registros propios' });
+        else
+            return next(null, { success: true, result: result, message: 'Pagofianza encontrad@' });
+    });
+};
 Pagofianza.all = (created_by, next) => {
     if( !connection )
         return next('Connection refused');
@@ -9,7 +55,7 @@ Pagofianza.all = (created_by, next) => {
     let query = '';
     let keys = [];
     if (created_by) {
-        query = 'SELECT pagofianza.*, _pago_idpago.folio as pago_pago_idpago , _persona.nombre as chofer_chofer_idchofer FROM pagofianza INNER JOIN pago as _pago_idpago ON _pago_idpago.idpago = pagofianza.pago_idpago INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = pagofianza.chofer_idchofer INNER JOIN persona as _persona ON _persona.idpersona = _chofer_idchofer.chofer  WHERE created_by = ? HAVING pagofianza.baja IS NULL OR pagofianza.baja = false';
+        query = 'SELECT pagofianza.*, _pago_idpago.folio as pago_pago_idpago , _persona.nombre as chofer_chofer_idchofer FROM pagofianza INNER JOIN pago as _pago_idpago ON _pago_idpago.idpago = pagofianza.pago_idpago INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = pagofianza.chofer_idchofer INNER JOIN persona as _persona ON _persona.idpersona = _chofer_idchofer.chofer  WHERE pagofianza.created_by = ? HAVING pagofianza.baja IS NULL OR pagofianza.baja = false';
         keys = [created_by];
     } else {
         query = 'SELECT pagofianza.*, _pago_idpago.folio as pago_pago_idpago , _persona.nombre as chofer_chofer_idchofer FROM pagofianza INNER JOIN pago as _pago_idpago ON _pago_idpago.idpago = pagofianza.pago_idpago INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = pagofianza.chofer_idchofer INNER JOIN persona as _persona ON _persona.idpersona = _chofer_idchofer.chofer  HAVING pagofianza.baja IS NULL OR pagofianza.baja = false';

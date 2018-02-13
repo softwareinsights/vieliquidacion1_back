@@ -3,45 +3,6 @@ const connection = require('../config/db-connection');
 const Liquidacion = {};
 
 
-/*
-Combo.update = (combo, platillos, next) => {
-    if ( !connection )
-        return next('Connection refused');
-
-    async.waterfall([
-        next => {
-            connection.query(`SELECT * FROM combo WHERE idcombo = ? HAVING baja IS NULL OR baja = false`,
-            [comboId], (error, result) => {
-                error ? next(error) : next(null, result)
-            })
-        },
-        (result, next) => {
-            
-            connection.query(`
-            SELECT platillo.idplatillo, platillo.nombre, platillo.descripcion, comboRP.cantidad 
-            FROM combo_has_restaurante_has_platillo AS comboRP
-            INNER JOIN platillo ON platillo.idplatillo = res_has_pla_platillo_idplatillo
-            WHERE combo_idcombo = ?`, [result[0].idcombo], (error, resultJoin) => {
-                if ( error )
-                    next(error)
-                else {
-                    result[0].platillos = resultJoin;
-                    next(null, result[0]);
-                }
-            })
-        }
-    ],
-    (error, result) => {
-        if ( error )
-            return next({ success: false, error: error });
-        else
-            return next( null, { success: true, result: result});
-    })
-
-};
-*/
-
-
 Liquidacion.reporte = (next) => {
     if( !connection )
         return next('Connection refused');
@@ -171,6 +132,76 @@ Liquidacion.adeudandoFromIdchofer = (idChofer, created_by, next) => {
     });
 };
 
+
+Liquidacion.findByIdChofer = (idChofer, created_by, next) => {
+    if( !connection )
+        return next('Connection refused');
+
+    let query = '';
+    let keys = [];
+    if (created_by) {
+        query = 'SELECT liquidacion.*, _permisotaxiasignado_idpermisotaxiasignado. as permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado , _chofer_idchofer. as chofer_chofer_idchofer , _estado_idestado. as estado_estado_idestado FROM liquidacion INNER JOIN permisotaxiasignado as _permisotaxiasignado_idpermisotaxiasignado ON _permisotaxiasignado_idpermisotaxiasignado.idpermisotaxiasignado = liquidacion.permisotaxiasignado_idpermisotaxiasignado INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = liquidacion.chofer_idchofer INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = liquidacion.estado_idestado   WHERE liquidacion.chofer_idchofer = ? AND liquidacion.created_by = ? HAVING liquidacion.baja IS NULL OR liquidacion.baja = false';
+        keys = [idChofer, created_by];
+    } else {
+        query = 'SELECT liquidacion.*, _permisotaxiasignado_idpermisotaxiasignado. as permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado , _chofer_idchofer. as chofer_chofer_idchofer , _estado_idestado. as estado_estado_idestado FROM liquidacion INNER JOIN permisotaxiasignado as _permisotaxiasignado_idpermisotaxiasignado ON _permisotaxiasignado_idpermisotaxiasignado.idpermisotaxiasignado = liquidacion.permisotaxiasignado_idpermisotaxiasignado INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = liquidacion.chofer_idchofer INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = liquidacion.estado_idestado   WHERE liquidacion.chofer_idchofer = ? HAVING liquidacion.baja IS NULL OR liquidacion.baja = false';
+        keys = [idChofer];
+    }
+
+    connection.query(query, keys, (error, result) => {
+        if(error)
+            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se encontraba el registro' });
+        else if (result.affectedRows === 0)
+            return next(null, { success: false, result: result, message: 'Solo es posible encontrar registros propios' });
+        else
+            return next(null, { success: true, result: result, message: 'Liquidacion encontrad@' });
+    });
+};
+Liquidacion.findByIdEstado = (idEstado, created_by, next) => {
+    if( !connection )
+        return next('Connection refused');
+
+    let query = '';
+    let keys = [];
+    if (created_by) {
+        query = 'SELECT liquidacion.*, _permisotaxiasignado_idpermisotaxiasignado. as permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado , _chofer_idchofer. as chofer_chofer_idchofer , _estado_idestado. as estado_estado_idestado FROM liquidacion INNER JOIN permisotaxiasignado as _permisotaxiasignado_idpermisotaxiasignado ON _permisotaxiasignado_idpermisotaxiasignado.idpermisotaxiasignado = liquidacion.permisotaxiasignado_idpermisotaxiasignado INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = liquidacion.chofer_idchofer INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = liquidacion.estado_idestado   WHERE liquidacion.estado_idestado = ? AND liquidacion.created_by = ? HAVING liquidacion.baja IS NULL OR liquidacion.baja = false';
+        keys = [idEstado, created_by];
+    } else {
+        query = 'SELECT liquidacion.*, _permisotaxiasignado_idpermisotaxiasignado. as permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado , _chofer_idchofer. as chofer_chofer_idchofer , _estado_idestado. as estado_estado_idestado FROM liquidacion INNER JOIN permisotaxiasignado as _permisotaxiasignado_idpermisotaxiasignado ON _permisotaxiasignado_idpermisotaxiasignado.idpermisotaxiasignado = liquidacion.permisotaxiasignado_idpermisotaxiasignado INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = liquidacion.chofer_idchofer INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = liquidacion.estado_idestado   WHERE liquidacion.estado_idestado = ? HAVING liquidacion.baja IS NULL OR liquidacion.baja = false';
+        keys = [idEstado];
+    }
+
+    connection.query(query, keys, (error, result) => {
+        if(error)
+            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se encontraba el registro' });
+        else if (result.affectedRows === 0)
+            return next(null, { success: false, result: result, message: 'Solo es posible encontrar registros propios' });
+        else
+            return next(null, { success: true, result: result, message: 'Liquidacion encontrad@' });
+    });
+};
+Liquidacion.findByIdPermisotaxiasignado = (idPermisotaxiasignado, created_by, next) => {
+    if( !connection )
+        return next('Connection refused');
+
+    let query = '';
+    let keys = [];
+    if (created_by) {
+        query = 'SELECT liquidacion.*, _permisotaxiasignado_idpermisotaxiasignado. as permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado , _chofer_idchofer. as chofer_chofer_idchofer , _estado_idestado. as estado_estado_idestado FROM liquidacion INNER JOIN permisotaxiasignado as _permisotaxiasignado_idpermisotaxiasignado ON _permisotaxiasignado_idpermisotaxiasignado.idpermisotaxiasignado = liquidacion.permisotaxiasignado_idpermisotaxiasignado INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = liquidacion.chofer_idchofer INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = liquidacion.estado_idestado   WHERE liquidacion.permisotaxiasignado_idpermisotaxiasignado = ? AND liquidacion.created_by = ? HAVING liquidacion.baja IS NULL OR liquidacion.baja = false';
+        keys = [idPermisotaxiasignado, created_by];
+    } else {
+        query = 'SELECT liquidacion.*, _permisotaxiasignado_idpermisotaxiasignado. as permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado , _chofer_idchofer. as chofer_chofer_idchofer , _estado_idestado. as estado_estado_idestado FROM liquidacion INNER JOIN permisotaxiasignado as _permisotaxiasignado_idpermisotaxiasignado ON _permisotaxiasignado_idpermisotaxiasignado.idpermisotaxiasignado = liquidacion.permisotaxiasignado_idpermisotaxiasignado INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = liquidacion.chofer_idchofer INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = liquidacion.estado_idestado   WHERE liquidacion.permisotaxiasignado_idpermisotaxiasignado = ? HAVING liquidacion.baja IS NULL OR liquidacion.baja = false';
+        keys = [idPermisotaxiasignado];
+    }
+
+    connection.query(query, keys, (error, result) => {
+        if(error)
+            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se encontraba el registro' });
+        else if (result.affectedRows === 0)
+            return next(null, { success: false, result: result, message: 'Solo es posible encontrar registros propios' });
+        else
+            return next(null, { success: true, result: result, message: 'Liquidacion encontrad@' });
+    });
+};
 Liquidacion.all = (created_by, next) => {
     if( !connection )
         return next('Connection refused');
@@ -178,10 +209,10 @@ Liquidacion.all = (created_by, next) => {
     let query = '';
     let keys = [];
     if (created_by) {
-        query = 'SELECT liquidacion.*, _permisotaxi.numero as permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado , _persona.nombre as chofer_chofer_idchofer , _estado_idestado.nombre as estado_estado_idestado FROM liquidacion INNER JOIN permisotaxiasignado as _permisotaxiasignado_idpermisotaxiasignado ON _permisotaxiasignado_idpermisotaxiasignado.idpermisotaxiasignado = liquidacion.permisotaxiasignado_idpermisotaxiasignado INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = liquidacion.chofer_idchofer INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = liquidacion.estado_idestado INNER JOIN permisotaxi as _permisotaxi ON _permisotaxi.idpermisotaxi = _permisotaxiasignado_idpermisotaxiasignado.permisotaxi_idpermisotaxi INNER JOIN persona as _persona ON _persona.idpersona = _chofer_idchofer.chofer  WHERE created_by = ? HAVING liquidacion.baja IS NULL OR liquidacion.baja = false';
+        query = 'SELECT liquidacion.*, _permisotaxiasignado_idpermisotaxiasignado. as permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado , _chofer_idchofer. as chofer_chofer_idchofer , _estado_idestado. as estado_estado_idestado FROM liquidacion INNER JOIN permisotaxiasignado as _permisotaxiasignado_idpermisotaxiasignado ON _permisotaxiasignado_idpermisotaxiasignado.idpermisotaxiasignado = liquidacion.permisotaxiasignado_idpermisotaxiasignado INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = liquidacion.chofer_idchofer INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = liquidacion.estado_idestado   WHERE liquidacion.created_by = ? HAVING liquidacion.baja IS NULL OR liquidacion.baja = false';
         keys = [created_by];
     } else {
-        query = 'SELECT liquidacion.*, _permisotaxi.numero as permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado , _persona.nombre as chofer_chofer_idchofer , _estado_idestado.nombre as estado_estado_idestado FROM liquidacion INNER JOIN permisotaxiasignado as _permisotaxiasignado_idpermisotaxiasignado ON _permisotaxiasignado_idpermisotaxiasignado.idpermisotaxiasignado = liquidacion.permisotaxiasignado_idpermisotaxiasignado INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = liquidacion.chofer_idchofer INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = liquidacion.estado_idestado INNER JOIN permisotaxi as _permisotaxi ON _permisotaxi.idpermisotaxi = _permisotaxiasignado_idpermisotaxiasignado.permisotaxi_idpermisotaxi INNER JOIN persona as _persona ON _persona.idpersona = _chofer_idchofer.chofer  HAVING liquidacion.baja IS NULL OR liquidacion.baja = false';
+        query = 'SELECT liquidacion.*, _permisotaxiasignado_idpermisotaxiasignado. as permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado , _chofer_idchofer. as chofer_chofer_idchofer , _estado_idestado. as estado_estado_idestado FROM liquidacion INNER JOIN permisotaxiasignado as _permisotaxiasignado_idpermisotaxiasignado ON _permisotaxiasignado_idpermisotaxiasignado.idpermisotaxiasignado = liquidacion.permisotaxiasignado_idpermisotaxiasignado INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = liquidacion.chofer_idchofer INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = liquidacion.estado_idestado   HAVING liquidacion.baja IS NULL OR liquidacion.baja = false';
         keys = [];
     }
 

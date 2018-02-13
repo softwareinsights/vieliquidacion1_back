@@ -9,7 +9,7 @@ Taller.all = (created_by, next) => {
     let query = '';
     let keys = [];
     if (created_by) {
-        query = 'SELECT taller.* FROM taller    WHERE created_by = ? HAVING taller.baja IS NULL OR taller.baja = false';
+        query = 'SELECT taller.* FROM taller    WHERE taller.created_by = ? HAVING taller.baja IS NULL OR taller.baja = false';
         keys = [created_by];
     } else {
         query = 'SELECT taller.* FROM taller    HAVING taller.baja IS NULL OR taller.baja = false';

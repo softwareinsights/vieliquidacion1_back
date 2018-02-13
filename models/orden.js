@@ -2,6 +2,52 @@ const connection = require('../config/db-connection');
 
 const Orden = {};
 
+Orden.findByIdEstado = (idEstado, created_by, next) => {
+    if( !connection )
+        return next('Connection refused');
+
+    let query = '';
+    let keys = [];
+    if (created_by) {
+        query = 'SELECT orden.*, _estado_idestado.nombre as estado_estado_idestado , _vehiculoreparando_idvehiculoreparando.motivo as vehiculoreparando_vehiculoreparando_idvehiculoreparando FROM orden INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = orden.estado_idestado INNER JOIN vehiculoreparando as _vehiculoreparando_idvehiculoreparando ON _vehiculoreparando_idvehiculoreparando.idvehiculoreparando = orden.vehiculoreparando_idvehiculoreparando   WHERE orden.estado_idestado = ? AND orden.created_by = ? HAVING orden.baja IS NULL OR orden.baja = false';
+        keys = [idEstado, created_by];
+    } else {
+        query = 'SELECT orden.*, _estado_idestado.nombre as estado_estado_idestado , _vehiculoreparando_idvehiculoreparando.motivo as vehiculoreparando_vehiculoreparando_idvehiculoreparando FROM orden INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = orden.estado_idestado INNER JOIN vehiculoreparando as _vehiculoreparando_idvehiculoreparando ON _vehiculoreparando_idvehiculoreparando.idvehiculoreparando = orden.vehiculoreparando_idvehiculoreparando   WHERE orden.estado_idestado = ? HAVING orden.baja IS NULL OR orden.baja = false';
+        keys = [idEstado];
+    }
+
+    connection.query(query, keys, (error, result) => {
+        if(error)
+            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se encontraba el registro' });
+        else if (result.affectedRows === 0)
+            return next(null, { success: false, result: result, message: 'Solo es posible encontrar registros propios' });
+        else
+            return next(null, { success: true, result: result, message: 'Orden encontrad@' });
+    });
+};
+Orden.findByIdVehiculoreparando = (idVehiculoreparando, created_by, next) => {
+    if( !connection )
+        return next('Connection refused');
+
+    let query = '';
+    let keys = [];
+    if (created_by) {
+        query = 'SELECT orden.*, _estado_idestado.nombre as estado_estado_idestado , _vehiculoreparando_idvehiculoreparando.motivo as vehiculoreparando_vehiculoreparando_idvehiculoreparando FROM orden INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = orden.estado_idestado INNER JOIN vehiculoreparando as _vehiculoreparando_idvehiculoreparando ON _vehiculoreparando_idvehiculoreparando.idvehiculoreparando = orden.vehiculoreparando_idvehiculoreparando   WHERE orden.vehiculoreparando_idvehiculoreparando = ? AND orden.created_by = ? HAVING orden.baja IS NULL OR orden.baja = false';
+        keys = [idVehiculoreparando, created_by];
+    } else {
+        query = 'SELECT orden.*, _estado_idestado.nombre as estado_estado_idestado , _vehiculoreparando_idvehiculoreparando.motivo as vehiculoreparando_vehiculoreparando_idvehiculoreparando FROM orden INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = orden.estado_idestado INNER JOIN vehiculoreparando as _vehiculoreparando_idvehiculoreparando ON _vehiculoreparando_idvehiculoreparando.idvehiculoreparando = orden.vehiculoreparando_idvehiculoreparando   WHERE orden.vehiculoreparando_idvehiculoreparando = ? HAVING orden.baja IS NULL OR orden.baja = false';
+        keys = [idVehiculoreparando];
+    }
+
+    connection.query(query, keys, (error, result) => {
+        if(error)
+            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se encontraba el registro' });
+        else if (result.affectedRows === 0)
+            return next(null, { success: false, result: result, message: 'Solo es posible encontrar registros propios' });
+        else
+            return next(null, { success: true, result: result, message: 'Orden encontrad@' });
+    });
+};
 Orden.all = (created_by, next) => {
     if( !connection )
         return next('Connection refused');
@@ -9,7 +55,7 @@ Orden.all = (created_by, next) => {
     let query = '';
     let keys = [];
     if (created_by) {
-        query = 'SELECT orden.*, _estado_idestado.nombre as estado_estado_idestado , _vehiculoreparando_idvehiculoreparando.motivo as vehiculoreparando_vehiculoreparando_idvehiculoreparando FROM orden INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = orden.estado_idestado INNER JOIN vehiculoreparando as _vehiculoreparando_idvehiculoreparando ON _vehiculoreparando_idvehiculoreparando.idvehiculoreparando = orden.vehiculoreparando_idvehiculoreparando   WHERE created_by = ? HAVING orden.baja IS NULL OR orden.baja = false';
+        query = 'SELECT orden.*, _estado_idestado.nombre as estado_estado_idestado , _vehiculoreparando_idvehiculoreparando.motivo as vehiculoreparando_vehiculoreparando_idvehiculoreparando FROM orden INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = orden.estado_idestado INNER JOIN vehiculoreparando as _vehiculoreparando_idvehiculoreparando ON _vehiculoreparando_idvehiculoreparando.idvehiculoreparando = orden.vehiculoreparando_idvehiculoreparando   WHERE orden.created_by = ? HAVING orden.baja IS NULL OR orden.baja = false';
         keys = [created_by];
     } else {
         query = 'SELECT orden.*, _estado_idestado.nombre as estado_estado_idestado , _vehiculoreparando_idvehiculoreparando.motivo as vehiculoreparando_vehiculoreparando_idvehiculoreparando FROM orden INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = orden.estado_idestado INNER JOIN vehiculoreparando as _vehiculoreparando_idvehiculoreparando ON _vehiculoreparando_idvehiculoreparando.idvehiculoreparando = orden.vehiculoreparando_idvehiculoreparando   HAVING orden.baja IS NULL OR orden.baja = false';

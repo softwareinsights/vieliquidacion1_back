@@ -2,6 +2,52 @@ const connection = require('../config/db-connection');
 
 const Orden_has_refaccion = {};
 
+Orden_has_refaccion.findByIdOrden = (idOrden, created_by, next) => {
+    if( !connection )
+        return next('Connection refused');
+
+    let query = '';
+    let keys = [];
+    if (created_by) {
+        query = 'SELECT orden_has_refaccion.*, _orden_idorden.idorden as orden_orden_idorden , _refaccion_idrefaccion.nombre as refaccion_refaccion_idrefaccion FROM orden_has_refaccion INNER JOIN orden as _orden_idorden ON _orden_idorden.idorden = orden_has_refaccion.orden_idorden INNER JOIN refaccion as _refaccion_idrefaccion ON _refaccion_idrefaccion.idrefaccion = orden_has_refaccion.refaccion_idrefaccion   WHERE orden_has_refaccion.orden_idorden = ? AND orden_has_refaccion.created_by = ? HAVING orden_has_refaccion.baja IS NULL OR orden_has_refaccion.baja = false';
+        keys = [idOrden, created_by];
+    } else {
+        query = 'SELECT orden_has_refaccion.*, _orden_idorden.idorden as orden_orden_idorden , _refaccion_idrefaccion.nombre as refaccion_refaccion_idrefaccion FROM orden_has_refaccion INNER JOIN orden as _orden_idorden ON _orden_idorden.idorden = orden_has_refaccion.orden_idorden INNER JOIN refaccion as _refaccion_idrefaccion ON _refaccion_idrefaccion.idrefaccion = orden_has_refaccion.refaccion_idrefaccion   WHERE orden_has_refaccion.orden_idorden = ? HAVING orden_has_refaccion.baja IS NULL OR orden_has_refaccion.baja = false';
+        keys = [idOrden];
+    }
+
+    connection.query(query, keys, (error, result) => {
+        if(error)
+            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se encontraba el registro' });
+        else if (result.affectedRows === 0)
+            return next(null, { success: false, result: result, message: 'Solo es posible encontrar registros propios' });
+        else
+            return next(null, { success: true, result: result, message: 'Orden_has_refaccion encontrad@' });
+    });
+};
+Orden_has_refaccion.findByIdRefaccion = (idRefaccion, created_by, next) => {
+    if( !connection )
+        return next('Connection refused');
+
+    let query = '';
+    let keys = [];
+    if (created_by) {
+        query = 'SELECT orden_has_refaccion.*, _orden_idorden.idorden as orden_orden_idorden , _refaccion_idrefaccion.nombre as refaccion_refaccion_idrefaccion FROM orden_has_refaccion INNER JOIN orden as _orden_idorden ON _orden_idorden.idorden = orden_has_refaccion.orden_idorden INNER JOIN refaccion as _refaccion_idrefaccion ON _refaccion_idrefaccion.idrefaccion = orden_has_refaccion.refaccion_idrefaccion   WHERE orden_has_refaccion.refaccion_idrefaccion = ? AND orden_has_refaccion.created_by = ? HAVING orden_has_refaccion.baja IS NULL OR orden_has_refaccion.baja = false';
+        keys = [idRefaccion, created_by];
+    } else {
+        query = 'SELECT orden_has_refaccion.*, _orden_idorden.idorden as orden_orden_idorden , _refaccion_idrefaccion.nombre as refaccion_refaccion_idrefaccion FROM orden_has_refaccion INNER JOIN orden as _orden_idorden ON _orden_idorden.idorden = orden_has_refaccion.orden_idorden INNER JOIN refaccion as _refaccion_idrefaccion ON _refaccion_idrefaccion.idrefaccion = orden_has_refaccion.refaccion_idrefaccion   WHERE orden_has_refaccion.refaccion_idrefaccion = ? HAVING orden_has_refaccion.baja IS NULL OR orden_has_refaccion.baja = false';
+        keys = [idRefaccion];
+    }
+
+    connection.query(query, keys, (error, result) => {
+        if(error)
+            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se encontraba el registro' });
+        else if (result.affectedRows === 0)
+            return next(null, { success: false, result: result, message: 'Solo es posible encontrar registros propios' });
+        else
+            return next(null, { success: true, result: result, message: 'Orden_has_refaccion encontrad@' });
+    });
+};
 Orden_has_refaccion.all = (created_by, next) => {
     if( !connection )
         return next('Connection refused');
@@ -9,7 +55,7 @@ Orden_has_refaccion.all = (created_by, next) => {
     let query = '';
     let keys = [];
     if (created_by) {
-        query = 'SELECT orden_has_refaccion.*, _orden_idorden.idorden as orden_orden_idorden , _refaccion_idrefaccion.nombre as refaccion_refaccion_idrefaccion FROM orden_has_refaccion INNER JOIN orden as _orden_idorden ON _orden_idorden.idorden = orden_has_refaccion.orden_idorden INNER JOIN refaccion as _refaccion_idrefaccion ON _refaccion_idrefaccion.idrefaccion = orden_has_refaccion.refaccion_idrefaccion   WHERE created_by = ? HAVING orden_has_refaccion.baja IS NULL OR orden_has_refaccion.baja = false';
+        query = 'SELECT orden_has_refaccion.*, _orden_idorden.idorden as orden_orden_idorden , _refaccion_idrefaccion.nombre as refaccion_refaccion_idrefaccion FROM orden_has_refaccion INNER JOIN orden as _orden_idorden ON _orden_idorden.idorden = orden_has_refaccion.orden_idorden INNER JOIN refaccion as _refaccion_idrefaccion ON _refaccion_idrefaccion.idrefaccion = orden_has_refaccion.refaccion_idrefaccion   WHERE orden_has_refaccion.created_by = ? HAVING orden_has_refaccion.baja IS NULL OR orden_has_refaccion.baja = false';
         keys = [created_by];
     } else {
         query = 'SELECT orden_has_refaccion.*, _orden_idorden.idorden as orden_orden_idorden , _refaccion_idrefaccion.nombre as refaccion_refaccion_idrefaccion FROM orden_has_refaccion INNER JOIN orden as _orden_idorden ON _orden_idorden.idorden = orden_has_refaccion.orden_idorden INNER JOIN refaccion as _refaccion_idrefaccion ON _refaccion_idrefaccion.idrefaccion = orden_has_refaccion.refaccion_idrefaccion   HAVING orden_has_refaccion.baja IS NULL OR orden_has_refaccion.baja = false';

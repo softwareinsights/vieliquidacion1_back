@@ -2,6 +2,52 @@ const connection = require('../config/db-connection');
 
 const Si_permiso = {};
 
+Si_permiso.findByIdSi_modulo = (idSi_modulo, created_by, next) => {
+    if( !connection )
+        return next('Connection refused');
+
+    let query = '';
+    let keys = [];
+    if (created_by) {
+        query = 'SELECT si_permiso.*, _si_rol_idsi_rol.nombre as si_rol_si_rol_idsi_rol , _si_modulo_idsi_modulo.nombre as si_modulo_si_modulo_idsi_modulo FROM si_permiso INNER JOIN si_rol as _si_rol_idsi_rol ON _si_rol_idsi_rol.idsi_rol = si_permiso.si_rol_idsi_rol INNER JOIN si_modulo as _si_modulo_idsi_modulo ON _si_modulo_idsi_modulo.idsi_modulo = si_permiso.si_modulo_idsi_modulo   WHERE si_permiso.si_modulo_idsi_modulo = ? AND si_permiso.created_by = ? HAVING si_permiso.baja IS NULL OR si_permiso.baja = false';
+        keys = [idSi_modulo, created_by];
+    } else {
+        query = 'SELECT si_permiso.*, _si_rol_idsi_rol.nombre as si_rol_si_rol_idsi_rol , _si_modulo_idsi_modulo.nombre as si_modulo_si_modulo_idsi_modulo FROM si_permiso INNER JOIN si_rol as _si_rol_idsi_rol ON _si_rol_idsi_rol.idsi_rol = si_permiso.si_rol_idsi_rol INNER JOIN si_modulo as _si_modulo_idsi_modulo ON _si_modulo_idsi_modulo.idsi_modulo = si_permiso.si_modulo_idsi_modulo   WHERE si_permiso.si_modulo_idsi_modulo = ? HAVING si_permiso.baja IS NULL OR si_permiso.baja = false';
+        keys = [idSi_modulo];
+    }
+
+    connection.query(query, keys, (error, result) => {
+        if(error)
+            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se encontraba el registro' });
+        else if (result.affectedRows === 0)
+            return next(null, { success: false, result: result, message: 'Solo es posible encontrar registros propios' });
+        else
+            return next(null, { success: true, result: result, message: 'Si_permiso encontrad@' });
+    });
+};
+Si_permiso.findByIdSi_rol = (idSi_rol, created_by, next) => {
+    if( !connection )
+        return next('Connection refused');
+
+    let query = '';
+    let keys = [];
+    if (created_by) {
+        query = 'SELECT si_permiso.*, _si_rol_idsi_rol.nombre as si_rol_si_rol_idsi_rol , _si_modulo_idsi_modulo.nombre as si_modulo_si_modulo_idsi_modulo FROM si_permiso INNER JOIN si_rol as _si_rol_idsi_rol ON _si_rol_idsi_rol.idsi_rol = si_permiso.si_rol_idsi_rol INNER JOIN si_modulo as _si_modulo_idsi_modulo ON _si_modulo_idsi_modulo.idsi_modulo = si_permiso.si_modulo_idsi_modulo   WHERE si_permiso.si_rol_idsi_rol = ? AND si_permiso.created_by = ? HAVING si_permiso.baja IS NULL OR si_permiso.baja = false';
+        keys = [idSi_rol, created_by];
+    } else {
+        query = 'SELECT si_permiso.*, _si_rol_idsi_rol.nombre as si_rol_si_rol_idsi_rol , _si_modulo_idsi_modulo.nombre as si_modulo_si_modulo_idsi_modulo FROM si_permiso INNER JOIN si_rol as _si_rol_idsi_rol ON _si_rol_idsi_rol.idsi_rol = si_permiso.si_rol_idsi_rol INNER JOIN si_modulo as _si_modulo_idsi_modulo ON _si_modulo_idsi_modulo.idsi_modulo = si_permiso.si_modulo_idsi_modulo   WHERE si_permiso.si_rol_idsi_rol = ? HAVING si_permiso.baja IS NULL OR si_permiso.baja = false';
+        keys = [idSi_rol];
+    }
+
+    connection.query(query, keys, (error, result) => {
+        if(error)
+            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se encontraba el registro' });
+        else if (result.affectedRows === 0)
+            return next(null, { success: false, result: result, message: 'Solo es posible encontrar registros propios' });
+        else
+            return next(null, { success: true, result: result, message: 'Si_permiso encontrad@' });
+    });
+};
 Si_permiso.all = (created_by, next) => {
     if( !connection )
         return next('Connection refused');
@@ -9,10 +55,10 @@ Si_permiso.all = (created_by, next) => {
     let query = '';
     let keys = [];
     if (created_by) {
-        query = 'SELECT si_permiso.*, _Rol_idsi_rol.nombre as si_rol_Rol_idsi_rol , _Modulo_idsi_modulo.nombre as si_modulo_Modulo_idsi_modulo FROM si_permiso INNER JOIN si_rol as _Rol_idsi_rol ON _Rol_idsi_rol.idsi_rol = si_permiso.Rol_idsi_rol INNER JOIN si_modulo as _Modulo_idsi_modulo ON _Modulo_idsi_modulo.idsi_modulo = si_permiso.Modulo_idsi_modulo   WHERE created_by = ? HAVING si_permiso.baja IS NULL OR si_permiso.baja = false';
+        query = 'SELECT si_permiso.*, _si_rol_idsi_rol.nombre as si_rol_si_rol_idsi_rol , _si_modulo_idsi_modulo.nombre as si_modulo_si_modulo_idsi_modulo FROM si_permiso INNER JOIN si_rol as _si_rol_idsi_rol ON _si_rol_idsi_rol.idsi_rol = si_permiso.si_rol_idsi_rol INNER JOIN si_modulo as _si_modulo_idsi_modulo ON _si_modulo_idsi_modulo.idsi_modulo = si_permiso.si_modulo_idsi_modulo   WHERE si_permiso.created_by = ? HAVING si_permiso.baja IS NULL OR si_permiso.baja = false';
         keys = [created_by];
     } else {
-        query = 'SELECT si_permiso.*, _Rol_idsi_rol.nombre as si_rol_Rol_idsi_rol , _Modulo_idsi_modulo.nombre as si_modulo_Modulo_idsi_modulo FROM si_permiso INNER JOIN si_rol as _Rol_idsi_rol ON _Rol_idsi_rol.idsi_rol = si_permiso.Rol_idsi_rol INNER JOIN si_modulo as _Modulo_idsi_modulo ON _Modulo_idsi_modulo.idsi_modulo = si_permiso.Modulo_idsi_modulo   HAVING si_permiso.baja IS NULL OR si_permiso.baja = false';
+        query = 'SELECT si_permiso.*, _si_rol_idsi_rol.nombre as si_rol_si_rol_idsi_rol , _si_modulo_idsi_modulo.nombre as si_modulo_si_modulo_idsi_modulo FROM si_permiso INNER JOIN si_rol as _si_rol_idsi_rol ON _si_rol_idsi_rol.idsi_rol = si_permiso.si_rol_idsi_rol INNER JOIN si_modulo as _si_modulo_idsi_modulo ON _si_modulo_idsi_modulo.idsi_modulo = si_permiso.si_modulo_idsi_modulo   HAVING si_permiso.baja IS NULL OR si_permiso.baja = false';
         keys = [];
     }
 

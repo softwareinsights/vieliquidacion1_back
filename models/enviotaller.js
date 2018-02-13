@@ -2,6 +2,75 @@ const connection = require('../config/db-connection');
 
 const Enviotaller = {};
 
+Enviotaller.findByIdMantenimiento = (idMantenimiento, created_by, next) => {
+    if( !connection )
+        return next('Connection refused');
+
+    let query = '';
+    let keys = [];
+    if (created_by) {
+        query = 'SELECT enviotaller.*, _mantenimiento_idmantenimiento.idmantenimiento as mantenimiento_mantenimiento_idmantenimiento , _permisotaxi.numero as permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado , _taller_idtaller.nombre as taller_taller_idtaller FROM enviotaller INNER JOIN mantenimiento as _mantenimiento_idmantenimiento ON _mantenimiento_idmantenimiento.idmantenimiento = enviotaller.mantenimiento_idmantenimiento INNER JOIN permisotaxiasignado as _permisotaxiasignado_idpermisotaxiasignado ON _permisotaxiasignado_idpermisotaxiasignado.idpermisotaxiasignado = enviotaller.permisotaxiasignado_idpermisotaxiasignado INNER JOIN taller as _taller_idtaller ON _taller_idtaller.idtaller = enviotaller.taller_idtaller INNER JOIN permisotaxi as _permisotaxi ON _permisotaxi.idpermisotaxi = _permisotaxiasignado_idpermisotaxiasignado.permisotaxi_idpermisotaxi  WHERE enviotaller.mantenimiento_idmantenimiento = ? AND enviotaller.created_by = ? HAVING enviotaller.baja IS NULL OR enviotaller.baja = false';
+        keys = [idMantenimiento, created_by];
+    } else {
+        query = 'SELECT enviotaller.*, _mantenimiento_idmantenimiento.idmantenimiento as mantenimiento_mantenimiento_idmantenimiento , _permisotaxi.numero as permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado , _taller_idtaller.nombre as taller_taller_idtaller FROM enviotaller INNER JOIN mantenimiento as _mantenimiento_idmantenimiento ON _mantenimiento_idmantenimiento.idmantenimiento = enviotaller.mantenimiento_idmantenimiento INNER JOIN permisotaxiasignado as _permisotaxiasignado_idpermisotaxiasignado ON _permisotaxiasignado_idpermisotaxiasignado.idpermisotaxiasignado = enviotaller.permisotaxiasignado_idpermisotaxiasignado INNER JOIN taller as _taller_idtaller ON _taller_idtaller.idtaller = enviotaller.taller_idtaller INNER JOIN permisotaxi as _permisotaxi ON _permisotaxi.idpermisotaxi = _permisotaxiasignado_idpermisotaxiasignado.permisotaxi_idpermisotaxi  WHERE enviotaller.mantenimiento_idmantenimiento = ? HAVING enviotaller.baja IS NULL OR enviotaller.baja = false';
+        keys = [idMantenimiento];
+    }
+
+    connection.query(query, keys, (error, result) => {
+        if(error)
+            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se encontraba el registro' });
+        else if (result.affectedRows === 0)
+            return next(null, { success: false, result: result, message: 'Solo es posible encontrar registros propios' });
+        else
+            return next(null, { success: true, result: result, message: 'Enviotaller encontrad@' });
+    });
+};
+Enviotaller.findByIdPermisotaxiasignado = (idPermisotaxiasignado, created_by, next) => {
+    if( !connection )
+        return next('Connection refused');
+
+    let query = '';
+    let keys = [];
+    if (created_by) {
+        query = 'SELECT enviotaller.*, _mantenimiento_idmantenimiento.idmantenimiento as mantenimiento_mantenimiento_idmantenimiento , _permisotaxi.numero as permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado , _taller_idtaller.nombre as taller_taller_idtaller FROM enviotaller INNER JOIN mantenimiento as _mantenimiento_idmantenimiento ON _mantenimiento_idmantenimiento.idmantenimiento = enviotaller.mantenimiento_idmantenimiento INNER JOIN permisotaxiasignado as _permisotaxiasignado_idpermisotaxiasignado ON _permisotaxiasignado_idpermisotaxiasignado.idpermisotaxiasignado = enviotaller.permisotaxiasignado_idpermisotaxiasignado INNER JOIN taller as _taller_idtaller ON _taller_idtaller.idtaller = enviotaller.taller_idtaller INNER JOIN permisotaxi as _permisotaxi ON _permisotaxi.idpermisotaxi = _permisotaxiasignado_idpermisotaxiasignado.permisotaxi_idpermisotaxi  WHERE enviotaller.permisotaxiasignado_idpermisotaxiasignado = ? AND enviotaller.created_by = ? HAVING enviotaller.baja IS NULL OR enviotaller.baja = false';
+        keys = [idPermisotaxiasignado, created_by];
+    } else {
+        query = 'SELECT enviotaller.*, _mantenimiento_idmantenimiento.idmantenimiento as mantenimiento_mantenimiento_idmantenimiento , _permisotaxi.numero as permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado , _taller_idtaller.nombre as taller_taller_idtaller FROM enviotaller INNER JOIN mantenimiento as _mantenimiento_idmantenimiento ON _mantenimiento_idmantenimiento.idmantenimiento = enviotaller.mantenimiento_idmantenimiento INNER JOIN permisotaxiasignado as _permisotaxiasignado_idpermisotaxiasignado ON _permisotaxiasignado_idpermisotaxiasignado.idpermisotaxiasignado = enviotaller.permisotaxiasignado_idpermisotaxiasignado INNER JOIN taller as _taller_idtaller ON _taller_idtaller.idtaller = enviotaller.taller_idtaller INNER JOIN permisotaxi as _permisotaxi ON _permisotaxi.idpermisotaxi = _permisotaxiasignado_idpermisotaxiasignado.permisotaxi_idpermisotaxi  WHERE enviotaller.permisotaxiasignado_idpermisotaxiasignado = ? HAVING enviotaller.baja IS NULL OR enviotaller.baja = false';
+        keys = [idPermisotaxiasignado];
+    }
+
+    connection.query(query, keys, (error, result) => {
+        if(error)
+            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se encontraba el registro' });
+        else if (result.affectedRows === 0)
+            return next(null, { success: false, result: result, message: 'Solo es posible encontrar registros propios' });
+        else
+            return next(null, { success: true, result: result, message: 'Enviotaller encontrad@' });
+    });
+};
+Enviotaller.findByIdTaller = (idTaller, created_by, next) => {
+    if( !connection )
+        return next('Connection refused');
+
+    let query = '';
+    let keys = [];
+    if (created_by) {
+        query = 'SELECT enviotaller.*, _mantenimiento_idmantenimiento.idmantenimiento as mantenimiento_mantenimiento_idmantenimiento , _permisotaxi.numero as permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado , _taller_idtaller.nombre as taller_taller_idtaller FROM enviotaller INNER JOIN mantenimiento as _mantenimiento_idmantenimiento ON _mantenimiento_idmantenimiento.idmantenimiento = enviotaller.mantenimiento_idmantenimiento INNER JOIN permisotaxiasignado as _permisotaxiasignado_idpermisotaxiasignado ON _permisotaxiasignado_idpermisotaxiasignado.idpermisotaxiasignado = enviotaller.permisotaxiasignado_idpermisotaxiasignado INNER JOIN taller as _taller_idtaller ON _taller_idtaller.idtaller = enviotaller.taller_idtaller INNER JOIN permisotaxi as _permisotaxi ON _permisotaxi.idpermisotaxi = _permisotaxiasignado_idpermisotaxiasignado.permisotaxi_idpermisotaxi  WHERE enviotaller.taller_idtaller = ? AND enviotaller.created_by = ? HAVING enviotaller.baja IS NULL OR enviotaller.baja = false';
+        keys = [idTaller, created_by];
+    } else {
+        query = 'SELECT enviotaller.*, _mantenimiento_idmantenimiento.idmantenimiento as mantenimiento_mantenimiento_idmantenimiento , _permisotaxi.numero as permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado , _taller_idtaller.nombre as taller_taller_idtaller FROM enviotaller INNER JOIN mantenimiento as _mantenimiento_idmantenimiento ON _mantenimiento_idmantenimiento.idmantenimiento = enviotaller.mantenimiento_idmantenimiento INNER JOIN permisotaxiasignado as _permisotaxiasignado_idpermisotaxiasignado ON _permisotaxiasignado_idpermisotaxiasignado.idpermisotaxiasignado = enviotaller.permisotaxiasignado_idpermisotaxiasignado INNER JOIN taller as _taller_idtaller ON _taller_idtaller.idtaller = enviotaller.taller_idtaller INNER JOIN permisotaxi as _permisotaxi ON _permisotaxi.idpermisotaxi = _permisotaxiasignado_idpermisotaxiasignado.permisotaxi_idpermisotaxi  WHERE enviotaller.taller_idtaller = ? HAVING enviotaller.baja IS NULL OR enviotaller.baja = false';
+        keys = [idTaller];
+    }
+
+    connection.query(query, keys, (error, result) => {
+        if(error)
+            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se encontraba el registro' });
+        else if (result.affectedRows === 0)
+            return next(null, { success: false, result: result, message: 'Solo es posible encontrar registros propios' });
+        else
+            return next(null, { success: true, result: result, message: 'Enviotaller encontrad@' });
+    });
+};
 Enviotaller.all = (created_by, next) => {
     if( !connection )
         return next('Connection refused');
@@ -9,10 +78,10 @@ Enviotaller.all = (created_by, next) => {
     let query = '';
     let keys = [];
     if (created_by) {
-        query = 'SELECT enviotaller.*, _permisotaxi.numero as permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado , _taller_idtaller.nombre as taller_taller_idtaller FROM enviotaller INNER JOIN permisotaxiasignado as _permisotaxiasignado_idpermisotaxiasignado ON _permisotaxiasignado_idpermisotaxiasignado.idpermisotaxiasignado = enviotaller.permisotaxiasignado_idpermisotaxiasignado INNER JOIN taller as _taller_idtaller ON _taller_idtaller.idtaller = enviotaller.taller_idtaller INNER JOIN permisotaxi as _permisotaxi ON _permisotaxi.idpermisotaxi = _permisotaxiasignado_idpermisotaxiasignado.permisotaxi_idpermisotaxi  WHERE created_by = ? HAVING enviotaller.baja IS NULL OR enviotaller.baja = false';
+        query = 'SELECT enviotaller.*, _mantenimiento_idmantenimiento.idmantenimiento as mantenimiento_mantenimiento_idmantenimiento , _permisotaxi.numero as permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado , _taller_idtaller.nombre as taller_taller_idtaller FROM enviotaller INNER JOIN mantenimiento as _mantenimiento_idmantenimiento ON _mantenimiento_idmantenimiento.idmantenimiento = enviotaller.mantenimiento_idmantenimiento INNER JOIN permisotaxiasignado as _permisotaxiasignado_idpermisotaxiasignado ON _permisotaxiasignado_idpermisotaxiasignado.idpermisotaxiasignado = enviotaller.permisotaxiasignado_idpermisotaxiasignado INNER JOIN taller as _taller_idtaller ON _taller_idtaller.idtaller = enviotaller.taller_idtaller INNER JOIN permisotaxi as _permisotaxi ON _permisotaxi.idpermisotaxi = _permisotaxiasignado_idpermisotaxiasignado.permisotaxi_idpermisotaxi  WHERE enviotaller.created_by = ? HAVING enviotaller.baja IS NULL OR enviotaller.baja = false';
         keys = [created_by];
     } else {
-        query = 'SELECT enviotaller.*, _permisotaxi.numero as permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado , _taller_idtaller.nombre as taller_taller_idtaller FROM enviotaller INNER JOIN permisotaxiasignado as _permisotaxiasignado_idpermisotaxiasignado ON _permisotaxiasignado_idpermisotaxiasignado.idpermisotaxiasignado = enviotaller.permisotaxiasignado_idpermisotaxiasignado INNER JOIN taller as _taller_idtaller ON _taller_idtaller.idtaller = enviotaller.taller_idtaller INNER JOIN permisotaxi as _permisotaxi ON _permisotaxi.idpermisotaxi = _permisotaxiasignado_idpermisotaxiasignado.permisotaxi_idpermisotaxi  HAVING enviotaller.baja IS NULL OR enviotaller.baja = false';
+        query = 'SELECT enviotaller.*, _mantenimiento_idmantenimiento.idmantenimiento as mantenimiento_mantenimiento_idmantenimiento , _permisotaxi.numero as permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado , _taller_idtaller.nombre as taller_taller_idtaller FROM enviotaller INNER JOIN mantenimiento as _mantenimiento_idmantenimiento ON _mantenimiento_idmantenimiento.idmantenimiento = enviotaller.mantenimiento_idmantenimiento INNER JOIN permisotaxiasignado as _permisotaxiasignado_idpermisotaxiasignado ON _permisotaxiasignado_idpermisotaxiasignado.idpermisotaxiasignado = enviotaller.permisotaxiasignado_idpermisotaxiasignado INNER JOIN taller as _taller_idtaller ON _taller_idtaller.idtaller = enviotaller.taller_idtaller INNER JOIN permisotaxi as _permisotaxi ON _permisotaxi.idpermisotaxi = _permisotaxiasignado_idpermisotaxiasignado.permisotaxi_idpermisotaxi  HAVING enviotaller.baja IS NULL OR enviotaller.baja = false';
         keys = [];
     }
 

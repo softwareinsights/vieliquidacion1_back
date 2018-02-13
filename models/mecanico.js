@@ -2,6 +2,52 @@ const connection = require('../config/db-connection');
 
 const Mecanico = {};
 
+Mecanico.findByIdPersona = (idPersona, created_by, next) => {
+    if( !connection )
+        return next('Connection refused');
+
+    let query = '';
+    let keys = [];
+    if (created_by) {
+        query = 'SELECT mecanico.*, _persona_idpersona.nombre as persona_persona_idpersona , _taller_idtaller.nombre as taller_taller_idtaller FROM mecanico INNER JOIN persona as _persona_idpersona ON _persona_idpersona.idpersona = mecanico.persona_idpersona INNER JOIN taller as _taller_idtaller ON _taller_idtaller.idtaller = mecanico.taller_idtaller   WHERE mecanico.persona_idpersona = ? AND mecanico.created_by = ? HAVING mecanico.baja IS NULL OR mecanico.baja = false';
+        keys = [idPersona, created_by];
+    } else {
+        query = 'SELECT mecanico.*, _persona_idpersona.nombre as persona_persona_idpersona , _taller_idtaller.nombre as taller_taller_idtaller FROM mecanico INNER JOIN persona as _persona_idpersona ON _persona_idpersona.idpersona = mecanico.persona_idpersona INNER JOIN taller as _taller_idtaller ON _taller_idtaller.idtaller = mecanico.taller_idtaller   WHERE mecanico.persona_idpersona = ? HAVING mecanico.baja IS NULL OR mecanico.baja = false';
+        keys = [idPersona];
+    }
+
+    connection.query(query, keys, (error, result) => {
+        if(error)
+            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se encontraba el registro' });
+        else if (result.affectedRows === 0)
+            return next(null, { success: false, result: result, message: 'Solo es posible encontrar registros propios' });
+        else
+            return next(null, { success: true, result: result, message: 'Mecanico encontrad@' });
+    });
+};
+Mecanico.findByIdTaller = (idTaller, created_by, next) => {
+    if( !connection )
+        return next('Connection refused');
+
+    let query = '';
+    let keys = [];
+    if (created_by) {
+        query = 'SELECT mecanico.*, _persona_idpersona.nombre as persona_persona_idpersona , _taller_idtaller.nombre as taller_taller_idtaller FROM mecanico INNER JOIN persona as _persona_idpersona ON _persona_idpersona.idpersona = mecanico.persona_idpersona INNER JOIN taller as _taller_idtaller ON _taller_idtaller.idtaller = mecanico.taller_idtaller   WHERE mecanico.taller_idtaller = ? AND mecanico.created_by = ? HAVING mecanico.baja IS NULL OR mecanico.baja = false';
+        keys = [idTaller, created_by];
+    } else {
+        query = 'SELECT mecanico.*, _persona_idpersona.nombre as persona_persona_idpersona , _taller_idtaller.nombre as taller_taller_idtaller FROM mecanico INNER JOIN persona as _persona_idpersona ON _persona_idpersona.idpersona = mecanico.persona_idpersona INNER JOIN taller as _taller_idtaller ON _taller_idtaller.idtaller = mecanico.taller_idtaller   WHERE mecanico.taller_idtaller = ? HAVING mecanico.baja IS NULL OR mecanico.baja = false';
+        keys = [idTaller];
+    }
+
+    connection.query(query, keys, (error, result) => {
+        if(error)
+            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se encontraba el registro' });
+        else if (result.affectedRows === 0)
+            return next(null, { success: false, result: result, message: 'Solo es posible encontrar registros propios' });
+        else
+            return next(null, { success: true, result: result, message: 'Mecanico encontrad@' });
+    });
+};
 Mecanico.all = (created_by, next) => {
     if( !connection )
         return next('Connection refused');
@@ -9,7 +55,7 @@ Mecanico.all = (created_by, next) => {
     let query = '';
     let keys = [];
     if (created_by) {
-        query = 'SELECT mecanico.*, _persona_idpersona.nombre as persona_persona_idpersona , _taller_idtaller.nombre as taller_taller_idtaller FROM mecanico INNER JOIN persona as _persona_idpersona ON _persona_idpersona.idpersona = mecanico.persona_idpersona INNER JOIN taller as _taller_idtaller ON _taller_idtaller.idtaller = mecanico.taller_idtaller   WHERE created_by = ? HAVING mecanico.baja IS NULL OR mecanico.baja = false';
+        query = 'SELECT mecanico.*, _persona_idpersona.nombre as persona_persona_idpersona , _taller_idtaller.nombre as taller_taller_idtaller FROM mecanico INNER JOIN persona as _persona_idpersona ON _persona_idpersona.idpersona = mecanico.persona_idpersona INNER JOIN taller as _taller_idtaller ON _taller_idtaller.idtaller = mecanico.taller_idtaller   WHERE mecanico.created_by = ? HAVING mecanico.baja IS NULL OR mecanico.baja = false';
         keys = [created_by];
     } else {
         query = 'SELECT mecanico.*, _persona_idpersona.nombre as persona_persona_idpersona , _taller_idtaller.nombre as taller_taller_idtaller FROM mecanico INNER JOIN persona as _persona_idpersona ON _persona_idpersona.idpersona = mecanico.persona_idpersona INNER JOIN taller as _taller_idtaller ON _taller_idtaller.idtaller = mecanico.taller_idtaller   HAVING mecanico.baja IS NULL OR mecanico.baja = false';

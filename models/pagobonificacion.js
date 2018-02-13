@@ -2,6 +2,52 @@ const connection = require('../config/db-connection');
 
 const Pagobonificacion = {};
 
+Pagobonificacion.findByIdBonificacion = (idBonificacion, created_by, next) => {
+    if( !connection )
+        return next('Connection refused');
+
+    let query = '';
+    let keys = [];
+    if (created_by) {
+        query = 'SELECT pagobonificacion.*, _bonificacion_idbonificacion.concepto as bonificacion_bonificacion_idbonificacion , _pago_idpago.folio as pago_pago_idpago FROM pagobonificacion INNER JOIN bonificacion as _bonificacion_idbonificacion ON _bonificacion_idbonificacion.idbonificacion = pagobonificacion.bonificacion_idbonificacion INNER JOIN pago as _pago_idpago ON _pago_idpago.idpago = pagobonificacion.pago_idpago   WHERE pagobonificacion.bonificacion_idbonificacion = ? AND pagobonificacion.created_by = ? HAVING pagobonificacion.baja IS NULL OR pagobonificacion.baja = false';
+        keys = [idBonificacion, created_by];
+    } else {
+        query = 'SELECT pagobonificacion.*, _bonificacion_idbonificacion.concepto as bonificacion_bonificacion_idbonificacion , _pago_idpago.folio as pago_pago_idpago FROM pagobonificacion INNER JOIN bonificacion as _bonificacion_idbonificacion ON _bonificacion_idbonificacion.idbonificacion = pagobonificacion.bonificacion_idbonificacion INNER JOIN pago as _pago_idpago ON _pago_idpago.idpago = pagobonificacion.pago_idpago   WHERE pagobonificacion.bonificacion_idbonificacion = ? HAVING pagobonificacion.baja IS NULL OR pagobonificacion.baja = false';
+        keys = [idBonificacion];
+    }
+
+    connection.query(query, keys, (error, result) => {
+        if(error)
+            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se encontraba el registro' });
+        else if (result.affectedRows === 0)
+            return next(null, { success: false, result: result, message: 'Solo es posible encontrar registros propios' });
+        else
+            return next(null, { success: true, result: result, message: 'Pagobonificacion encontrad@' });
+    });
+};
+Pagobonificacion.findByIdPago = (idPago, created_by, next) => {
+    if( !connection )
+        return next('Connection refused');
+
+    let query = '';
+    let keys = [];
+    if (created_by) {
+        query = 'SELECT pagobonificacion.*, _bonificacion_idbonificacion.concepto as bonificacion_bonificacion_idbonificacion , _pago_idpago.folio as pago_pago_idpago FROM pagobonificacion INNER JOIN bonificacion as _bonificacion_idbonificacion ON _bonificacion_idbonificacion.idbonificacion = pagobonificacion.bonificacion_idbonificacion INNER JOIN pago as _pago_idpago ON _pago_idpago.idpago = pagobonificacion.pago_idpago   WHERE pagobonificacion.pago_idpago = ? AND pagobonificacion.created_by = ? HAVING pagobonificacion.baja IS NULL OR pagobonificacion.baja = false';
+        keys = [idPago, created_by];
+    } else {
+        query = 'SELECT pagobonificacion.*, _bonificacion_idbonificacion.concepto as bonificacion_bonificacion_idbonificacion , _pago_idpago.folio as pago_pago_idpago FROM pagobonificacion INNER JOIN bonificacion as _bonificacion_idbonificacion ON _bonificacion_idbonificacion.idbonificacion = pagobonificacion.bonificacion_idbonificacion INNER JOIN pago as _pago_idpago ON _pago_idpago.idpago = pagobonificacion.pago_idpago   WHERE pagobonificacion.pago_idpago = ? HAVING pagobonificacion.baja IS NULL OR pagobonificacion.baja = false';
+        keys = [idPago];
+    }
+
+    connection.query(query, keys, (error, result) => {
+        if(error)
+            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se encontraba el registro' });
+        else if (result.affectedRows === 0)
+            return next(null, { success: false, result: result, message: 'Solo es posible encontrar registros propios' });
+        else
+            return next(null, { success: true, result: result, message: 'Pagobonificacion encontrad@' });
+    });
+};
 Pagobonificacion.all = (created_by, next) => {
     if( !connection )
         return next('Connection refused');
@@ -9,7 +55,7 @@ Pagobonificacion.all = (created_by, next) => {
     let query = '';
     let keys = [];
     if (created_by) {
-        query = 'SELECT pagobonificacion.*, _bonificacion_idbonificacion.concepto as bonificacion_bonificacion_idbonificacion , _pago_idpago.folio as pago_pago_idpago FROM pagobonificacion INNER JOIN bonificacion as _bonificacion_idbonificacion ON _bonificacion_idbonificacion.idbonificacion = pagobonificacion.bonificacion_idbonificacion INNER JOIN pago as _pago_idpago ON _pago_idpago.idpago = pagobonificacion.pago_idpago   WHERE created_by = ? HAVING pagobonificacion.baja IS NULL OR pagobonificacion.baja = false';
+        query = 'SELECT pagobonificacion.*, _bonificacion_idbonificacion.concepto as bonificacion_bonificacion_idbonificacion , _pago_idpago.folio as pago_pago_idpago FROM pagobonificacion INNER JOIN bonificacion as _bonificacion_idbonificacion ON _bonificacion_idbonificacion.idbonificacion = pagobonificacion.bonificacion_idbonificacion INNER JOIN pago as _pago_idpago ON _pago_idpago.idpago = pagobonificacion.pago_idpago   WHERE pagobonificacion.created_by = ? HAVING pagobonificacion.baja IS NULL OR pagobonificacion.baja = false';
         keys = [created_by];
     } else {
         query = 'SELECT pagobonificacion.*, _bonificacion_idbonificacion.concepto as bonificacion_bonificacion_idbonificacion , _pago_idpago.folio as pago_pago_idpago FROM pagobonificacion INNER JOIN bonificacion as _bonificacion_idbonificacion ON _bonificacion_idbonificacion.idbonificacion = pagobonificacion.bonificacion_idbonificacion INNER JOIN pago as _pago_idpago ON _pago_idpago.idpago = pagobonificacion.pago_idpago   HAVING pagobonificacion.baja IS NULL OR pagobonificacion.baja = false';

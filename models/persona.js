@@ -9,7 +9,7 @@ Persona.all = (created_by, next) => {
     let query = '';
     let keys = [];
     if (created_by) {
-        query = 'SELECT persona.* FROM persona    WHERE created_by = ? HAVING persona.baja IS NULL OR persona.baja = false';
+        query = 'SELECT persona.* FROM persona    WHERE persona.created_by = ? HAVING persona.baja IS NULL OR persona.baja = false';
         keys = [created_by];
     } else {
         query = 'SELECT persona.* FROM persona    HAVING persona.baja IS NULL OR persona.baja = false';

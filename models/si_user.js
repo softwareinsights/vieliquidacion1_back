@@ -41,7 +41,7 @@ Si_user.login = ( email, password, next ) => {
     if ( !connection )
         return next('Connection refused');
 
-    const query = connection.query(`SELECT idsi_user, usuario, email, password, Rol_idsi_rol, super, baja FROM si_user WHERE email = ? HAVING baja IS NULL OR baja = false`, [email], (error, result) => {
+    const query = connection.query(`SELECT idsi_user, usuario, email, password, si_rol_idsi_rol, super, baja FROM si_user WHERE email = ? HAVING baja IS NULL OR baja = false`, [email], (error, result) => {
 
         if ( error )
             return next( error );
@@ -53,7 +53,7 @@ Si_user.login = ( email, password, next ) => {
                         idsi_user: result[0].idsi_user,
                         usuario: result[0].usuario,
                         email: result[0].email,
-                        Rol_idsi_rol: result[0].Rol_idsi_rol
+                        si_rol_idsi_rol: result[0].si_rol_idsi_rol
                     }
                     // Generate token
                     const token = jwt.sign(payload, mySecretPass, {
@@ -66,9 +66,9 @@ Si_user.login = ( email, password, next ) => {
                     if (!_super) {
                         _query = `SELECT m.nombre, m.baja, p.writeable, p.deleteable, p.readable, p.updateable, p.write_own, p.delete_own, p.read_own, p.update_own
                                  FROM si_user as u 
-                                 INNER JOIN si_rol as r ON r.idsi_rol = u.Rol_idsi_rol 
-                                 INNER JOIN si_permiso as p ON p.Rol_idsi_rol = r.idsi_rol 
-                                 INNER JOIN si_modulo as m ON m.idsi_modulo = p.Modulo_idsi_modulo 
+                                 INNER JOIN si_rol as r ON r.idsi_rol = u.si_rol_idsi_rol 
+                                 INNER JOIN si_permiso as p ON p.si_rol_idsi_rol = r.idsi_rol 
+                                 INNER JOIN si_modulo as m ON m.idsi_modulo = p.si_modulo_idsi_modulo 
                                  WHERE u.idsi_user = ? AND p.acceso = 1 HAVING m.baja IS NULL OR m.baja = false`;
                     } else {
                         _query = `SELECT m.nombre FROM si_modulo as m`;
@@ -108,10 +108,10 @@ Si_user.all = (created_by, next) => {
     let query = '';
     let keys = [];
     if (created_by) {
-        query = 'SELECT si_user.*, r.nombre as rol_Rol_idsi_rol FROM si_user INNER JOIN si_rol as r ON r.idsi_rol = si_user.Rol_idsi_rol WHERE created_by = ? HAVING si_user.baja IS NULL OR si_user.baja = false';
+        query = 'SELECT si_user.* FROM si_user WHERE created_by = ? HAVING si_user.baja IS NULL OR si_user.baja = false';
         keys = [created_by];
     } else {
-        query = 'SELECT si_user.*, r.nombre as rol_Rol_idsi_rol FROM si_user INNER JOIN si_rol as r ON r.idsi_rol = si_user.Rol_idsi_rol HAVING si_user.baja IS NULL OR si_user.baja = false';
+        query = 'SELECT si_user.* FROM si_user HAVING si_user.baja IS NULL OR si_user.baja = false';
         keys = [];
     }
 

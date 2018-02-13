@@ -4,6 +4,34 @@ const passport = require('passport');
 const permissions = require('../config/permissions');
 
 router
+    .get('/persona/:idpersona', (req, res, next) => {
+        passport.authenticate('jwt', { session: true }, (err, auth_data, info) => {
+            permissions.module_permission(auth_data.modules, 'mecanico', auth_data.user.super, 'readable', (error, permission) => {
+                if (permission.success) {
+                    const created_by = (permission.only_own) ? auth_data.user.idsi_user : false;
+                    Mecanico.findByIdPersona(req.params.idpersona, created_by, (error, data) => {
+                        return Mecanico.response(res, error, data);
+                    })
+                } else {
+                    return Mecanico.response(res, error, permission);
+                }
+            });
+        })(req, res, next);
+    })
+    .get('/taller/:idtaller', (req, res, next) => {
+        passport.authenticate('jwt', { session: true }, (err, auth_data, info) => {
+            permissions.module_permission(auth_data.modules, 'mecanico', auth_data.user.super, 'readable', (error, permission) => {
+                if (permission.success) {
+                    const created_by = (permission.only_own) ? auth_data.user.idsi_user : false;
+                    Mecanico.findByIdTaller(req.params.idtaller, created_by, (error, data) => {
+                        return Mecanico.response(res, error, data);
+                    })
+                } else {
+                    return Mecanico.response(res, error, permission);
+                }
+            });
+        })(req, res, next);
+    })
     .get('/', (req, res, next) => {
         passport.authenticate('jwt', { session: true }, (err, auth_data, info) => {
             permissions.module_permission(auth_data.modules, 'mecanico', auth_data.user.super, 'readable', (error, permission) => {
