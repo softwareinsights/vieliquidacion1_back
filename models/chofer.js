@@ -187,6 +187,30 @@ Chofer.all = (created_by, next) => {
     });
 };
 
+Chofer.allDisponibles = (created_by, next) => {
+    if( !connection )
+        return next('Connection refused');
+
+    let query = '';
+    let keys = [];
+    if (created_by) {
+        query = 'SELECT chofer.*, _estado_idestado.nombre as estado_estado_idestado , _estado_idestado_fianza.nombre as estado_estado_idestado_fianza , _chofer.nombre as persona_chofer , _aval1.nombre as persona_aval1 , _aval2.nombre as persona_aval2 , _aval3.nombre as persona_aval3 , _aval4.nombre as persona_aval4 FROM chofer INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = chofer.estado_idestado INNER JOIN estado as _estado_idestado_fianza ON _estado_idestado_fianza.idestado = chofer.estado_idestado_fianza INNER JOIN persona as _chofer ON _chofer.idpersona = chofer.chofer INNER JOIN persona as _aval1 ON _aval1.idpersona = chofer.aval1 INNER JOIN persona as _aval2 ON _aval2.idpersona = chofer.aval2 INNER JOIN persona as _aval3 ON _aval3.idpersona = chofer.aval3 INNER JOIN persona as _aval4 ON _aval4.idpersona = chofer.aval4   WHERE chofer.created_by = ? AND chofer.estado_idestado = 19 HAVING chofer.baja IS NULL OR chofer.baja = false';
+        keys = [created_by];
+    } else {
+        query = 'SELECT chofer.*, _estado_idestado.nombre as estado_estado_idestado , _estado_idestado_fianza.nombre as estado_estado_idestado_fianza , _chofer.nombre as persona_chofer , _aval1.nombre as persona_aval1 , _aval2.nombre as persona_aval2 , _aval3.nombre as persona_aval3 , _aval4.nombre as persona_aval4 FROM chofer INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = chofer.estado_idestado INNER JOIN estado as _estado_idestado_fianza ON _estado_idestado_fianza.idestado = chofer.estado_idestado_fianza INNER JOIN persona as _chofer ON _chofer.idpersona = chofer.chofer INNER JOIN persona as _aval1 ON _aval1.idpersona = chofer.aval1 INNER JOIN persona as _aval2 ON _aval2.idpersona = chofer.aval2 INNER JOIN persona as _aval3 ON _aval3.idpersona = chofer.aval3 INNER JOIN persona as _aval4 ON _aval4.idpersona = chofer.aval4  WHERE chofer.estado_idestado = 19  HAVING chofer.baja IS NULL OR chofer.baja = false';
+        keys = [];
+    }
+
+    connection.query(query, keys, (error, result) => {
+        if(error) 
+            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se leían registros' });
+        else if (result.affectedRows === 0)
+            return next(null, { success: false, result: result, message: 'Solo es posible leer registros propios' });
+        else
+            return next(null, { success: true, result: result, message: 'Chofer leíd@' });
+    });
+};
+
 Chofer.findById = (idChofer, created_by, next) => {
     if( !connection )
         return next('Connection refused');

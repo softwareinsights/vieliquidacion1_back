@@ -116,6 +116,20 @@ router
             });
         })(req, res, next);
     })
+    .get('/disponibles', (req, res, next) => {
+        passport.authenticate('jwt', { session: true }, (err, auth_data, info) => {
+            permissions.module_permission(auth_data.modules, 'chofer', auth_data.user.super, 'readable', (error, permission) => {
+                if (permission.success) {
+                    const created_by = (permission.only_own) ? auth_data.user.idsi_user : false;
+                    Chofer.allDisponibles(created_by, (error, data) => {
+                        return Chofer.response(res, error, data);
+                    })
+                } else {
+                    return Chofer.response(res, error, permission);
+                }
+            });
+        })(req, res, next);
+    })
     .get('/count', (req, res, next) => {
         passport.authenticate('jwt', { session: true }, (err, auth_data, info) => {
             permissions.module_permission(auth_data.modules, 'chofer', auth_data.user.super, 'readable', (error, permission) => {
