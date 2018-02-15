@@ -55,10 +55,10 @@ Vehiculo.all = (created_by, next) => {
     let query = '';
     let keys = [];
     if (created_by) {
-        query = 'SELECT vehiculo.*, _estado_idestado.nombre as estado_estado_idestado , _propietario.nombre as persona_propietario FROM vehiculo INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = vehiculo.estado_idestado INNER JOIN persona as _propietario ON _propietario.idpersona = vehiculo.propietario   WHERE vehiculo.created_by = ? AND vehiculo.estado_idestado = 19 HAVING vehiculo.baja IS NULL OR vehiculo.baja = false';
+        query = 'SELECT vehiculo.*, _estado_idestado.nombre as estado_estado_idestado , _propietario.nombre as persona_propietario FROM vehiculo INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = vehiculo.estado_idestado INNER JOIN persona as _propietario ON _propietario.idpersona = vehiculo.propietario   WHERE vehiculo.created_by = ? HAVING vehiculo.baja IS NULL OR vehiculo.baja = false';
         keys = [created_by];
     } else {
-        query = 'SELECT vehiculo.*, _estado_idestado.nombre as estado_estado_idestado , _propietario.nombre as persona_propietario FROM vehiculo INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = vehiculo.estado_idestado INNER JOIN persona as _propietario ON _propietario.idpersona = vehiculo.propietario WHERE vehiculo.estado_idestado = 19 HAVING vehiculo.baja IS NULL OR vehiculo.baja = false';
+        query = 'SELECT vehiculo.*, _estado_idestado.nombre as estado_estado_idestado , _propietario.nombre as persona_propietario FROM vehiculo INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = vehiculo.estado_idestado INNER JOIN persona as _propietario ON _propietario.idpersona = vehiculo.propietario  HAVING vehiculo.baja IS NULL OR vehiculo.baja = false';
         keys = [];
     }
 
