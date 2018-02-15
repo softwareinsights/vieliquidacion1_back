@@ -3,6 +3,45 @@ const connection = require('../config/db-connection');
 const Permisotaxi = {};
 
 
+
+Permisotaxi.findLiquidezByIdInThisDayAtThisHour = (idPermisotaxi, created_by, next) => {
+    if( !connection )
+        return next('Connection refused');
+
+        console.log("idPermisotaxi", idPermisotaxi);
+
+    // SACAR NÚMERO DE DÍA
+    connection.query('SELECT WEEKDAY(NOW())', [], (error, resultDay) => {
+        if(error) 
+            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se encontraba el registro' });
+        else {
+
+            let diaBonificar = resultDay[0].dia;
+            // SACAR SI LA FECHA ES UN DÍA DOMINGO Y SI ESTA ENVIADO DE TALLER PARA APLICAR LA BONIFICACION
+            let query = '';
+            if (diaBonificar === 6) {
+                query = 'SELECT pt.liquidezDom as liquidez, (ROUND(TIME_TO_SEC(TIMEDIFF("23:59:59", curTime()))/60)) as minutosFaltan, (ROUND(TIME_TO_SEC(TIMEDIFF(curTime(), "00:00:00"))/60)) as minutosPasan FROM permisotaxi as pt WHERE pt.idpermisotaxi = ?';
+            } else {
+                query = 'SELECT pt.liquidez as liquidez, (ROUND(TIME_TO_SEC(TIMEDIFF("23:59:59", curTime()))/60)) as minutosFaltan, (ROUND(TIME_TO_SEC(TIMEDIFF(curTime(), "00:00:00"))/60)) as minutosPasan FROM permisotaxi as pt WHERE pt.idpermisotaxi = ?';
+            }
+            keys = [idPermisotaxi];
+            connection.query(query, keys, (error, result) => {
+                if(error) 
+                    return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se encontraba el registro' });
+                else if (result.affectedRows === 0)
+                    return next(null, { success: false, result: result, message: 'Solo es posible encontrar registros propios' });
+                else {
+                    // FÓRMULA LIQUIDEZ
+                    result.liquidezUp = result.liquidez / 1440 * result.minutosFaltan;
+                    result.liquidezDown = result.liquidez / 1440 * result.minutosPasan;
+                    return next(null, { success: true, result: result, message: 'Liquidez encontrad@' });
+                }
+            });
+        }
+    });
+
+};
+
 Permisotaxi.findLiquidezByIdInThisDay = (idPermisotaxi, created_by, next) => {
     if( !connection )
         return next('Connection refused');

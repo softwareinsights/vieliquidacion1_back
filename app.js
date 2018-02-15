@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const morgan = require('morgan');
 const passport = require('passport');
-// var CronJob = require('cron').CronJob;
+var CronJob = require('cron').CronJob;
 
 //Route importation.
 const bonificacion = require('./routes/bonificacions');
@@ -83,7 +83,6 @@ app.use('/dashboard', dashboard);
 app.use('/mantenimiento', mantenimiento);
 
 
-/*
 // CRON JOB, CREA LIQUIDACIONES DIARIAS PARA TODOS LOS PERMISOSTAXIASIGNADOS CON ESTADO ASIGNADO
 
 // new CronJob('10 * * * * * *', function() {
@@ -150,7 +149,7 @@ new CronJob('00 00 00 * * 0-7', function() {
         }
     });
 }, null, true, 'America/Mexico_City');
-*/
+
 
 // Set port
 app.listen(3000);

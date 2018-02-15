@@ -41,9 +41,9 @@ Corralon.goOutCorralon = (Corralon, next) => {
                     // SACAR SI LA FECHA ES UN DÍA LUNES Y SI ESTA ENVIADO DE TALLER PARA APLICAR LA BONIFICACION
                     let query = '';
                     if (diaBonificar === 6) {
-                        query = 'SELECT pt.liquidezDom as liquidez, pta.chofer_idchofer as idchofer, pta.vehiculo_idvehiculo as idvehiculo FROM corralon as corr INNER JOIN permisotaxiasignado as pta ON pta.idpermisotaxiasignado = corr.permisotaxiasignado_idpermisotaxiasignado INNER JOIN permisotaxi as pt ON pt.idpermisotaxi = pta.permisotaxi_idpermisotaxi WHERE corr.idcorralon = ?';
+                        query = 'SELECT pt.liquidezDom as liquidez, pta.chofer_idchofer as idchofer, pt.vehiculo_idvehiculo as idvehiculo FROM corralon as corr INNER JOIN permisotaxiasignado as pta ON pta.idpermisotaxiasignado = corr.permisotaxiasignado_idpermisotaxiasignado INNER JOIN permisotaxi as pt ON pt.idpermisotaxi = pta.permisotaxi_idpermisotaxi WHERE corr.idcorralon = ?';
                     } else {
-                        query = 'SELECT pt.liquidez as liquidez, pta.chofer_idchofer as idchofer, pta.vehiculo_idvehiculo as idvehiculo FROM corralon as corr INNER JOIN permisotaxiasignado as pta ON pta.idpermisotaxiasignado = corr.permisotaxiasignado_idpermisotaxiasignado INNER JOIN permisotaxi as pt ON pt.idpermisotaxi = pta.permisotaxi_idpermisotaxi WHERE corr.idcorralon = ?';
+                        query = 'SELECT pt.liquidez as liquidez, pta.chofer_idchofer as idchofer, pt.vehiculo_idvehiculo as idvehiculo FROM corralon as corr INNER JOIN permisotaxiasignado as pta ON pta.idpermisotaxiasignado = corr.permisotaxiasignado_idpermisotaxiasignado INNER JOIN permisotaxi as pt ON pt.idpermisotaxi = pta.permisotaxi_idpermisotaxi WHERE corr.idcorralon = ?';
                     }
 
                     // SACAR LIQUIDEZ CORRESPONDIENTE DE TABLA PERMISOTAXI SEGÚN permisotaxiasignado

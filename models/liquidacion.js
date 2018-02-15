@@ -2,6 +2,32 @@ const connection = require('../config/db-connection');
 
 const Liquidacion = {};
 
+Liquidacion.liquidacionFromIdchoferFecha = (idChofer, fecha, created_by, next) => {
+    if( !connection )
+        return next('Connection refused');
+
+    const newFecha = fecha.split('_');
+    fecha = newFecha[0] + "-" + newFecha[1] + "-" + newFecha[2];
+
+    let query = '';
+    let keys = [];
+    if (created_by) {
+        query = 'SELECT liquidacion.* FROM liquidacion WHERE liquidacion.chofer_idchofer = ? AND liquidacion.estado_idestado = 9 AND liquidacion.fecha = ? AND liquidacion.created_by = ? HAVING liquidacion.baja IS NULL OR liquidacion.baja = false';
+        keys = [idChofer, fecha, created_by];
+    } else {
+        query = 'SELECT liquidacion.* FROM liquidacion WHERE  liquidacion.chofer_idchofer = ? AND liquidacion.estado_idestado = 9 AND liquidacion.fecha = ? HAVING liquidacion.baja IS NULL OR liquidacion.baja = false';
+        keys = [idChofer];
+    }
+
+    connection.query(query, keys, (error, result) => {
+        if(error) 
+            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se encontraba el registro' });
+        else if (result.affectedRows === 0)
+            return next(null, { success: false, result: result, message: 'Solo es posible encontrar registros propios' });
+        else
+            return next(null, { success: true, result: result, message: 'Liquidacion encontrad@' });
+    });
+};
 
 Liquidacion.reporte = (next) => {
     if( !connection )
@@ -140,11 +166,11 @@ Liquidacion.findByIdChofer = (idChofer, created_by, next) => {
     let query = '';
     let keys = [];
     if (created_by) {
-        query = 'SELECT liquidacion.*, _permisotaxiasignado_idpermisotaxiasignado. as permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado , _chofer_idchofer. as chofer_chofer_idchofer , _estado_idestado. as estado_estado_idestado FROM liquidacion INNER JOIN permisotaxiasignado as _permisotaxiasignado_idpermisotaxiasignado ON _permisotaxiasignado_idpermisotaxiasignado.idpermisotaxiasignado = liquidacion.permisotaxiasignado_idpermisotaxiasignado INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = liquidacion.chofer_idchofer INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = liquidacion.estado_idestado   WHERE liquidacion.chofer_idchofer = ? AND liquidacion.created_by = ? HAVING liquidacion.baja IS NULL OR liquidacion.baja = false';
+        query = 'SELECT liquidacion.*, _permisotaxi.numero as permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado , _persona.nombre as chofer_chofer_idchofer , _estado_idestado.nombre as estado_estado_idestado FROM liquidacion INNER JOIN permisotaxiasignado as _permisotaxiasignado_idpermisotaxiasignado ON _permisotaxiasignado_idpermisotaxiasignado.idpermisotaxiasignado = liquidacion.permisotaxiasignado_idpermisotaxiasignado INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = liquidacion.chofer_idchofer INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = liquidacion.estado_idestado INNER JOIN permisotaxi as _permisotaxi ON _permisotaxi.idpermisotaxi = _permisotaxiasignado_idpermisotaxiasignado.permisotaxi_idpermisotaxi INNER JOIN persona as _persona ON _persona.idpersona = _chofer_idchofer.chofer  WHERE liquidacion.chofer_idchofer = ? AND liquidacion.created_by = ? HAVING liquidacion.baja IS NULL OR liquidacion.baja = false';
         keys = [idChofer, created_by];
     } else {
-        query = 'SELECT liquidacion.*, _permisotaxiasignado_idpermisotaxiasignado. as permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado , _chofer_idchofer. as chofer_chofer_idchofer , _estado_idestado. as estado_estado_idestado FROM liquidacion INNER JOIN permisotaxiasignado as _permisotaxiasignado_idpermisotaxiasignado ON _permisotaxiasignado_idpermisotaxiasignado.idpermisotaxiasignado = liquidacion.permisotaxiasignado_idpermisotaxiasignado INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = liquidacion.chofer_idchofer INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = liquidacion.estado_idestado   WHERE liquidacion.chofer_idchofer = ? HAVING liquidacion.baja IS NULL OR liquidacion.baja = false';
-        keys = [idChofer];
+        query = 'SELECT liquidacion.*, _permisotaxi.numero as permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado , _persona.nombre as chofer_chofer_idchofer , _estado_idestado.nombre as estado_estado_idestado FROM liquidacion INNER JOIN permisotaxiasignado as _permisotaxiasignado_idpermisotaxiasignado ON _permisotaxiasignado_idpermisotaxiasignado.idpermisotaxiasignado = liquidacion.permisotaxiasignado_idpermisotaxiasignado INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = liquidacion.chofer_idchofer INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = liquidacion.estado_idestado INNER JOIN permisotaxi as _permisotaxi ON _permisotaxi.idpermisotaxi = _permisotaxiasignado_idpermisotaxiasignado.permisotaxi_idpermisotaxi INNER JOIN persona as _persona ON _persona.idpersona = _chofer_idchofer.chofer WHERE liquidacion.chofer_idchofer = ? HAVING liquidacion.baja IS NULL OR liquidacion.baja = false';
+       keys = [idChofer];
     }
 
     connection.query(query, keys, (error, result) => {
@@ -163,10 +189,10 @@ Liquidacion.findByIdEstado = (idEstado, created_by, next) => {
     let query = '';
     let keys = [];
     if (created_by) {
-        query = 'SELECT liquidacion.*, _permisotaxiasignado_idpermisotaxiasignado. as permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado , _chofer_idchofer. as chofer_chofer_idchofer , _estado_idestado. as estado_estado_idestado FROM liquidacion INNER JOIN permisotaxiasignado as _permisotaxiasignado_idpermisotaxiasignado ON _permisotaxiasignado_idpermisotaxiasignado.idpermisotaxiasignado = liquidacion.permisotaxiasignado_idpermisotaxiasignado INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = liquidacion.chofer_idchofer INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = liquidacion.estado_idestado   WHERE liquidacion.estado_idestado = ? AND liquidacion.created_by = ? HAVING liquidacion.baja IS NULL OR liquidacion.baja = false';
+        query = 'SELECT liquidacion.*, _permisotaxi.numero as permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado , _persona.nombre as chofer_chofer_idchofer , _estado_idestado.nombre as estado_estado_idestado FROM liquidacion INNER JOIN permisotaxiasignado as _permisotaxiasignado_idpermisotaxiasignado ON _permisotaxiasignado_idpermisotaxiasignado.idpermisotaxiasignado = liquidacion.permisotaxiasignado_idpermisotaxiasignado INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = liquidacion.chofer_idchofer INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = liquidacion.estado_idestado INNER JOIN permisotaxi as _permisotaxi ON _permisotaxi.idpermisotaxi = _permisotaxiasignado_idpermisotaxiasignado.permisotaxi_idpermisotaxi INNER JOIN persona as _persona ON _persona.idpersona = _chofer_idchofer.chofer  WHERE liquidacion.estado_idestado = ? AND liquidacion.created_by = ? HAVING liquidacion.baja IS NULL OR liquidacion.baja = false';
         keys = [idEstado, created_by];
     } else {
-        query = 'SELECT liquidacion.*, _permisotaxiasignado_idpermisotaxiasignado. as permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado , _chofer_idchofer. as chofer_chofer_idchofer , _estado_idestado. as estado_estado_idestado FROM liquidacion INNER JOIN permisotaxiasignado as _permisotaxiasignado_idpermisotaxiasignado ON _permisotaxiasignado_idpermisotaxiasignado.idpermisotaxiasignado = liquidacion.permisotaxiasignado_idpermisotaxiasignado INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = liquidacion.chofer_idchofer INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = liquidacion.estado_idestado   WHERE liquidacion.estado_idestado = ? HAVING liquidacion.baja IS NULL OR liquidacion.baja = false';
+        query = 'SELECT liquidacion.*, _permisotaxi.numero as permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado , _persona.nombre as chofer_chofer_idchofer , _estado_idestado.nombre as estado_estado_idestado FROM liquidacion INNER JOIN permisotaxiasignado as _permisotaxiasignado_idpermisotaxiasignado ON _permisotaxiasignado_idpermisotaxiasignado.idpermisotaxiasignado = liquidacion.permisotaxiasignado_idpermisotaxiasignado INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = liquidacion.chofer_idchofer INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = liquidacion.estado_idestado INNER JOIN permisotaxi as _permisotaxi ON _permisotaxi.idpermisotaxi = _permisotaxiasignado_idpermisotaxiasignado.permisotaxi_idpermisotaxi INNER JOIN persona as _persona ON _persona.idpersona = _chofer_idchofer.chofer WHERE liquidacion.estado_idestado = ? HAVING liquidacion.baja IS NULL OR liquidacion.baja = false';
         keys = [idEstado];
     }
 
@@ -186,10 +212,10 @@ Liquidacion.findByIdPermisotaxiasignado = (idPermisotaxiasignado, created_by, ne
     let query = '';
     let keys = [];
     if (created_by) {
-        query = 'SELECT liquidacion.*, _permisotaxiasignado_idpermisotaxiasignado. as permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado , _chofer_idchofer. as chofer_chofer_idchofer , _estado_idestado. as estado_estado_idestado FROM liquidacion INNER JOIN permisotaxiasignado as _permisotaxiasignado_idpermisotaxiasignado ON _permisotaxiasignado_idpermisotaxiasignado.idpermisotaxiasignado = liquidacion.permisotaxiasignado_idpermisotaxiasignado INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = liquidacion.chofer_idchofer INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = liquidacion.estado_idestado   WHERE liquidacion.permisotaxiasignado_idpermisotaxiasignado = ? AND liquidacion.created_by = ? HAVING liquidacion.baja IS NULL OR liquidacion.baja = false';
+        query = 'SELECT liquidacion.*, _permisotaxi.numero as permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado , _persona.nombre as chofer_chofer_idchofer , _estado_idestado.nombre as estado_estado_idestado FROM liquidacion INNER JOIN permisotaxiasignado as _permisotaxiasignado_idpermisotaxiasignado ON _permisotaxiasignado_idpermisotaxiasignado.idpermisotaxiasignado = liquidacion.permisotaxiasignado_idpermisotaxiasignado INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = liquidacion.chofer_idchofer INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = liquidacion.estado_idestado INNER JOIN permisotaxi as _permisotaxi ON _permisotaxi.idpermisotaxi = _permisotaxiasignado_idpermisotaxiasignado.permisotaxi_idpermisotaxi INNER JOIN persona as _persona ON _persona.idpersona = _chofer_idchofer.chofer  WHERE liquidacion.permisotaxiasignado_idpermisotaxiasignado = ? AND liquidacion.created_by = ? HAVING liquidacion.baja IS NULL OR liquidacion.baja = false';
         keys = [idPermisotaxiasignado, created_by];
     } else {
-        query = 'SELECT liquidacion.*, _permisotaxiasignado_idpermisotaxiasignado. as permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado , _chofer_idchofer. as chofer_chofer_idchofer , _estado_idestado. as estado_estado_idestado FROM liquidacion INNER JOIN permisotaxiasignado as _permisotaxiasignado_idpermisotaxiasignado ON _permisotaxiasignado_idpermisotaxiasignado.idpermisotaxiasignado = liquidacion.permisotaxiasignado_idpermisotaxiasignado INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = liquidacion.chofer_idchofer INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = liquidacion.estado_idestado   WHERE liquidacion.permisotaxiasignado_idpermisotaxiasignado = ? HAVING liquidacion.baja IS NULL OR liquidacion.baja = false';
+        query = 'SELECT liquidacion.*, _permisotaxi.numero as permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado , _persona.nombre as chofer_chofer_idchofer , _estado_idestado.nombre as estado_estado_idestado FROM liquidacion INNER JOIN permisotaxiasignado as _permisotaxiasignado_idpermisotaxiasignado ON _permisotaxiasignado_idpermisotaxiasignado.idpermisotaxiasignado = liquidacion.permisotaxiasignado_idpermisotaxiasignado INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = liquidacion.chofer_idchofer INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = liquidacion.estado_idestado INNER JOIN permisotaxi as _permisotaxi ON _permisotaxi.idpermisotaxi = _permisotaxiasignado_idpermisotaxiasignado.permisotaxi_idpermisotaxi INNER JOIN persona as _persona ON _persona.idpersona = _chofer_idchofer.chofer WHERE liquidacion.permisotaxiasignado_idpermisotaxiasignado = ? HAVING liquidacion.baja IS NULL OR liquidacion.baja = false';
         keys = [idPermisotaxiasignado];
     }
 
@@ -208,11 +234,12 @@ Liquidacion.all = (created_by, next) => {
 
     let query = '';
     let keys = [];
+
     if (created_by) {
-        query = 'SELECT liquidacion.*, _permisotaxiasignado_idpermisotaxiasignado. as permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado , _chofer_idchofer. as chofer_chofer_idchofer , _estado_idestado. as estado_estado_idestado FROM liquidacion INNER JOIN permisotaxiasignado as _permisotaxiasignado_idpermisotaxiasignado ON _permisotaxiasignado_idpermisotaxiasignado.idpermisotaxiasignado = liquidacion.permisotaxiasignado_idpermisotaxiasignado INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = liquidacion.chofer_idchofer INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = liquidacion.estado_idestado   WHERE liquidacion.created_by = ? HAVING liquidacion.baja IS NULL OR liquidacion.baja = false';
+        query = 'SELECT liquidacion.*, _permisotaxi.numero as permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado , _persona.nombre as chofer_chofer_idchofer , _estado_idestado.nombre as estado_estado_idestado FROM liquidacion INNER JOIN permisotaxiasignado as _permisotaxiasignado_idpermisotaxiasignado ON _permisotaxiasignado_idpermisotaxiasignado.idpermisotaxiasignado = liquidacion.permisotaxiasignado_idpermisotaxiasignado INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = liquidacion.chofer_idchofer INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = liquidacion.estado_idestado INNER JOIN permisotaxi as _permisotaxi ON _permisotaxi.idpermisotaxi = _permisotaxiasignado_idpermisotaxiasignado.permisotaxi_idpermisotaxi INNER JOIN persona as _persona ON _persona.idpersona = _chofer_idchofer.chofer  WHERE liquidacion.created_by = ? HAVING liquidacion.baja IS NULL OR liquidacion.baja = false';
         keys = [created_by];
     } else {
-        query = 'SELECT liquidacion.*, _permisotaxiasignado_idpermisotaxiasignado. as permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado , _chofer_idchofer. as chofer_chofer_idchofer , _estado_idestado. as estado_estado_idestado FROM liquidacion INNER JOIN permisotaxiasignado as _permisotaxiasignado_idpermisotaxiasignado ON _permisotaxiasignado_idpermisotaxiasignado.idpermisotaxiasignado = liquidacion.permisotaxiasignado_idpermisotaxiasignado INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = liquidacion.chofer_idchofer INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = liquidacion.estado_idestado   HAVING liquidacion.baja IS NULL OR liquidacion.baja = false';
+        query = 'SELECT liquidacion.*, _permisotaxi.numero as permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado , _persona.nombre as chofer_chofer_idchofer , _estado_idestado.nombre as estado_estado_idestado FROM liquidacion INNER JOIN permisotaxiasignado as _permisotaxiasignado_idpermisotaxiasignado ON _permisotaxiasignado_idpermisotaxiasignado.idpermisotaxiasignado = liquidacion.permisotaxiasignado_idpermisotaxiasignado INNER JOIN chofer as _chofer_idchofer ON _chofer_idchofer.idchofer = liquidacion.chofer_idchofer INNER JOIN estado as _estado_idestado ON _estado_idestado.idestado = liquidacion.estado_idestado INNER JOIN permisotaxi as _permisotaxi ON _permisotaxi.idpermisotaxi = _permisotaxiasignado_idpermisotaxiasignado.permisotaxi_idpermisotaxi INNER JOIN persona as _persona ON _persona.idpersona = _chofer_idchofer.chofer HAVING liquidacion.baja IS NULL OR liquidacion.baja = false';
         keys = [];
     }
 

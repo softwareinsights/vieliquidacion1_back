@@ -17,6 +17,24 @@ router
             });
         })(req, res, next);
     })
+
+
+    .get('/liquidacion-from-idchofer/:id/fecha/:fecha', (req, res, next) => {
+        passport.authenticate('jwt', { session: true }, (err, auth_data, info) => {
+            permissions.module_permission(auth_data.modules, 'liquidacion', auth_data.user.super, 'readable', (error, permission) => {
+                if (permission.success) {
+                    const created_by = (permission.only_own) ? auth_data.user.idsi_user : false;
+                    Liquidacion.liquidacionFromIdchoferFecha(req.params.id,req.params.fecha, created_by, (error, data) => {
+                        return Liquidacion.response(res, error, data);
+                    })
+                } else {
+                    return Liquidacion.response(res, error, permission);
+                }
+            });
+        })(req, res, next);
+    })
+
+
     .get('/adeudando-from-idchofer/:id', (req, res, next) => {
         passport.authenticate('jwt', { session: true }, (err, auth_data, info) => {
             permissions.module_permission(auth_data.modules, 'liquidacion', auth_data.user.super, 'readable', (error, permission) => {
