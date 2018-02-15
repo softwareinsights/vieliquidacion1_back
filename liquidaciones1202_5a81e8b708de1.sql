@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 13-02-2018 a las 18:05:01
+-- Tiempo de generación: 15-02-2018 a las 19:08:36
 -- Versión del servidor: 10.1.9-MariaDB
 -- Versión de PHP: 5.6.15
 
@@ -40,6 +40,15 @@ CREATE TABLE `bonificacion` (
   `modified_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '0|'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='1|1|Bonificaciones||chofer_chofer_idchofer.Nombre del Chofer,estado_estado_idestado.Estado,concepto.Concepto';
 
+--
+-- Volcado de datos para la tabla `bonificacion`
+--
+
+INSERT INTO `bonificacion` (`idbonificacion`, `cantidad`, `validado`, `fecha`, `estado_idestado`, `concepto`, `chofer_idchofer`, `baja`, `created_by`, `created_at`, `modified_at`) VALUES
+(7, 123, 1, '2018-02-07', 6, 'ENVÍO A TALLER', 10, NULL, 1, '2018-02-12 20:34:32', '2018-02-13 19:50:14'),
+(8, 0.625, 0, '2018-02-13', 6, 'BONIFICACIÓN POR TIEMPO EN CORRALÓN', 10, NULL, NULL, '2018-02-13 19:16:16', '2018-02-13 19:50:01'),
+(9, 19.9306, 0, '2018-02-14', 6, 'BONIFICACIÓN POR TIEMPO EN CORRALÓN', 11, NULL, NULL, '2018-02-14 20:56:55', '2018-02-14 20:56:55');
+
 -- --------------------------------------------------------
 
 --
@@ -65,6 +74,14 @@ CREATE TABLE `chofer` (
   `modified_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '0|'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='1|2|Choferes||persona_chofer.Nombre de Chofer,estado_estado_idestado.Estado del Chofer,estado_estado_idestado_fianza.Estado de la Fianza';
 
+--
+-- Volcado de datos para la tabla `chofer`
+--
+
+INSERT INTO `chofer` (`idchofer`, `licencia`, `fianza`, `estado_idestado`, `estado_idestado_fianza`, `chofer`, `aval1`, `aval2`, `aval3`, `aval4`, `deudafianza`, `deudaliquidacion`, `baja`, `created_by`, `created_at`, `modified_at`) VALUES
+(10, '123456', 2500, 5, 20, 64, 64, 64, 64, 64, NULL, NULL, NULL, 1, '2018-02-12 20:34:29', '2018-02-13 19:16:16'),
+(11, '666', 2500, 19, 8, 65, 65, 65, 65, 65, 200, 2400, NULL, 2, '2018-02-14 16:31:46', '2018-02-14 21:01:57');
+
 -- --------------------------------------------------------
 
 --
@@ -79,6 +96,13 @@ CREATE TABLE `concepto` (
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '0|',
   `modified_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '0|'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='1|3|Conceptos||nombre.Concepto';
+
+--
+-- Volcado de datos para la tabla `concepto`
+--
+
+INSERT INTO `concepto` (`idconcepto`, `nombre`, `baja`, `created_by`, `created_at`, `modified_at`) VALUES
+(2, 'Papel Higienicos', NULL, 1, '2018-02-12 20:55:27', '2018-02-12 20:55:27');
 
 -- --------------------------------------------------------
 
@@ -103,6 +127,15 @@ CREATE TABLE `corralon` (
   `modified_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '0|'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='1|5|Corralones||motivo.Motivo,corralonNombre.Corralón,permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado.Número de Permiso,fecha.Fecha de Ingreso';
 
+--
+-- Volcado de datos para la tabla `corralon`
+--
+
+INSERT INTO `corralon` (`idcorralon`, `fecha`, `hora`, `fechaSalida`, `horaSalida`, `infraccionNumero`, `corralonNombre`, `motivo`, `estado_idestado`, `permisotaxiasignado_idpermisotaxiasignado`, `baja`, `created_by`, `created_at`, `modified_at`) VALUES
+(2, '2018-02-13', '13:13:00', '2018-02-13', '13:16:00', 123, 'x', 'X', 1, 13, NULL, 1, '2018-02-13 19:13:22', '2018-02-13 19:16:16'),
+(3, '2018-02-14', '13:34:00', '2018-02-14', '14:56:00', 666677, 'SAN JUAN', 'SE ESTACIONÓ MAL', 1, 14, NULL, 2, '2018-02-14 19:34:19', '2018-02-14 20:56:55'),
+(4, '2018-02-15', '12:31:00', NULL, NULL, 123456, 'X', 'POR CHOQUES', 18, 15, NULL, 2, '2018-02-15 17:00:25', '2018-02-15 17:00:25');
+
 -- --------------------------------------------------------
 
 --
@@ -122,6 +155,13 @@ CREATE TABLE `egresoconcepto` (
   `modified_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '0|'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='1|6|Egreso Conceptos||fecha.Fecha,taller_taller_idtaller.Nombre del Taller,concepto_concepto_idconcepto.Concepto';
 
+--
+-- Volcado de datos para la tabla `egresoconcepto`
+--
+
+INSERT INTO `egresoconcepto` (`idegresoconcepto`, `fecha`, `hora`, `total`, `taller_idtaller`, `concepto_idconcepto`, `baja`, `created_by`, `created_at`, `modified_at`) VALUES
+(1, '2018-02-16', '00:32:00', 500, 5, 2, NULL, 1, '2018-02-12 20:55:35', '2018-02-12 20:55:35');
+
 -- --------------------------------------------------------
 
 --
@@ -139,8 +179,17 @@ CREATE TABLE `enviotaller` (
   `created_by` int(11) DEFAULT NULL COMMENT '0|',
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '0|',
   `modified_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '0|',
-  `mantenimiento_idmantenimiento` varchar(25) NOT NULL COMMENT '1|Mantenimientos|idmantenimiento'
+  `mantenimiento_idmantenimiento` varchar(25) DEFAULT 'NO ES MANTENIMIENTO' COMMENT '1|Mantenimientos|idmantenimiento'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='1|7|Envios Taller||motivo.Motivo,permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado.Número de Permiso,taller_taller_idtaller.Nombre del Taller,fecha.Fecha de Envío';
+
+--
+-- Volcado de datos para la tabla `enviotaller`
+--
+
+INSERT INTO `enviotaller` (`idenviotaller`, `fecha`, `hora`, `motivo`, `permisotaxiasignado_idpermisotaxiasignado`, `taller_idtaller`, `baja`, `created_by`, `created_at`, `modified_at`, `mantenimiento_idmantenimiento`) VALUES
+(13, '2018-02-19', '11:11:00', 'CHOCA', 10, 5, NULL, 1, '2018-02-12 20:42:58', '2018-02-12 20:42:58', ''),
+(14, NULL, '02:34:00', 'X', 13, 5, NULL, 1, '2018-02-13 16:42:42', '2018-02-13 16:42:42', 'PRIMER'),
+(15, '2018-02-01', '11:11:00', 'X', 10, 5, NULL, 1, '2018-02-13 16:52:18', '2018-02-13 16:52:18', 'PRIMER');
 
 -- --------------------------------------------------------
 
@@ -156,6 +205,33 @@ CREATE TABLE `estado` (
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '0|',
   `modified_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '0|'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='1|9|Estados|nombre.Estado';
+
+--
+-- Volcado de datos para la tabla `estado`
+--
+
+INSERT INTO `estado` (`idestado`, `nombre`, `baja`, `created_by`, `created_at`, `modified_at`) VALUES
+(1, 'FUERA', NULL, NULL, '2018-01-18 11:45:06', '2018-01-18 11:45:06'),
+(5, 'ACTIVO', NULL, 1, '2018-01-17 02:47:18', '2018-01-17 02:47:18'),
+(6, 'NOAPLICADA', NULL, 1, '2018-01-17 02:59:01', '2018-01-17 02:59:01'),
+(7, 'APLICADA', NULL, 1, '2018-01-17 02:59:07', '2018-01-17 02:59:07'),
+(8, 'PAGADA', NULL, 1, '2018-01-17 05:20:05', '2018-01-17 05:20:05'),
+(9, 'ADEUDANDO', NULL, 1, '2018-01-17 05:20:11', '2018-01-17 05:20:11'),
+(10, 'INACTIVO', NULL, 1, '2018-01-17 22:17:28', '2018-01-17 22:17:28'),
+(11, 'REPARANDO', NULL, 1, '2018-01-17 22:31:58', '2018-01-17 22:31:58'),
+(12, 'ASIGNADO', NULL, 1, '2018-01-17 22:56:44', '2018-01-17 22:56:44'),
+(13, 'NOASIGNADO', NULL, 1, '2018-01-17 22:56:51', '2018-01-17 22:56:51'),
+(14, 'ASIGNADO-REPARANDO', NULL, 1, '2018-01-17 22:58:06', '2018-01-17 22:58:06'),
+(15, 'TALLER', NULL, 1, '2018-01-17 23:02:51', '2018-01-17 23:02:51'),
+(16, 'REPARADO', NULL, 1, '2018-01-17 23:39:18', '2018-01-17 23:39:18'),
+(17, 'ASIGNADO-CORRALÓN', NULL, 1, '2018-01-17 23:54:57', '2018-01-17 23:54:57'),
+(18, 'CORRALON', NULL, 1, '2018-01-18 00:00:16', '2018-01-18 12:02:59'),
+(19, 'DISPONIBLE', NULL, 1, '2018-01-18 00:01:54', '2018-01-18 00:01:54'),
+(20, 'ACTIVO', NULL, 1, '2018-02-12 20:29:32', '2018-02-12 20:29:32'),
+(21, 'ACTIVO-ALERTAMANTENIMIENTO', NULL, 1, '2018-02-13 19:39:16', '2018-02-13 19:39:16'),
+(22, 'NODISPONIBLE', NULL, 1, '2018-02-13 19:39:28', '2018-02-13 19:39:49'),
+(23, 'SEBAJAACHOFER', NULL, NULL, '2018-02-14 16:12:13', '2018-02-14 16:12:13'),
+(24, 'ENVIADOATALLER', NULL, NULL, '2018-02-15 16:57:03', '2018-02-15 16:57:03');
 
 -- --------------------------------------------------------
 
@@ -180,6 +256,17 @@ CREATE TABLE `liquidacion` (
   `modified_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '0|'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Volcado de datos para la tabla `liquidacion`
+--
+
+INSERT INTO `liquidacion` (`idliquidacion`, `fecha`, `saldoanterior`, `saldoactual`, `montopagado`, `bonificado`, `h_corte`, `permisotaxiasignado_idpermisotaxiasignado`, `chofer_idchofer`, `estado_idestado`, `baja`, `created_by`, `created_at`, `modified_at`) VALUES
+(6, '2018-02-14', NULL, 0, 0, 0, '14:13:00', 13, 10, 9, NULL, 1, '2018-02-13 16:06:08', '2018-02-13 16:06:08'),
+(7, '2018-02-14', NULL, 0, 0, 0, '12:34:00', 14, 11, 9, NULL, 2, '2018-02-14 16:39:51', '2018-02-14 20:37:01'),
+(8, '2018-02-15', NULL, 0, 0, 0, '00:00:00', 20, 11, 9, NULL, 2, '2018-02-14 20:37:59', '2018-02-14 20:37:59'),
+(9, '2018-02-14', NULL, 0, 0, 0, '00:00:00', 21, 11, 9, NULL, 2, '2018-02-14 20:40:43', '2018-02-14 20:40:43'),
+(10, '2018-02-14', NULL, 0, 0, 0, '00:00:00', 22, 11, 9, NULL, 2, '2018-02-14 20:42:08', '2018-02-14 20:42:08');
+
 -- --------------------------------------------------------
 
 --
@@ -196,6 +283,14 @@ CREATE TABLE `mantenimiento` (
   `modified_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '0|'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='1|20|Mantenimientos';
 
+--
+-- Volcado de datos para la tabla `mantenimiento`
+--
+
+INSERT INTO `mantenimiento` (`idmantenimiento`, `kminicial`, `kmfinal`, `baja`, `created_by`, `created_at`, `modified_at`) VALUES
+('PRIMER', 0, 5000, NULL, 1, '2018-02-13 16:34:07', '2018-02-13 16:34:07'),
+('SEGUNDO', 5000, 10000, NULL, 1, '2018-02-13 16:38:57', '2018-02-13 16:38:57');
+
 -- --------------------------------------------------------
 
 --
@@ -211,6 +306,13 @@ CREATE TABLE `mecanico` (
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '0|',
   `modified_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '0|'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='1|11|Mecánicos||persona_persona_idpersona.Nombre,taller_taller_idtaller.Nombre de Taller';
+
+--
+-- Volcado de datos para la tabla `mecanico`
+--
+
+INSERT INTO `mecanico` (`idmecanico`, `persona_idpersona`, `taller_idtaller`, `baja`, `created_by`, `created_at`, `modified_at`) VALUES
+(4, 64, 5, NULL, 1, '2018-02-12 20:43:41', '2018-02-12 20:43:41');
 
 -- --------------------------------------------------------
 
@@ -235,6 +337,15 @@ CREATE TABLE `orden` (
   `modified_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '0|'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='1|12|Ordenes|orden_has_refaccion.orden_idorden.refaccion_idrefaccion.refaccion.idrefaccion.nombre.Refacciones|fecha.Fecha,estado_estado_idestado.Estado,descripcion.Descripción,vehiculoreparando_vehiculoreparando_idvehiculoreparando.Motivo de Reparación\n';
 
+--
+-- Volcado de datos para la tabla `orden`
+--
+
+INSERT INTO `orden` (`idorden`, `fecha`, `hora`, `manoObra`, `subtotal`, `total`, `anticipo`, `estado_idestado`, `descripcion`, `vehiculoreparando_idvehiculoreparando`, `baja`, `created_by`, `created_at`, `modified_at`) VALUES
+(5, '2018-02-21', '00:33:00', 400, 500, 600, 300, 20, 'X', 8, NULL, 1, '2018-02-12 20:46:48', '2018-02-12 20:46:48'),
+(6, '2018-02-13', '11:13:00', 0, 0, 0, 0, 6, 'x', 9, NULL, 1, '2018-02-13 17:14:33', '2018-02-13 17:14:33'),
+(7, '2018-02-13', '12:40:00', 3000, 140859, 143759, 100, 6, 'XXXX', 8, NULL, 1, '2018-02-13 18:40:53', '2018-02-13 18:42:06');
+
 -- --------------------------------------------------------
 
 --
@@ -251,6 +362,16 @@ CREATE TABLE `orden_has_refaccion` (
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '0|',
   `modified_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '0|'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='1|12|Refacciones de ordenes||refaccion_refaccion_idrefaccion.Nombre de Refacción';
+
+--
+-- Volcado de datos para la tabla `orden_has_refaccion`
+--
+
+INSERT INTO `orden_has_refaccion` (`idorden_has_refaccion`, `orden_idorden`, `refaccion_idrefaccion`, `cantidad`, `baja`, `created_by`, `created_at`, `modified_at`) VALUES
+(2, 5, 6, 5463465, NULL, 1, '2018-02-12 20:50:16', '2018-02-12 20:50:16'),
+(3, 5, 5, 500, NULL, 1, '2018-02-12 20:46:48', '2018-02-12 20:49:34'),
+(4, 7, 5, 1, NULL, 1, '2018-02-13 18:40:53', '2018-02-13 18:40:53'),
+(5, 7, 6, 3, NULL, 1, '2018-02-13 18:40:53', '2018-02-13 18:40:53');
 
 -- --------------------------------------------------------
 
@@ -280,6 +401,15 @@ CREATE TABLE `pago` (
   `modified_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '0|'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='1|10|Pagos|pagobonificacion.pago_idpago.bonificacion_idbonificacion.bonificacion.idbonificacion.concepto.Bonificaciones por Conceptos|chofer_chofer_idchofer.Chofer,fecha.Fecha,nota.Nota,estado_estado_idestado.Estado';
 
+--
+-- Volcado de datos para la tabla `pago`
+--
+
+INSERT INTO `pago` (`idpago`, `cantidadRecibida`, `cambio`, `kilometraje`, `fecha`, `hora`, `nota`, `cantPagada`, `estado_idestado`, `descripcion`, `folio`, `liquidacion`, `foliofianza`, `fianza`, `chofer_idchofer`, `baja`, `created_by`, `created_at`, `modified_at`) VALUES
+(7, 123123, 123, 25000, '2018-02-06', '11:11:00', 'X', 123231, 20, 'X', '123', 123, '123', 123, 10, NULL, 1, '2018-02-12 20:36:37', '2018-02-12 20:36:37'),
+(8, 500, 13, 63565432, '2018-02-16', '12:31:00', 'X', 213123, 20, 'X', 'X', 5000, '123', 54756, 10, NULL, 1, '2018-02-12 20:53:45', '2018-02-12 20:53:45'),
+(9, 1095, 5, 437877, '2018-02-14', '14:57:00', 'xxxxx', 1100, 6, NULL, '123', 500, '2123', 600, 11, NULL, 2, '2018-02-14 20:58:01', '2018-02-14 20:58:01');
+
 -- --------------------------------------------------------
 
 --
@@ -295,6 +425,15 @@ CREATE TABLE `pagobonificacion` (
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '0|',
   `modified_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '0|'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='1|12|Pago de Bonificaciones';
+
+--
+-- Volcado de datos para la tabla `pagobonificacion`
+--
+
+INSERT INTO `pagobonificacion` (`idpagobonificacion`, `bonificacion_idbonificacion`, `pago_idpago`, `baja`, `created_by`, `created_at`, `modified_at`) VALUES
+(1, 7, 7, NULL, 1, '2018-02-12 20:36:37', '2018-02-12 20:36:37'),
+(2, 7, 7, NULL, 1, '2018-02-12 20:37:15', '2018-02-12 20:37:15'),
+(3, 7, 8, NULL, 1, '2018-02-12 20:53:45', '2018-02-12 20:53:45');
 
 -- --------------------------------------------------------
 
@@ -315,6 +454,13 @@ CREATE TABLE `pagofianza` (
   `modified_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '0|'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='1|12|Pago de Fianzas';
 
+--
+-- Volcado de datos para la tabla `pagofianza`
+--
+
+INSERT INTO `pagofianza` (`idpagofianza`, `saldoanterior`, `montopagado`, `saldoactual`, `pago_idpago`, `chofer_idchofer`, `baja`, `created_by`, `created_at`, `modified_at`) VALUES
+(1, NULL, 600, NULL, 9, 11, NULL, 2, '2018-02-14 20:58:01', '2018-02-14 20:58:01');
+
 -- --------------------------------------------------------
 
 --
@@ -334,6 +480,17 @@ CREATE TABLE `pagoliquidacion` (
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '0|',
   `modified_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '0|'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='1|12|Pago de Liquidaciones';
+
+--
+-- Volcado de datos para la tabla `pagoliquidacion`
+--
+
+INSERT INTO `pagoliquidacion` (`idpagoliquidacion`, `saldoanterior`, `montopagado`, `saldoactual`, `pago_idpago`, `liquidacion_idliquidacion`, `chofer_idchofer`, `baja`, `created_by`, `created_at`, `modified_at`) VALUES
+(6, 200, 400, 500, 7, 1, 10, NULL, 1, '2018-02-12 20:38:51', '2018-02-12 20:39:02'),
+(7, NULL, NULL, NULL, 9, 7, 11, NULL, 2, '2018-02-14 20:58:01', '2018-02-14 20:58:01'),
+(8, NULL, NULL, NULL, 9, 8, 11, NULL, 2, '2018-02-14 20:58:01', '2018-02-14 20:58:01'),
+(9, NULL, NULL, NULL, 9, 9, 11, NULL, 2, '2018-02-14 20:58:01', '2018-02-14 20:58:01'),
+(10, NULL, NULL, NULL, 9, 10, 11, NULL, 2, '2018-02-14 20:58:01', '2018-02-14 20:58:01');
 
 -- --------------------------------------------------------
 
@@ -357,6 +514,14 @@ CREATE TABLE `permisotaxi` (
   `modified_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '0|'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='1|13|Permisos Taxi||numero.Número,persona_propietario.Nombre del Propietario';
 
+--
+-- Volcado de datos para la tabla `permisotaxi`
+--
+
+INSERT INTO `permisotaxi` (`idpermisotaxi`, `numero`, `estado_idestado`, `fechaAlta`, `vigencia`, `liquidez`, `liquidezDom`, `propietario`, `vehiculo_idvehiculo`, `baja`, `created_by`, `created_at`, `modified_at`) VALUES
+(6, '12345678', 20, '2018-02-13', '2018-02-03', 300, 350, 64, 5, NULL, 1, '2018-02-12 20:41:23', '2018-02-12 20:41:23'),
+(7, '55/22', 19, '2018-02-14', '2018-02-14', 350, 250, 66, 6, NULL, 2, '2018-02-14 16:37:39', '2018-02-15 17:08:13');
+
 -- --------------------------------------------------------
 
 --
@@ -375,6 +540,23 @@ CREATE TABLE `permisotaxiasignado` (
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '0|',
   `modified_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '0|'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='1|14|Asignador Vehículo a Chofer||vehiculo_vehiculo_idvehiculo.Placa de Vehiculo,permisotaxi_permisotaxi_idpermisotaxi.Número de Permiso,chofer_chofer_idchofer.Nombre de Chofer,fecha.Fecha,estado_estado_idestado.Estado';
+
+--
+-- Volcado de datos para la tabla `permisotaxiasignado`
+--
+
+INSERT INTO `permisotaxiasignado` (`idpermisotaxiasignado`, `estado_idestado`, `fecha`, `hora`, `chofer_idchofer`, `permisotaxi_idpermisotaxi`, `baja`, `created_by`, `created_at`, `modified_at`) VALUES
+(10, 14, '2018-02-21', '11:21:00', 10, 6, NULL, 1, '2018-02-12 20:42:12', '2018-02-13 16:52:18'),
+(13, 17, '2018-02-14', '14:13:00', 10, 6, NULL, 1, '2018-02-13 16:06:08', '2018-02-13 19:13:22'),
+(14, 23, '2018-02-15', '12:34:00', 11, 7, NULL, 2, '2018-02-14 16:39:51', '2018-02-14 19:49:18'),
+(15, 18, '2018-02-23', '02:13:00', 11, 7, NULL, 2, '2018-02-14 19:51:58', '2018-02-15 17:00:25'),
+(16, 23, '2018-02-15', '16:35:00', 11, 7, NULL, 2, '2018-02-14 20:17:35', '2018-02-15 17:06:02'),
+(17, 23, '2018-02-09', '04:34:00', 11, 7, NULL, 2, '2018-02-14 20:22:10', '2018-02-15 17:06:06'),
+(18, 23, '2018-02-09', '04:34:00', 11, 7, NULL, 2, '2018-02-14 20:24:37', '2018-02-15 17:08:13'),
+(19, 12, '2018-02-15', '00:34:00', 11, 7, NULL, 2, '2018-02-14 20:34:45', '2018-02-14 20:34:45'),
+(20, 12, '2018-02-15', '00:34:00', 11, 7, NULL, 2, '2018-02-14 20:37:59', '2018-02-14 20:37:59'),
+(21, 12, '2018-02-14', '00:34:00', 11, 7, NULL, 2, '2018-02-14 20:40:42', '2018-02-14 20:40:42'),
+(22, 12, '2018-02-14', '12:31:00', 11, 7, NULL, 2, '2018-02-14 20:42:08', '2018-02-14 20:42:08');
 
 -- --------------------------------------------------------
 
@@ -396,6 +578,15 @@ CREATE TABLE `persona` (
   `modified_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '0|'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='1|15|Personas||nombre.Nombre,rfc.RFC,domicilio.Domicilio';
 
+--
+-- Volcado de datos para la tabla `persona`
+--
+
+INSERT INTO `persona` (`idpersona`, `nombre`, `edad`, `sexo`, `rfc`, `telefono`, `domicilio`, `baja`, `created_by`, `created_at`, `modified_at`) VALUES
+(64, 'CESAR', 35, 'MASCULINO', '23452345245', 2147483647, 'COLON', NULL, 1, '2018-02-12 20:34:23', '2018-02-12 20:34:23'),
+(65, 'x', 45, 'x', 'x', 1, 'x', NULL, 2, '2018-02-14 16:31:29', '2018-02-14 16:31:29'),
+(66, 'Agustin', 66, 'MASCULINO', '44355654', 31241234, 'TOMAS ESCOBEDO 123', NULL, 2, '2018-02-14 16:35:18', '2018-02-14 16:35:18');
+
 -- --------------------------------------------------------
 
 --
@@ -413,6 +604,14 @@ CREATE TABLE `refaccion` (
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '0|',
   `modified_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '0|'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='1|16|Refacciones||nombre.Nombre de Refacción,taller_taller_idtaller.Nombre de Taller';
+
+--
+-- Volcado de datos para la tabla `refaccion`
+--
+
+INSERT INTO `refaccion` (`idrefaccion`, `nombre`, `precioCompra`, `precioVenta`, `taller_idtaller`, `baja`, `created_by`, `created_at`, `modified_at`) VALUES
+(5, 'Llanta Michelin 4x4', 400, 600, 5, NULL, 1, '2018-02-12 20:46:47', '2018-02-12 20:46:47'),
+(6, 'PALANCA', 124325, 46753, 5, NULL, 1, '2018-02-12 20:50:11', '2018-02-12 20:50:11');
 
 -- --------------------------------------------------------
 
@@ -488,6 +687,33 @@ CREATE TABLE `si_permiso` (
   `modified_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '0|'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='1|2|Permisos||modulo_Modulo_idsi_modulo.Módulo';
 
+--
+-- Volcado de datos para la tabla `si_permiso`
+--
+
+INSERT INTO `si_permiso` (`idsi_permiso`, `acceso`, `si_rol_idsi_rol`, `si_modulo_idsi_modulo`, `readable`, `writeable`, `updateable`, `deleteable`, `read_own`, `write_own`, `update_own`, `delete_own`, `baja`, `created_by`, `created_at`, `modified_at`) VALUES
+(1, 1, 2, 66, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, '2018-02-14 15:36:19', '2018-02-14 15:36:19'),
+(2, 0, 2, 67, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, '2018-02-14 15:36:35', '2018-02-14 15:56:43'),
+(3, 0, 2, 68, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, '2018-02-14 15:36:52', '2018-02-14 15:56:47'),
+(4, 0, 2, 69, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, '2018-02-14 15:37:18', '2018-02-14 15:56:51'),
+(5, 1, 2, 70, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, '2018-02-14 15:37:47', '2018-02-14 15:57:04'),
+(6, 1, 2, 71, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, '2018-02-14 15:38:26', '2018-02-14 15:38:26'),
+(7, 1, 2, 81, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, '2018-02-14 15:39:11', '2018-02-14 15:39:11'),
+(8, 0, 2, 60, 1, 0, 0, 0, 0, 1, 1, 1, 0, 1, '2018-02-14 15:39:25', '2018-02-14 21:13:57'),
+(9, 1, 2, 56, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, '2018-02-14 15:39:47', '2018-02-14 15:39:47'),
+(10, 1, 2, 58, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, '2018-02-14 15:40:10', '2018-02-14 15:40:10'),
+(11, 0, 2, 62, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, '2018-02-14 15:40:40', '2018-02-14 15:58:13'),
+(12, 1, 2, 75, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, '2018-02-14 15:41:04', '2018-02-14 15:41:04'),
+(13, 0, 2, 80, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, '2018-02-14 15:41:22', '2018-02-14 16:14:41'),
+(14, 0, 2, 72, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, '2018-02-14 15:41:45', '2018-02-14 15:59:24'),
+(15, 0, 2, 74, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, '2018-02-14 16:20:23', '2018-02-14 16:20:23'),
+(16, 0, 2, 77, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, '2018-02-14 16:20:33', '2018-02-14 16:20:33'),
+(17, 1, 2, 55, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, '2018-02-14 16:20:50', '2018-02-14 19:48:37'),
+(18, 0, 2, 61, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, '2018-02-14 16:21:04', '2018-02-14 16:21:04'),
+(19, 0, 2, 82, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, '2018-02-14 19:44:31', '2018-02-14 19:44:31'),
+(22, 0, 2, 79, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, '2018-02-14 21:11:54', '2018-02-14 21:11:54'),
+(23, 0, 2, 63, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, '2018-02-14 21:12:20', '2018-02-14 21:12:20');
+
 -- --------------------------------------------------------
 
 --
@@ -529,7 +755,9 @@ CREATE TABLE `si_rol` (
 --
 
 INSERT INTO `si_rol` (`idsi_rol`, `nombre`, `baja`, `created_by`, `created_at`, `modified_at`) VALUES
-(1, 'ADMINISTRADOR', 0, NULL, '2018-02-12 19:20:08', '2018-02-12 19:20:08');
+(1, 'ADMINISTRADOR', 0, NULL, '2018-02-12 19:20:08', '2018-02-12 19:20:08'),
+(2, 'LIQUIDACIONES', 0, 1, '2018-02-14 15:34:17', '2018-02-14 15:34:17'),
+(3, 'TALLER', 0, 1, '2018-02-14 15:35:03', '2018-02-14 15:35:03');
 
 -- --------------------------------------------------------
 
@@ -555,7 +783,9 @@ CREATE TABLE `si_user` (
 --
 
 INSERT INTO `si_user` (`idsi_user`, `usuario`, `email`, `password`, `si_rol_idsi_rol`, `super`, `baja`, `created_by`, `created_at`, `modified_at`) VALUES
-(1, 'SuperUsuario', 'admin@liquidacion1601.com', 0x243261243130246362766c3943474b4d525146327a564a4a577945747549676c4f4651384f5056517951436c4c6d344e50314e386e4d4a6175476b47, 1, 1, 0, NULL, '2018-01-17 01:42:33', '2018-01-18 10:02:07');
+(1, 'SuperUsuario', 'admin@liquidacion1601.com', 0x243261243130246362766c3943474b4d525146327a564a4a577945747549676c4f4651384f5056517951436c4c6d344e50314e386e4d4a6175476b47, 1, 1, 0, NULL, '2018-01-17 01:42:33', '2018-01-18 10:02:07'),
+(2, 'liquidacion1', 'liquidacion1@vieliquidaciones.com', 0x243261243130245456445867662e704c74514d48585964655a4d557a2e483032494c56394f6874697a556779624c7979445170764d5235523744632e, 2, 0, 0, 1, '2018-02-14 15:34:22', '2018-02-14 15:34:22'),
+(3, 'Taller1', 'taller1@vieliquidaciones.com', 0x243261243130246e42796c5563783253793161522f6a554b783751417576504c32454b6c2f54335a6f58414c58316f6131556e61483146594a774c65, 3, 0, 0, 1, '2018-02-14 15:35:06', '2018-02-14 15:35:06');
 
 -- --------------------------------------------------------
 
@@ -574,6 +804,13 @@ CREATE TABLE `taller` (
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '0|',
   `modified_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '0|'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='1|17|Talleres||nombre.Nombre,direccion.Dirección';
+
+--
+-- Volcado de datos para la tabla `taller`
+--
+
+INSERT INTO `taller` (`idtaller`, `nombre`, `direccion`, `telefono`, `descripcion`, `baja`, `created_by`, `created_at`, `modified_at`) VALUES
+(5, 'JUANITOS', 'X', 12312, 'X', NULL, 1, '2018-02-12 20:42:55', '2018-02-12 20:42:55');
 
 -- --------------------------------------------------------
 
@@ -601,6 +838,14 @@ CREATE TABLE `vehiculo` (
   `modified_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '0|'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='1|18|Vehículos||marca.Marca,modelo.Modelo,placa.Placa,color.Color,persona_propietario.Nombre de Propietario';
 
+--
+-- Volcado de datos para la tabla `vehiculo`
+--
+
+INSERT INTO `vehiculo` (`idvehiculo`, `marca`, `modelo`, `anio`, `serie`, `serieMotor`, `placa`, `kilometraje`, `estado_idestado`, `poliza`, `polizaTipo`, `color`, `propietario`, `baja`, `created_by`, `created_at`, `modified_at`) VALUES
+(5, 'X', 'X', 1, '1', 'X', '1X', 1, 19, '1', '1', 'ROJO', 64, NULL, 1, '2018-02-12 20:41:21', '2018-02-13 19:16:16'),
+(6, 'FORD', 'KA', 2014, 'x21', '2436536436', 'HJS-ACB-DE', 20000, 19, '32464', 'CHOFER', 'ROJO', 66, NULL, 2, '2018-02-14 16:36:54', '2018-02-14 16:36:54');
+
 -- --------------------------------------------------------
 
 --
@@ -627,6 +872,15 @@ CREATE TABLE `vehiculoreparando` (
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '0|',
   `modified_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '0|'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='1|19|Vehículos Reparando||fechaIngresa.Fecha Ingreso,fechaSalida.Fecha Salida,inventario.Inventario,motivo.Motivo de Reparación,enviotaller_enviotaller_idenviotaller.Motivo Envío a Taller,mecanico_mecanico_idmecanico.Mecánico,permisotaxiasignado_permisotaxiasignado_idpermisotaxiasignado.Permiso,estado_estado_idestado.Estado';
+
+--
+-- Volcado de datos para la tabla `vehiculoreparando`
+--
+
+INSERT INTO `vehiculoreparando` (`idvehiculoreparando`, `fechaIngresa`, `horaIngresa`, `fechaSalida`, `horaSalida`, `fechaEstimada`, `horaEstimada`, `inventario`, `motivo`, `estado_idestado`, `enviotaller_idenviotaller`, `taller_idtaller`, `mecanico_idmecanico`, `permisotaxiasignado_idpermisotaxiasignado`, `baja`, `created_by`, `created_at`, `modified_at`) VALUES
+(8, '2018-02-14', '00:12:00', '2018-02-21', '00:12:00', '2018-02-13', '12:21:00', 'X', 'CHOCAX', 20, 13, 5, 4, 10, NULL, 1, '2018-02-12 20:44:05', '2018-02-12 20:44:05'),
+(9, '2018-02-25', NULL, '2018-02-13', '14:29:00', '2018-02-07', '12:31:00', 'x', 'CHOCA..', 16, 15, 5, 4, 10, NULL, 1, '2018-02-13 16:53:19', '2018-02-13 20:29:24'),
+(10, '2018-02-07', '03:42:00', '2018-02-17', '02:34:00', '2018-02-08', '00:31:00', 'x', 'x', 5, 14, 5, 4, 15, NULL, 2, '2018-02-14 21:14:28', '2018-02-14 21:14:28');
 
 --
 -- Índices para tablas volcadas
@@ -863,12 +1117,12 @@ ALTER TABLE `vehiculoreparando`
 -- AUTO_INCREMENT de la tabla `bonificacion`
 --
 ALTER TABLE `bonificacion`
-  MODIFY `idbonificacion` int(11) NOT NULL AUTO_INCREMENT COMMENT '0|', AUTO_INCREMENT=8;
+  MODIFY `idbonificacion` int(11) NOT NULL AUTO_INCREMENT COMMENT '0|', AUTO_INCREMENT=10;
 --
 -- AUTO_INCREMENT de la tabla `chofer`
 --
 ALTER TABLE `chofer`
-  MODIFY `idchofer` int(11) NOT NULL AUTO_INCREMENT COMMENT '0|', AUTO_INCREMENT=11;
+  MODIFY `idchofer` int(11) NOT NULL AUTO_INCREMENT COMMENT '0|', AUTO_INCREMENT=12;
 --
 -- AUTO_INCREMENT de la tabla `concepto`
 --
@@ -878,7 +1132,7 @@ ALTER TABLE `concepto`
 -- AUTO_INCREMENT de la tabla `corralon`
 --
 ALTER TABLE `corralon`
-  MODIFY `idcorralon` int(11) NOT NULL AUTO_INCREMENT COMMENT '0|', AUTO_INCREMENT=2;
+  MODIFY `idcorralon` int(11) NOT NULL AUTO_INCREMENT COMMENT '0|', AUTO_INCREMENT=5;
 --
 -- AUTO_INCREMENT de la tabla `egresoconcepto`
 --
@@ -893,12 +1147,12 @@ ALTER TABLE `enviotaller`
 -- AUTO_INCREMENT de la tabla `estado`
 --
 ALTER TABLE `estado`
-  MODIFY `idestado` int(3) NOT NULL AUTO_INCREMENT COMMENT '0|', AUTO_INCREMENT=21;
+  MODIFY `idestado` int(3) NOT NULL AUTO_INCREMENT COMMENT '0|', AUTO_INCREMENT=25;
 --
 -- AUTO_INCREMENT de la tabla `liquidacion`
 --
 ALTER TABLE `liquidacion`
-  MODIFY `idliquidacion` int(11) NOT NULL AUTO_INCREMENT COMMENT '0|', AUTO_INCREMENT=7;
+  MODIFY `idliquidacion` int(11) NOT NULL AUTO_INCREMENT COMMENT '0|', AUTO_INCREMENT=11;
 --
 -- AUTO_INCREMENT de la tabla `mecanico`
 --
@@ -908,17 +1162,17 @@ ALTER TABLE `mecanico`
 -- AUTO_INCREMENT de la tabla `orden`
 --
 ALTER TABLE `orden`
-  MODIFY `idorden` int(11) NOT NULL AUTO_INCREMENT COMMENT '0|', AUTO_INCREMENT=6;
+  MODIFY `idorden` int(11) NOT NULL AUTO_INCREMENT COMMENT '0|', AUTO_INCREMENT=8;
 --
 -- AUTO_INCREMENT de la tabla `orden_has_refaccion`
 --
 ALTER TABLE `orden_has_refaccion`
-  MODIFY `idorden_has_refaccion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `idorden_has_refaccion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 --
 -- AUTO_INCREMENT de la tabla `pago`
 --
 ALTER TABLE `pago`
-  MODIFY `idpago` int(11) NOT NULL AUTO_INCREMENT COMMENT '0|', AUTO_INCREMENT=9;
+  MODIFY `idpago` int(11) NOT NULL AUTO_INCREMENT COMMENT '0|', AUTO_INCREMENT=10;
 --
 -- AUTO_INCREMENT de la tabla `pagobonificacion`
 --
@@ -933,22 +1187,22 @@ ALTER TABLE `pagofianza`
 -- AUTO_INCREMENT de la tabla `pagoliquidacion`
 --
 ALTER TABLE `pagoliquidacion`
-  MODIFY `idpagoliquidacion` int(11) NOT NULL AUTO_INCREMENT COMMENT '0|', AUTO_INCREMENT=7;
+  MODIFY `idpagoliquidacion` int(11) NOT NULL AUTO_INCREMENT COMMENT '0|', AUTO_INCREMENT=11;
 --
 -- AUTO_INCREMENT de la tabla `permisotaxi`
 --
 ALTER TABLE `permisotaxi`
-  MODIFY `idpermisotaxi` int(11) NOT NULL AUTO_INCREMENT COMMENT '0|', AUTO_INCREMENT=7;
+  MODIFY `idpermisotaxi` int(11) NOT NULL AUTO_INCREMENT COMMENT '0|', AUTO_INCREMENT=8;
 --
 -- AUTO_INCREMENT de la tabla `permisotaxiasignado`
 --
 ALTER TABLE `permisotaxiasignado`
-  MODIFY `idpermisotaxiasignado` int(11) NOT NULL AUTO_INCREMENT COMMENT '0|', AUTO_INCREMENT=14;
+  MODIFY `idpermisotaxiasignado` int(11) NOT NULL AUTO_INCREMENT COMMENT '0|', AUTO_INCREMENT=23;
 --
 -- AUTO_INCREMENT de la tabla `persona`
 --
 ALTER TABLE `persona`
-  MODIFY `idpersona` int(11) NOT NULL AUTO_INCREMENT COMMENT '0|', AUTO_INCREMENT=65;
+  MODIFY `idpersona` int(11) NOT NULL AUTO_INCREMENT COMMENT '0|', AUTO_INCREMENT=67;
 --
 -- AUTO_INCREMENT de la tabla `refaccion`
 --
@@ -963,7 +1217,7 @@ ALTER TABLE `si_modulo`
 -- AUTO_INCREMENT de la tabla `si_permiso`
 --
 ALTER TABLE `si_permiso`
-  MODIFY `idsi_permiso` int(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `idsi_permiso` int(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 --
 -- AUTO_INCREMENT de la tabla `si_reporte`
 --
@@ -973,12 +1227,12 @@ ALTER TABLE `si_reporte`
 -- AUTO_INCREMENT de la tabla `si_rol`
 --
 ALTER TABLE `si_rol`
-  MODIFY `idsi_rol` int(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `idsi_rol` int(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 --
 -- AUTO_INCREMENT de la tabla `si_user`
 --
 ALTER TABLE `si_user`
-  MODIFY `idsi_user` int(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `idsi_user` int(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 --
 -- AUTO_INCREMENT de la tabla `taller`
 --
@@ -988,12 +1242,12 @@ ALTER TABLE `taller`
 -- AUTO_INCREMENT de la tabla `vehiculo`
 --
 ALTER TABLE `vehiculo`
-  MODIFY `idvehiculo` int(11) NOT NULL AUTO_INCREMENT COMMENT '0|', AUTO_INCREMENT=6;
+  MODIFY `idvehiculo` int(11) NOT NULL AUTO_INCREMENT COMMENT '0|', AUTO_INCREMENT=7;
 --
 -- AUTO_INCREMENT de la tabla `vehiculoreparando`
 --
 ALTER TABLE `vehiculoreparando`
-  MODIFY `idvehiculoreparando` int(11) NOT NULL AUTO_INCREMENT COMMENT '0|', AUTO_INCREMENT=10;
+  MODIFY `idvehiculoreparando` int(11) NOT NULL AUTO_INCREMENT COMMENT '0|', AUTO_INCREMENT=11;
 --
 -- Restricciones para tablas volcadas
 --
