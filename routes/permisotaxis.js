@@ -88,6 +88,21 @@ router
             });
         })(req, res, next);
     })
+    .get('/disponibles', (req, res, next) => {
+        passport.authenticate('jwt', { session: true }, (err, auth_data, info) => {
+            permissions.module_permission(auth_data.modules, 'permisotaxi', auth_data.user.super, 'readable', (error, permission) => {
+                if (permission.success) {
+                    const created_by = (permission.only_own) ? auth_data.user.idsi_user : false;
+                    Permisotaxi.allDisponibles(created_by, (error, data) => {
+                        return Permisotaxi.response(res, error, data);
+                    })
+                } else {
+                    return Permisotaxi.response(res, error, permission);
+                }
+            });
+        })(req, res, next);
+    })
+
     .get('/count', (req, res, next) => {
         passport.authenticate('jwt', { session: true }, (err, auth_data, info) => {
             permissions.module_permission(auth_data.modules, 'permisotaxi', auth_data.user.super, 'readable', (error, permission) => {
