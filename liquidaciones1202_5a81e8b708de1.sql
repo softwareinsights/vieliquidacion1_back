@@ -254,7 +254,7 @@ CREATE TABLE `liquidacion` (
   `created_by` int(11) DEFAULT NULL COMMENT '0|',
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '0|',
   `modified_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '0|'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='1|21|Liquidaciones';
 
 --
 -- Volcado de datos para la tabla `liquidacion`
@@ -598,6 +598,9 @@ CREATE TABLE `refaccion` (
   `nombre` varchar(45) DEFAULT NULL COMMENT '1|Nombre',
   `precioCompra` int(11) DEFAULT NULL COMMENT '1|Precio Compra',
   `precioVenta` int(11) DEFAULT NULL COMMENT '1|Precio Venta',
+  `estante` int(11) DEFAULT NULL COMMENT '1|Estante',
+  `cantidad` int(11) DEFAULT NULL COMMENT '1|Cantidad',
+  `descripcion` varchar(150) DEFAULT NULL COMMENT '1|Descripción',
   `taller_idtaller` int(11) NOT NULL COMMENT '1|Taller|nombre',
   `baja` tinyint(1) DEFAULT NULL COMMENT '0|',
   `created_by` int(11) DEFAULT NULL COMMENT '0|',
@@ -866,7 +869,7 @@ CREATE TABLE `vehiculoreparando` (
   `enviotaller_idenviotaller` int(11) DEFAULT NULL COMMENT '1|Envio Taller|motivo',
   `taller_idtaller` int(11) NOT NULL COMMENT '1|Taller|nombre',
   `mecanico_idmecanico` int(11) NOT NULL COMMENT '1|Mecánico|**nombre persona.idpersona mecanico.persona_idpersona',
-  `permisotaxiasignado_idpermisotaxiasignado` int(11) DEFAULT NULL COMMENT '1|Permiso Taxi|**numero permisotaxi.idpermisotaxi permisotaxiasignado.permisotaxi_idpermisotaxi',
+  `vehiculo_idvehiculo` int(11) NOT NULL COMMENT '1|Vehículo|marca',
   `baja` tinyint(1) DEFAULT NULL COMMENT '0|',
   `created_by` int(11) DEFAULT NULL COMMENT '0|',
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '0|',
@@ -877,10 +880,10 @@ CREATE TABLE `vehiculoreparando` (
 -- Volcado de datos para la tabla `vehiculoreparando`
 --
 
-INSERT INTO `vehiculoreparando` (`idvehiculoreparando`, `fechaIngresa`, `horaIngresa`, `fechaSalida`, `horaSalida`, `fechaEstimada`, `horaEstimada`, `inventario`, `motivo`, `estado_idestado`, `enviotaller_idenviotaller`, `taller_idtaller`, `mecanico_idmecanico`, `permisotaxiasignado_idpermisotaxiasignado`, `baja`, `created_by`, `created_at`, `modified_at`) VALUES
-(8, '2018-02-14', '00:12:00', '2018-02-21', '00:12:00', '2018-02-13', '12:21:00', 'X', 'CHOCAX', 20, 13, 5, 4, 10, NULL, 1, '2018-02-12 20:44:05', '2018-02-12 20:44:05'),
-(9, '2018-02-25', NULL, '2018-02-13', '14:29:00', '2018-02-07', '12:31:00', 'x', 'CHOCA..', 16, 15, 5, 4, 10, NULL, 1, '2018-02-13 16:53:19', '2018-02-13 20:29:24'),
-(10, '2018-02-07', '03:42:00', '2018-02-17', '02:34:00', '2018-02-08', '00:31:00', 'x', 'x', 5, 14, 5, 4, 15, NULL, 2, '2018-02-14 21:14:28', '2018-02-14 21:14:28');
+INSERT INTO `vehiculoreparando` (`idvehiculoreparando`, `fechaIngresa`, `horaIngresa`, `fechaSalida`, `horaSalida`, `fechaEstimada`, `horaEstimada`, `inventario`, `motivo`, `estado_idestado`, `enviotaller_idenviotaller`, `taller_idtaller`, `mecanico_idmecanico`, `vehiculo_idvehiculo`, `baja`, `created_by`, `created_at`, `modified_at`) VALUES
+(8, '2018-02-14', '00:12:00', '2018-02-21', '00:12:00', '2018-02-13', '12:21:00', 'X', 'CHOCAX', 20, 13, 5, 4, 5, NULL, 1, '2018-02-12 20:44:05', '2018-02-12 20:44:05'),
+(9, '2018-02-25', NULL, '2018-02-13', '14:29:00', '2018-02-07', '12:31:00', 'x', 'CHOCA..', 16, 15, 5, 4, 5, NULL, 1, '2018-02-13 16:53:19', '2018-02-13 20:29:24'),
+(10, '2018-02-07', '03:42:00', '2018-02-17', '02:34:00', '2018-02-08', '00:31:00', 'x', 'x', 5, 14, 5, 4, 5, NULL, 2, '2018-02-14 21:14:28', '2018-02-14 21:14:28');
 
 --
 -- Índices para tablas volcadas
@@ -1106,7 +1109,7 @@ ALTER TABLE `vehiculoreparando`
   ADD KEY `fk_vehiculoreparando_enviotaller1_idx` (`enviotaller_idenviotaller`),
   ADD KEY `fk_vehiculoreparando_taller1_idx` (`taller_idtaller`),
   ADD KEY `fk_vehiculoreparando_mecanico1_idx` (`mecanico_idmecanico`),
-  ADD KEY `fk_vehiculoreparando_permisotaxiasignado1_idx` (`permisotaxiasignado_idpermisotaxiasignado`),
+  ADD KEY `fk_vehiculoreparando_vehiculo1_idx` (`vehiculo_idvehiculo`),
   ADD KEY `fk_vehiculoreparando_estado1_idx` (`estado_idestado`);
 
 --
@@ -1404,7 +1407,7 @@ ALTER TABLE `vehiculoreparando`
   ADD CONSTRAINT `fk_vehiculoreparando_enviotaller1` FOREIGN KEY (`enviotaller_idenviotaller`) REFERENCES `enviotaller` (`idenviotaller`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_vehiculoreparando_estado1` FOREIGN KEY (`estado_idestado`) REFERENCES `estado` (`idestado`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_vehiculoreparando_mecanico1` FOREIGN KEY (`mecanico_idmecanico`) REFERENCES `mecanico` (`idmecanico`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `fk_vehiculoreparando_permisotaxiasignado1` FOREIGN KEY (`permisotaxiasignado_idpermisotaxiasignado`) REFERENCES `permisotaxiasignado` (`idpermisotaxiasignado`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_vehiculoreparando_vehiculo1` FOREIGN KEY (`vehiculo_idvehiculo`) REFERENCES `vehiculo` (`idvehiculo`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_vehiculoreparando_taller1` FOREIGN KEY (`taller_idtaller`) REFERENCES `taller` (`idtaller`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
