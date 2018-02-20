@@ -16,7 +16,7 @@ Liquidacion.liquidacionFromIdchoferFecha = (idChofer, fecha, created_by, next) =
         keys = [idChofer, fecha, created_by];
     } else {
         query = 'SELECT liquidacion.* FROM liquidacion WHERE  liquidacion.chofer_idchofer = ? AND liquidacion.estado_idestado = 9 AND liquidacion.fecha = ? HAVING liquidacion.baja IS NULL OR liquidacion.baja = false';
-        keys = [idChofer];
+        keys = [idChofer, fecha];
     }
 
     connection.query(query, keys, (error, result) => {

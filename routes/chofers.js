@@ -4,6 +4,21 @@ const passport = require('passport');
 const permissions = require('../config/permissions');
 
 router
+
+    .get('/bitacora-pagos/:idchofer', (req, res, next) => {
+        passport.authenticate('jwt', { session: true }, (err, auth_data, info) => {
+            permissions.module_permission(auth_data.modules, 'chofer', auth_data.user.super, 'readable', (error, permission) => {
+                if (permission.success) {
+                    Chofer.findByIdChofer(req.params.idchofer, (error, data) => {
+                        return Chofer.response(res, error, data);
+                    })
+                } else {
+                    return Chofer.response(res, error, permission);
+                }
+            });
+        })(req, res, next);
+    })
+
     .get('/estado/:idestado', (req, res, next) => {
         passport.authenticate('jwt', { session: true }, (err, auth_data, info) => {
             permissions.module_permission(auth_data.modules, 'chofer', auth_data.user.super, 'readable', (error, permission) => {

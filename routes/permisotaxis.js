@@ -4,6 +4,22 @@ const passport = require('passport');
 const permissions = require('../config/permissions');
 
 router
+
+
+    .get('/bitacora-pagos/:idpermisotaxi', (req, res, next) => {
+        passport.authenticate('jwt', { session: true }, (err, auth_data, info) => {
+            permissions.module_permission(auth_data.modules, 'permisotaxi', auth_data.user.super, 'readable', (error, permission) => {
+                if (permission.success) {
+                    Permisotaxi.findByIdPermisoTaxi(req.params.idpermisotaxi, (error, data) => {
+                        return Permisotaxi.response(res, error, data);
+                    })
+                } else {
+                    return Permisotaxi.response(res, error, permission);
+                }
+            });
+        })(req, res, next);
+    })
+
     .get('/this-day/:id/this-hour', (req, res, next) => {
         passport.authenticate('jwt', { session: true }, (err, auth_data, info) => {
             permissions.module_permission(auth_data.modules, 'permisotaxi', auth_data.user.super, 'readable', (error, permission) => {

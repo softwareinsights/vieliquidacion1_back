@@ -2,6 +2,25 @@ const connection = require('../config/db-connection');
 
 const Chofer = {};
 
+
+Chofer.findByIdChofer = (idChofer, next) => {
+    if( !connection )
+        return next('Connection refused');
+
+    let query = 'SELECT permisotaxi.numero,persona.nombre as chofer, liquidacion.fecha, liquidacion.montopagado, pago.folio, pago.nota from permisotaxi RIGHT join permisotaxiasignado on permisotaxi.idpermisotaxi = permisotaxiasignado.permisotaxi_idpermisotaxi RIGHT join chofer on permisotaxiasignado.chofer_idchofer = chofer.idchofer RIGHT JOIN persona on chofer.chofer = persona.idpersona RIGHT join liquidacion on permisotaxiasignado.idpermisotaxiasignado = liquidacion.permisotaxiasignado_idpermisotaxiasignado RIGHT JOIN pagoliquidacion on liquidacion.idliquidacion = pagoliquidacion.liquidacion_idliquidacion RIGHT join pago on pagoliquidacion.pago_idpago = pago.idpago WHERE pago.chofer_idchofer = ? order by pago.fecha';
+
+    let keys = [idChofer];
+
+    connection.query(query, keys, (error, result) => {
+        if(error)
+            return next({ success: false, error: error, message: 'Un error ha ocurrido mientras se encontraba el registro' });
+        else if (result.affectedRows === 0)
+            return next(null, { success: false, result: result, message: 'Solo es posible encontrar registros propios' });
+        else
+            return next(null, { success: true, result: result, message: 'Chofer encontrad@' });
+    });
+};
+
 Chofer.findByIdEstado = (idEstado, created_by, next) => {
     if( !connection )
         return next('Connection refused');
